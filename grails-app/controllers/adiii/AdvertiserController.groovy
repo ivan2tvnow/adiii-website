@@ -1,5 +1,7 @@
 package adiii
 
+import grails.plugins.springsecurity.Secured
+
 class AdvertiserController
 {
     static allowedMethods = [index: ['GET', 'POST']]
@@ -8,6 +10,7 @@ class AdvertiserController
      *  URL: /advertiser/index
      *  廣告主首頁, 即顯示所有廣告主可進行操作與顯示所有廣告活動的頁面.
      */
+    @Secured(['ROLE_ADVERTISER'])
     def index()
     {
         Map modelMap = [:]
