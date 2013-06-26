@@ -97,7 +97,7 @@
 
             <div class="control-group">
                 <label for="end_date" class="control-label">
-                    <g:checkBox id="has_end_checkbox" name="check_end_date" />  結束時間：
+                    <g:checkBox id="has_end_checkbox" name="check_end_date" checked="false" />  結束時間：
                 </label>
                 <div class="controls">
                     <div class="input-append date" id="end_date_datepicker" data-date="${endDate}" data-date-format="yyyy/mm/dd">
@@ -154,7 +154,6 @@
 <script src="${resource(dir: "js", file: "jquery.validate.js")}"></script>
 <script>
     $(function() {
-        $('#has_end_checkbox').attr("checked", "checked");
         $('#end_date_datepicker').attr('disabled', true);
         $('#end_hour_select').attr('disabled', true);
         $('#end_min_select').attr('disabled', true);

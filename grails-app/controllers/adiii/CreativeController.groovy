@@ -1,5 +1,6 @@
 package adiii
 
+import grails.plugins.springsecurity.Secured
 import org.springframework.web.multipart.MultipartFile
 
 class CreativeController
@@ -10,6 +11,7 @@ class CreativeController
      *  URL: /advertiser/creative/save/${campaign.id}
      *  實際進行廣告內容(creative)儲存的action method; 當儲存成功後, 將網頁導至/advertiser/index.
      */
+    @Secured(['ROLE_ADVERTISER'])
     def save()
     {
         Integer campId = params.int('id')

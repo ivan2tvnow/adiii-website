@@ -5,6 +5,7 @@ import grails.plugins.springsecurity.Secured
 class AdvertiserController
 {
     static allowedMethods = [index: ['GET', 'POST']]
+    def springSecurityService
 
     /*
      *  URL: /advertiser/index
@@ -15,8 +16,10 @@ class AdvertiserController
     {
         Map modelMap = [:]
 
-        modelMap.campaignCount = Campaign.count()
-        modelMap.campaigns = Campaign.list()
+        User advertiser = springSecurityService.getCurrentUser()
+
+        modelMap.campaignCount = advertiser.campaigns.size()
+        modelMap.campaigns = advertiser.campaigns.toList()
 
         render(view: "index", model: modelMap)
     }
@@ -25,6 +28,7 @@ class AdvertiserController
      *  URL: /advertiser/campaign/${campaign.id}, ex: /advertiser/campaign/5566
      *  廣告活動(campaign)資訊頁面, 顯示廣告活動的詳細資訊, 主要顯示其所包含的所有廣告內容(creatives)
      */
+    @Secured(['ROLE_ADVERTISER'])
     def campaign()
     {
         Campaign campaign = Campaign.get(params.id)
@@ -53,6 +57,7 @@ class AdvertiserController
      *  URL: /advertiser/addcampaign
      *  廣告主用以新增廣告活動(campaign)的頁面
      */
+    @Secured(['ROLE_ADVERTISER'])
     def addcampaign()
     {
         Map modelMap = [:]
@@ -86,6 +91,7 @@ class AdvertiserController
      *  廣告主用以為廣告活動(campaign)新增影片廣告內容(creative)的頁面
      *  注意URL的第三個segment為目前要為其建立內容的campaign ID
      */
+    @Secured(['ROLE_ADVERTISER'])
     def addvidadcreative()
     {
         Integer count = Campaign.count()
@@ -101,6 +107,7 @@ class AdvertiserController
      *  廣告主用以為廣告活動(campaign)新增行動廣告內容(creative)的頁面
      *  注意URL的第三個segment為目前要為其建立內容的campaign ID
      */
+    @Secured(['ROLE_ADVERTISER'])
     def addmobadcampaign(){
         render(view: "addmobadcampaign")
     }
@@ -109,6 +116,7 @@ class AdvertiserController
      *  URL: /advertiser/reports
      *  顯示廣告投放狀況的頁面
      */
+    @Secured(['ROLE_ADVERTISER'])
     def reports(){
         render(view: "reports")
     }
@@ -117,6 +125,7 @@ class AdvertiserController
      *  URL: /advertiser/account
      *  顯示廣告主帳戶狀況的頁面, 此頁面用以顯示與操作與金錢額度相關的資訊與操作.
      */
+    @Secured(['ROLE_ADVERTISER'])
     def account(){
         render(view: "account")
     }
