@@ -1,15 +1,26 @@
+<%@ page contentType="text/html;charset=UTF-8" %>
+<!DOCTYPE html>
 <html>
 <head>
-	<meta name='layout' content='main'/>
-	<title>使用者登入</title>
+	<title>Adiii</title>
+    <link href='http://fonts.googleapis.com/css?family=Lily+Script+One' rel='stylesheet' type='text/css'>
+    <link href="${resource(dir: "css", file: "bootstrap.css")}" rel="stylesheet" media="screen">
 	<style type='text/css' media='screen'>
 	#login {
 		margin: 15px 0px;
 		padding: 0px;
 		text-align: center;
+        display: inline;
 	}
 
-	#login .inner {
+    #signup {
+        margin: 15px 0px;
+        padding: 0px;
+        text-align: center;
+        display:inline;
+    }
+
+	.inner {
 		width: 340px;
 		padding-bottom: 6px;
 		margin: 60px auto;
@@ -22,7 +33,7 @@
 		box-shadow: 2px 2px 2px #eee;
 	}
 
-	#login .inner .fheader {
+	.inner .fheader {
 		padding: 18px 26px 14px 26px;
 		background-color: #f7f7ff;
 		margin: 0px 0 14px 0;
@@ -31,7 +42,7 @@
 		font-weight: bold;
 	}
 
-	#login .inner .cssform p {
+	.inner .cssform p {
 		clear: left;
 		margin: 0;
 		padding: 4px 0 3px 0;
@@ -40,11 +51,11 @@
 		height: 1%;
 	}
 
-	#login .inner .cssform input[type='text'] {
+	.inner .cssform input[type='text'] {
 		width: 120px;
 	}
 
-	#login .inner .cssform label {
+	.inner .cssform label {
 		font-weight: bold;
 		float: left;
 		text-align: right;
@@ -74,17 +85,38 @@
 		color: #c33;
 	}
 
-	#login .inner .text_ {
+	.inner .text_ {
 		width: 120px;
 	}
 
 	#login .inner .chk {
 		height: 12px;
 	}
+
+    #signup .signlink {
+        text-align: center;
+        font-size: 18px;
+    }
+
 	</style>
 </head>
 
 <body>
+<div class="navbar navbar-static-top">
+    <div class="navbar-inner">
+        <div class="container">
+            <ul class="pull-right nav">
+                <li><a href="${createLink(controller: "user", action: "account")}">您好，Test Advertiser</a></li>
+                <li><a href="${createLink(controller: "user", action: "logout")}">登出</a></li>
+            </ul>
+        </div>
+    </div>
+</div>
+<header class="">
+    <div class="container">
+        <h1><a class="brand" href="${createLink(controller: "adiii")}">Adiii</a></h1>
+    </div>
+</header>
 <div id='login'>
 	<div class='inner'>
 		<div class='fheader'>使用者登入</div>
@@ -114,6 +146,12 @@
 			</p>
 		</form>
 	</div>
+</div>
+<div id='signup'>
+    <div class='inner'>
+        <div class='fheader'>沒有帳戶？</div>
+        <div class='signlink'><a href="${createLink(controller: "user", action: "signup")}">立刻建立帳戶</a></div>
+    </div>
 </div>
 <script type='text/javascript'>
 	<!--
