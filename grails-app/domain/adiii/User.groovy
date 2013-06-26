@@ -10,7 +10,7 @@ class User {
     String email
     String country
     String company
-    String apiKey
+    String apikey
 	boolean enabled
 	boolean accountExpired
 	boolean accountLocked
@@ -21,7 +21,7 @@ class User {
 	static constraints = {
         firstname blank: false
         lastname blank: false
-        email blank: false, unique: true
+        email blank: false, unique: true, email: true
 		password blank: false
 	}
 
