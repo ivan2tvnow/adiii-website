@@ -29,8 +29,14 @@
     <div class="navbar-inner">
         <div class="container">
             <ul class="pull-right nav">
-                <li><a href="${createLink(controller: "user", action: "account")}">您好，Test Advertiser</a></li>
-                <li><a href="${createLink(controller: "user", action: "logout")}">登出</a></li>
+                <sec:ifNotLoggedIn>
+                    <li><a href="${createLink(controller: "login", action: "auth")}">登入</a></li>
+                    <li><a href="${createLink(controller: "user", action: "signup")}">註冊</a></li>
+                </sec:ifNotLoggedIn>
+                <sec:ifLoggedIn>
+                    <li><a href="${createLink(controller: "user", action: "account")}">您好，<sec:username /></a></li>
+                    <li><a href="${createLink(controller: "logout")}">登出</a></li>
+                </sec:ifLoggedIn>
             </ul>
         </div>
     </div>

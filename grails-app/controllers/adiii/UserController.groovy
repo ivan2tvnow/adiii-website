@@ -25,16 +25,18 @@ class UserController {
 
         if (!guestUser.validate()) {
             guestUser.errors.allErrors.each { println it }
-            return "validate failed!"
+            flash.message = "資料有錯!"
+        } else {
+            guestUser.save(flush: true)
+
+            if (!guestUser.authorities.contains(userRole)) {
+                UserRole.create guestUser, userRole
+            }
+
+            flash.message = '註冊成功: ' + guestUser.email
         }
 
-        guestUser.save(flush: true)
-
-        if (!guestUser.authorities.contains(userRole)) {
-            UserRole.create guestUser, userRole
-        }
-
-        render 'register success: ' + guestUser.email
+        redirect controller: 'adiii', action: 'index'
     }
 
     def signup()

@@ -24,8 +24,14 @@
     <div class="navbar-inner">
         <div class="container">
             <ul class="pull-right nav">
-                <li><a href="${createLink(controller: "user", action: "account")}">您好，Test Advertiser</a></li>
-                <li><a href="${createLink(controller: "user", action: "logout")}">登出</a></li>
+                <sec:ifNotLoggedIn>
+                    <li><a href="${createLink(controller: "login", action: "auth")}">登入</a></li>
+                    <li><a href="${createLink(controller: "user", action: "signup")}">註冊</a></li>
+                </sec:ifNotLoggedIn>
+                <sec:ifLoggedIn>
+                    <li><a href="${createLink(controller: "user", action: "account")}">您好，<sec:username /></a></li>
+                    <li><a href="${createLink(controller: "logout")}">登出</a></li>
+                </sec:ifLoggedIn>
             </ul>
         </div>
     </div>
@@ -41,7 +47,7 @@
             <h2>建立新帳戶</h2>
         </div>
         <div class="well">
-            <g:form url="[controller: 'user', name: 'save']" id="user_form" class="form-horizontal">
+            <g:form controller='user' action='save' id="user_form" class="form-horizontal">
                 <fieldset>
                     <legend>帳戶類型</legend>
 
