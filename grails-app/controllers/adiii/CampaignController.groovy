@@ -14,7 +14,11 @@ class CampaignController
     def save()
     {
         Date startDate = Date.parse("yyyy/MM/dd HH:mm", "${params.start_date} ${params.start_hour}:${params.start_min}")
-        Date endDate = Date.parse("yyyy/MM/dd HH:mm", "${params.end_date} ${params.end_hour ?: '23'}:${params.end_min ?: '59'}")
+        Date endDate = new Date()
+        if (params?.check_end_date == 'on')
+        {
+            endDate = Date.parse("yyyy/MM/dd HH:mm", "${params.end_date} ${params.end_hour ?: '23'}:${params.end_min ?: '59'}")
+        }
         Boolean checkEndDate = params?.check_end_date == 'on' ? true : false
 
         Campaign campaign = new Campaign(name: params.campaign_name,
@@ -27,8 +31,8 @@ class CampaignController
         User user = springSecurityService.getCurrentUser()
         if(user == null)
         {
-            flash.message = "尚未登入"
-            redirect(controller: "advertiser", action: "addvidadcreative", id: campaign.id)
+            String error = "尚未登入"
+            redirect(controller: "advertiser", action: "index", params: [errors: error])
         }
 
         try{
@@ -49,7 +53,8 @@ class CampaignController
             user.errors.each {
                 error += (it.toString() +'\n')
             }
-            render error
+            error = "資料出錯"
+            redirect(controller: "advertiser", action: "index", params: [errors: error])
         }
     }
 }

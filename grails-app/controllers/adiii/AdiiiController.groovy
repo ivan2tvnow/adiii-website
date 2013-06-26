@@ -6,17 +6,20 @@ class AdiiiController
 
     def index()
     {
-        if (springSecurityService.isLoggedIn()) {
+        if (springSecurityService.isLoggedIn())
+        {
             def auth = springSecurityService.authentication
             String username = auth.name
             def authorities = auth.authorities // a Collection of GrantedAuthority
-            if (authorities == ['ROLE_ADVERTISER']) {
+            if (authorities == ['ROLE_ADVERTISER'])
+            {
                 redirect(controller: "advertiser", action: "index")
             }
 
             render view: 'index'
         }
-        else {
+        else
+        {
             render view: 'index'
         }
 

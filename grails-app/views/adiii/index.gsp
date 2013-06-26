@@ -5,28 +5,6 @@
     <title>Adiii</title>
     <link href='http://fonts.googleapis.com/css?family=Lily+Script+One' rel='stylesheet' type='text/css'>
     <link href="${resource(dir: "css", file: "bootstrap.css")}" rel="stylesheet" media="screen">
-    <style type='text/css' media='screen'>
-    .content {
-        position: absolute;
-        left: 30%;
-        display: inline;
-        text-align: center;
-    }
-
-    .content .login_message {
-        text-align: center;
-        font-size: 18px;
-        width: 340px;
-        padding-bottom: 6px;
-        margin: 60px auto;
-        text-align: left;
-        background-color: #f0f0fa;
-        -moz-box-shadow: 2px 2px 2px #eee;
-        -webkit-box-shadow: 2px 2px 2px #eee;
-        -khtml-box-shadow: 2px 2px 2px #eee;
-        box-shadow: 2px 2px 2px #eee;
-    }
-    </style>
 </head>
 <body>
 <div class="navbar navbar-static-top">
@@ -53,10 +31,8 @@
         <h1><a class="brand" href="${createLink(controller: "adiii")}">Adiii</a></h1>
     </div>
 </header>
-<div class='content'>
-    <g:if test='${flash.message}'>
-        <div class='login_message'>${flash.message}</div>
-    </g:if>
-</div>
+<g:if test='${flash.message}'>
+    <script>alert("${flash.message}");</script>
+</g:if>
 </body>
 </html>

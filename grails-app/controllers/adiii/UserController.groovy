@@ -9,7 +9,8 @@ class UserController {
     def save()
     {
         def userRole
-        if (params.user_type == "advertiser") {
+        if (params.user_type == "advertiser")
+        {
             userRole = Role.findByAuthority('ROLE_ADVERTISER') ?: new Role(authority: 'ROLE_ADVERTISER').save(failOnError: true)
         }
 
@@ -23,10 +24,12 @@ class UserController {
                 apikey: generateUserKey(),
                 enabled: true)
 
-        if (!guestUser.validate()) {
+        if (!guestUser.validate())
+        {
             guestUser.errors.allErrors.each { println it }
             flash.message = "資料有錯!"
-        } else {
+        } else
+        {
             guestUser.save(flush: true)
 
             if (!guestUser.authorities.contains(userRole)) {

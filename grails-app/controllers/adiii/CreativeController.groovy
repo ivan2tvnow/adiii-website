@@ -16,7 +16,10 @@ class CreativeController
     {
         Integer campId = params.int('id')
         Campaign campaign = Campaign.get(campId)
-        println campaign
+        if (!campaign) {
+            String error = "找不到相對應廣告"
+            redirect(controller: "advertiser", action: "index", params: [errors: error])
+        }
 
         MultipartFile file = request.getFile('upload_file')
         String extension = file.contentType.split("/")[1]
@@ -37,9 +40,11 @@ class CreativeController
         }
         else
         {
+            String error = ""
             campaign.errors.each {
-                println it
+                error += (it.toString() +'\n')
             }
+            redirect(controller: "advertiser", action: "index", params: [errors: error])
         }
     }
 }
