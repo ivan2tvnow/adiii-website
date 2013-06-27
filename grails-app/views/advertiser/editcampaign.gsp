@@ -68,6 +68,7 @@
                         </label>
                         <div class="controls">
                             <g:textField name="campaign_name" required="true" maxlength="30" value="${campaign.name}"/>
+                            <g:hiddenField id="campaign_id" name="campaign_id" value="${campaign.id}" />
                             <span class="add-on">
                                 <a id="campaign_name_info" class="btn btn-mini btn-info">
                                     <i class="icon-info-sign icon-white"></i>

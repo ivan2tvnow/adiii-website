@@ -58,6 +58,11 @@ class CampaignController
         }
     }
 
+    /*
+     *  URL: /advertiser/campaign/edit
+     *  實際進行廣告活動(campaign)修改的action method;
+     *  會讀取出指定ID的campaign並導到 /advertiser/editcampaign
+     */
     @Secured(['ROLE_ADVERTISER'])
     def edit() {
         Map modelMap = [:]
@@ -69,7 +74,12 @@ class CampaignController
             modelMap.startDate = campaign.startDatetime.format("yyyy/MM/dd")
             modelMap.endDate = campaign.endDatetime.format("yyyy/MM/dd")
 
-            render(view: "editcampaign", model: modelMap)
+            List hourList = (0..23).collect({
+                String.format("%02d", it)
+            })
+            modelMap.hourList = hourList
+
+            render(view: "../advertiser/editcampaign", model: modelMap)
         }
         else
         {
