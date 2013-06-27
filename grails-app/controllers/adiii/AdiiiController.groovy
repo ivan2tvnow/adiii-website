@@ -4,6 +4,10 @@ class AdiiiController
 {
     def springSecurityService
 
+    /*
+     *  URL: /adiii/
+     *  網站首頁，使用者登入後自動導到使用者畫面
+     */
     def index()
     {
         if (springSecurityService.isLoggedIn())

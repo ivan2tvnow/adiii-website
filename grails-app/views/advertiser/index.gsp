@@ -111,7 +111,7 @@
                         <tr>
                             <td style="vertical-align:middle"><input type="checkbox"></td>
                             <td><a href="${createLink(controller: 'advertiser', action: 'campaign', id: "${campaign.id}")}"><strong class="text-info">${campaign.name}</strong></a>
-                                <a id="" class="btn btn-mini btn-info pull-right">
+                                <a id="" class="btn btn-mini btn-info pull-right" href="${createLink(controller: 'campaign', action: 'edit', id: "${campaign.id}")}">
                                     <i class="icon-pencil icon-white"></i>
                                 </a>
                                 <g:if test="${campaign.creatives.size() <= 0}">

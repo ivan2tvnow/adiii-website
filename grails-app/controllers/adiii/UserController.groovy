@@ -6,6 +6,11 @@ package adiii
  */
 class UserController {
 
+    /*
+     *  URL: /adiii/user/save
+     *  當使用者註冊後，其資料會在此進行驗證與儲存
+     *  當儲存成功後, 將網頁導至/adiii/首頁，使用者可以進行登入的動作.
+     */
     def save()
     {
         def userRole

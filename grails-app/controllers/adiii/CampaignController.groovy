@@ -57,4 +57,23 @@ class CampaignController
             redirect(controller: "advertiser", action: "index", params: [errors: error])
         }
     }
+
+    @Secured(['ROLE_ADVERTISER'])
+    def edit() {
+        Map modelMap = [:]
+        Campaign campaign = Campaign.get(params.id)
+
+        if(campaign != null)
+        {
+            modelMap.campaign = campaign
+            modelMap.startDate = campaign.startDatetime.format("yyyy/MM/dd")
+            modelMap.endDate = campaign.endDatetime.format("yyyy/MM/dd")
+
+            render(view: "editcampaign", model: modelMap)
+        }
+        else
+        {
+            render "<h1>No such resource!</h1>"
+        }
+    }
 }
