@@ -49,90 +49,90 @@
 </header>
 <div class="container">
     <div id="row">
-    <div class="well">
-        <h2>建立新影片廣告內容</h2>
-        <span>您目前共有 ${campaignCount} 個影片廣告活動</span>
-    </div>
         <div class="well">
-    <g:uploadForm url="[controller: 'videoCreative', action: 'save', id: campaignId]" id="creative_form" class="form-horizontal">
-        <fieldset>
-            <legend>廣告內容資訊</legend>
-            <div class="control-group">
-                <label class="control-label" for="ad_name">
-                    廣告名稱：<em class="red">*</em>
-                </label>
-                <div class="controls">
-                    <g:textField name="ad_name" required="true"/>
-                    <span class="add-on">
-                        <a id="ad_name_info" class="btn btn-mini btn-info">
-                            <i class="icon-info-sign icon-white"></i>
-                        </a>
-                    </span>
-                </div>
-            </div>
-
-            <div class="control-group">
-                <label class="control-label" for="ad_link">
-                    廣告連結：<em class="red">*</em>
-                </label>
-                <div class="controls">
-                    <g:textField class="span4" name="ad_link" value="http://" required="true"/>
-                    <span class="add-on">
-                        <a id="ad_link_info" class="btn btn-mini btn-info">
-                            <i class="icon-info-sign icon-white"></i>
-                        </a>
-                    </span>
-                </div>
-            </div>
-
-            <div class="control-group">
-                <label class="control-label" for="display_text">
-                    顯示文字：<em class="red">*</em>
-                </label>
-                <div class="controls">
-                    <g:textField class="span4" name="display_text" required="true" length="48"/>
-                    <span class="add-on">
-                        <a id="display_text_info" class="btn btn-mini btn-info">
-                            <i class="icon-info-sign icon-white"></i>
-                        </a>
-                    </span>
-                </div>
-            </div>
-
-            <div class="control-group">
-                <label class="control-label" for="upload_file">
-                    廣告圖片：<em class="red">*</em>
-                </label>
-                <div class="controls">
-                    <input type="file" name="upload_file" accept="image/*" required="true"/>
-                    <span class="add-on">
-                        <a id="upload_file_info" class="btn btn-mini btn-info">
-                            <i class="icon-info-sign icon-white"></i>
-                        </a>
-                    </span>
-                </div>
-            </div>
-            <div class="control-group">
-                <label class="control-label" for="price">
-                    出價：<em class="red">*</em>
-                </label>
-                <div class="controls">
-                    <g:textField class="span4" name="price" required="true" value="1.0" length="48"/>
-                    <span class="add-on">
-                        <a id="price_info" class="btn btn-mini btn-info">
-                            <i class="icon-info-sign icon-white"></i>
-                        </a>
-                    </span>
-                </div>
-            </div>
-        </fieldset>
-        <div class="form-actions">
-            <input type="submit" class="btn btn-primary" value="儲存並完成">
-            <input type="submit" class="btn" value="取消"/>
+            <h2>建立新影片廣告內容</h2>
+            <span>您目前共有 ${campaignCount} 個影片廣告活動</span>
         </div>
-    </g:uploadForm>
-            </div>
-  </div>
+        <div class="well">
+            <g:uploadForm url="[controller: 'videoCreative', action: 'update', id: creative.id]" id="creative_form" class="form-horizontal">
+                <fieldset>
+                    <legend>廣告內容資訊</legend>
+                    <div class="control-group">
+                        <label class="control-label" for="ad_name">
+                            廣告名稱：<em class="red">*</em>
+                        </label>
+                        <div class="controls">
+                            <g:textField name="ad_name" required="true" value="${creative.name}"/>
+                            <span class="add-on">
+                                <a id="ad_name_info" class="btn btn-mini btn-info">
+                                    <i class="icon-info-sign icon-white"></i>
+                                </a>
+                            </span>
+                        </div>
+                    </div>
+
+                    <div class="control-group">
+                        <label class="control-label" for="ad_link">
+                            廣告連結：<em class="red">*</em>
+                        </label>
+                        <div class="controls">
+                            <g:textField class="span4" name="ad_link" value="${creative.link}" required="true"/>
+                            <span class="add-on">
+                                <a id="ad_link_info" class="btn btn-mini btn-info">
+                                    <i class="icon-info-sign icon-white"></i>
+                                </a>
+                            </span>
+                        </div>
+                    </div>
+
+                    <div class="control-group">
+                        <label class="control-label" for="display_text">
+                            顯示文字：<em class="red">*</em>
+                        </label>
+                        <div class="controls">
+                            <g:textField class="span4" name="display_text" required="true" length="48" value="${creative.displayText}"/>
+                            <span class="add-on">
+                                <a id="display_text_info" class="btn btn-mini btn-info">
+                                    <i class="icon-info-sign icon-white"></i>
+                                </a>
+                            </span>
+                        </div>
+                    </div>
+
+                    <div class="control-group">
+                        <label class="control-label" for="upload_file">
+                            廣告圖片：<em class="red">*</em>
+                        </label>
+                        <div class="controls">
+                            <input type="file" name="upload_file" accept="image/*" required="true"/>
+                            <span class="add-on">
+                                <a id="upload_file_info" class="btn btn-mini btn-info">
+                                    <i class="icon-info-sign icon-white"></i>
+                                </a>
+                            </span>
+                        </div>
+                    </div>
+                    <div class="control-group">
+                        <label class="control-label" for="price">
+                            出價：<em class="red">*</em>
+                        </label>
+                        <div class="controls">
+                            <g:textField class="span4" name="price" required="true" value="${creative.price}" length="48"/>
+                            <span class="add-on">
+                                <a id="price_info" class="btn btn-mini btn-info">
+                                    <i class="icon-info-sign icon-white"></i>
+                                </a>
+                            </span>
+                        </div>
+                    </div>
+                </fieldset>
+                <div class="form-actions">
+                    <input type="submit" class="btn btn-primary" value="儲存並完成">
+                    <input type="submit" class="btn" value="取消"/>
+                </div>
+            </g:uploadForm>
+        </div>
+    </div>
 </div>
 <script src="http://code.jquery.com/jquery.js"></script>
 <script src="${resource(dir: "js", file: "bootstrap.min.js")}"></script>

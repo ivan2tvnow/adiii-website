@@ -6,9 +6,9 @@ class Creative
     String link
     String displayText
     String imageUrl
-    Float price
+    BigDecimal price
 
-    static belongsTo = Campaign
+    static belongsTo = [campaign: Campaign]
     static hasMany = [impressions: Impression, clicks: Click]
 
     static constraints = {

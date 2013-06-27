@@ -59,7 +59,7 @@
         <span>您目前共有 ${campaignCount} 個廣告活動</span>
     </div>
         <div class="well">
-    <g:form url="[controller: 'campaign', name: 'save']" id="campaign_form" class="form-horizontal">
+    <g:form controller="campaign" action="save" method="post" id="campaign_form" class="form-horizontal">
         <fieldset>
             <legend>基本資訊</legend>
             <div class="control-group">

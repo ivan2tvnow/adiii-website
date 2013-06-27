@@ -11,7 +11,8 @@ class CampaignController
          *  會讀取出指定ID的campaign並導到 /advertiser/editcampaign
          */
     @Secured(['ROLE_ADVERTISER'])
-    def edit() {
+    def edit()
+    {
         Map modelMap = [:]
         Campaign campaign = Campaign.get(params.id)
 
@@ -94,7 +95,8 @@ class CampaignController
          *  當更新成功後, 將網頁導至/advertiser/index
          */
     @Secured(['ROLE_ADVERTISER'])
-    def update() {
+    def update()
+    {
         Campaign campaign = Campaign.get(params.campaign_id)
         Date startDate = Date.parse("yyyy/MM/dd HH:mm", "${params.start_date} ${params.start_hour}:${params.start_min}")
         Date endDate = new Date()

@@ -105,8 +105,8 @@
                     <g:each in="${creatives}" var="creative">
                         <tr>
                             <td style="vertical-align:middle"><input type="checkbox"></td>
-                            <td><a href="${createLink(controller: 'advertiser', action: 'campaign')}"><strong class="text-info">${campaignName}</strong></a>
-                                <a id="" class="btn btn-mini btn-info pull-right" href="${createLink(controller: 'creative', action: 'edit', id: "${creatives.id}")}">
+                            <td><a href="${createLink(controller: 'advertiser', action: 'campaign')}"><strong class="text-info">${creative.name}</strong></a>
+                                <a id="" class="btn btn-mini btn-info pull-right" href="${createLink(controller: 'videoCreative', action: 'edit', id: "${creative.id}")}">
                                     <i class="icon-pencil icon-white"></i>
                                 </a>
                             </td>
