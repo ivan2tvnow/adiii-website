@@ -20,7 +20,7 @@ class AdvertiserController
 
         modelMap.campaignCount = advertiser.campaigns.size()
         modelMap.campaigns = advertiser.campaigns.toList()
-        flash.message = params.errors
+        flash.message = params.message
 
         render(view: "index", model: modelMap)
     }

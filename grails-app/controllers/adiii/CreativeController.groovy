@@ -17,8 +17,8 @@ class CreativeController
         Integer campId = params.int('id')
         Campaign campaign = Campaign.get(campId)
         if (!campaign) {
-            String error = "找不到相對應廣告"
-            redirect(controller: "advertiser", action: "index", params: [errors: error])
+            String message = "找不到相對應廣告"
+            redirect(controller: "advertiser", action: "index", params: [message: message])
         }
 
         MultipartFile file = request.getFile('upload_file')
@@ -34,16 +34,17 @@ class CreativeController
 
         if(campaign.save())
         {
-            redirect(controller: "advertiser", action: "index")
+            String message = "廣告新增成功"
+            redirect(controller: "advertiser", action: "index", params: [message: message])
         }
         else
         {
-            String error = ""
+            String message = ""
             campaign.errors.each {
-                error += (it.toString() +'\n')
+                message += (it.toString() +'\n')
             }
-            error = "資料出錯"
-            redirect(controller: "advertiser", action: "index", params: [errors: error])
+            message = "資料出錯"
+            redirect(controller: "advertiser", action: "index", params: [message: message])
         }
     }
 }

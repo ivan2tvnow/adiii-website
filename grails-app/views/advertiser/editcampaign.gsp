@@ -55,11 +55,10 @@
 <div class="container">
     <div id="row">
         <div class="well">
-            <h2>建立新廣告活動</h2>
-            <span>您目前共有 ${campaignCount} 個廣告活動</span>
+            <h2>修改廣告活動</h2>
         </div>
         <div class="well">
-            <g:form url="[controller: 'campaign', name: 'save']" id="campaign_form" class="form-horizontal">
+            <g:form controller="campaign" action="update" method="post" id="campaign_form" class="form-horizontal">
                 <fieldset>
                     <legend>基本資訊</legend>
                     <div class="control-group">
@@ -99,7 +98,13 @@
 
                     <div class="control-group">
                         <label for="end_date" class="control-label">
-                            <g:checkBox id="has_end_checkbox" name="check_end_date" checked="false" />  結束時間：
+                            <g:if test="${campaign.hasEndDatetime}">
+                                <g:checkBox id="has_end_checkbox" name="check_end_date" checked="true" />
+                            </g:if>
+                            <g:else>
+                                <g:checkBox id="has_end_checkbox" name="check_end_date" checked="false" />
+                            </g:else>
+                            結束時間：
                         </label>
                         <div class="controls">
                             <div class="input-append date" id="end_date_datepicker" data-date="${endDate}" data-date-format="yyyy/mm/dd">
@@ -167,9 +172,9 @@
 <script src="${resource(dir: "js", file: "jquery.validate.js")}"></script>
 <script>
     $(function() {
-        $('#end_date_datepicker').attr('disabled', true);
-        $('#end_hour_select').attr('disabled', true);
-        $('#end_min_select').attr('disabled', true);
+        $('#end_date_datepicker').attr('disabled', ${!campaign.hasEndDatetime});
+        $('#end_hour_select').attr('disabled', ${!campaign.hasEndDatetime});
+        $('#end_min_select').attr('disabled', ${!campaign.hasEndDatetime});
     });
 
     $('#campaign_name_info').popover({

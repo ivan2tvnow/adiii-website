@@ -6,63 +6,10 @@ class CampaignController
 {
     def springSecurityService
     /*
-     *  URL: /advertiser/campaign/save
-     *  實際進行廣告活動(campaign)儲存的action method;
-     *  當儲存成功後, 將網頁導至/advertiser/creative/save/${campaign.id}, 以繼續進行廣告內容的建立.
-     */
-    @Secured(['ROLE_ADVERTISER'])
-    def save()
-    {
-        Date startDate = Date.parse("yyyy/MM/dd HH:mm", "${params.start_date} ${params.start_hour}:${params.start_min}")
-        Date endDate = new Date()
-        if (params?.check_end_date == 'on')
-        {
-            endDate = Date.parse("yyyy/MM/dd HH:mm", "${params.end_date} ${params.end_hour ?: '23'}:${params.end_min ?: '59'}")
-        }
-        Boolean checkEndDate = params?.check_end_date == 'on' ? true : false
-
-        Campaign campaign = new Campaign(name: params.campaign_name,
-                startDatetime: startDate,
-                hasEndDatetime: checkEndDate,
-                endDatetime: endDate,
-                dailyBudget: params.int('daily_budget'),
-                campaignType: params.campaign_type)
-
-        User user = springSecurityService.getCurrentUser()
-        if(user == null)
-        {
-            String error = "尚未登入"
-            redirect(controller: "advertiser", action: "index", params: [errors: error])
-        }
-
-        try{
-            user.addToCampaigns(campaign)
-        }
-        catch(Exception e)
-        {
-            log.error(e.toString(), e)
-        }
-
-        if(user.save(flush: true))
-        {
-            redirect(controller: "advertiser", action: "addvidadcreative", id: campaign.id)
-        }
-        else
-        {
-            String error = ""
-            user.errors.each {
-                error += (it.toString() +'\n')
-            }
-            error = "資料出錯"
-            redirect(controller: "advertiser", action: "index", params: [errors: error])
-        }
-    }
-
-    /*
-     *  URL: /advertiser/campaign/edit
-     *  實際進行廣告活動(campaign)修改的action method;
-     *  會讀取出指定ID的campaign並導到 /advertiser/editcampaign
-     */
+         *  URL: /advertiser/campaign/edit
+         *  廣告修改的傳導頁;
+         *  會讀取出指定ID的campaign並導到 /advertiser/editcampaign
+         */
     @Secured(['ROLE_ADVERTISER'])
     def edit() {
         Map modelMap = [:]
@@ -85,5 +32,99 @@ class CampaignController
         {
             render "<h1>No such resource!</h1>"
         }
+    }
+
+    /*
+         *  URL: /advertiser/campaign/save
+         *  實際進行廣告活動(campaign)儲存的action method;
+         *  當儲存成功後, 將網頁導至/advertiser/creative/save/${campaign.id}, 以繼續進行廣告內容的建立.
+         */
+    @Secured(['ROLE_ADVERTISER'])
+    def save()
+    {
+        Date startDate = Date.parse("yyyy/MM/dd HH:mm", "${params.start_date} ${params.start_hour}:${params.start_min}")
+        Date endDate = new Date()
+        if (params?.check_end_date == 'on')
+        {
+            endDate = Date.parse("yyyy/MM/dd HH:mm", "${params.end_date} ${params.end_hour ?: '23'}:${params.end_min ?: '59'}")
+        }
+        Boolean checkEndDate = params?.check_end_date == 'on' ? true : false
+
+        Campaign campaign = new Campaign(name: params.campaign_name,
+                startDatetime: startDate,
+                hasEndDatetime: checkEndDate,
+                endDatetime: endDate,
+                dailyBudget: params.int('daily_budget'),
+                campaignType: params.campaign_type)
+
+        User user = springSecurityService.getCurrentUser()
+        if(user == null)
+        {
+            String message = "尚未登入"
+            redirect(controller: "advertiser", action: "index", params: [message: message])
+        }
+
+        try{
+            user.addToCampaigns(campaign)
+        }
+        catch(Exception e)
+        {
+            log.error(e.toString(), e)
+        }
+
+        if(user.save(flush: true))
+        {
+            redirect(controller: "advertiser", action: "addvidadcreative", id: campaign.id)
+        }
+        else
+        {
+            String message = ""
+            user.errors.each {
+                message += (it.toString() +'\n')
+                println message
+            }
+            message = "資料出錯"
+            redirect(controller: "advertiser", action: "index", params: [message: message])
+        }
+    }
+
+    /*
+         *  URL: /advertiser/campaign/update
+         *  實際進行廣告活動(campaign)更新的action method;
+         *  當更新成功後, 將網頁導至/advertiser/index
+         */
+    @Secured(['ROLE_ADVERTISER'])
+    def update() {
+        Campaign campaign = Campaign.get(params.campaign_id)
+        Date startDate = Date.parse("yyyy/MM/dd HH:mm", "${params.start_date} ${params.start_hour}:${params.start_min}")
+        Date endDate = new Date()
+        if (params?.check_end_date == 'on')
+        {
+            endDate = Date.parse("yyyy/MM/dd HH:mm", "${params.end_date} ${params.end_hour ?: '23'}:${params.end_min ?: '59'}")
+        }
+        Boolean checkEndDate = params?.check_end_date == 'on' ? true : false
+
+        campaign.setProperties(name: params.campaign_name,
+                startDatetime: startDate,
+                hasEndDatetime: checkEndDate,
+                endDatetime: endDate,
+                dailyBudget: params.int('daily_budget'),
+                campaignType: params.campaign_type)
+
+        String message = ""
+        if(campaign.save(flush: true))
+        {
+            message = "修改成功"
+        }
+        else
+        {
+            campaign.errors.each {
+                message += (it.toString() +'\n')
+                println message
+            }
+            message = "資料出錯"
+        }
+
+        redirect(controller: "advertiser", action: "index", params: [message: message])
     }
 }
