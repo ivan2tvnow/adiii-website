@@ -112,6 +112,19 @@
                     </span>
                 </div>
             </div>
+            <div class="control-group">
+                <label class="control-label" for="price">
+                    出價：<em class="red">*</em>
+                </label>
+                <div class="controls">
+                    <g:textField class="span4" name="price" required="true" value="1.0" length="48"/>
+                    <span class="add-on">
+                        <a id="price_info" class="btn btn-mini btn-info">
+                            <i class="icon-info-sign icon-white"></i>
+                        </a>
+                    </span>
+                </div>
+            </div>
         </fieldset>
         <div class="form-actions">
             <input type="submit" class="btn btn-primary" value="儲存並完成">
@@ -145,6 +158,10 @@
         'trigger': 'hover',
         'content': '實際用以顯示的廣告圖片；最大檔案尺寸為500kb；並僅允許jpg、jpeg與png等圖片格式。'
     });
+    $('#price_info').popover({
+        'trigger': 'hover',
+        'content': '廣告的單價。'
+    });
 
     $("#creative_form").validate({
         rules:{
@@ -153,13 +170,16 @@
                 maxlength: 30
             },
             ad_link:{
-                required: true,
+                required: true
             },
             display_text:{
                 required: true,
                 maxlength: 48
             },
             upload_file:{
+                required: true
+            },
+            price:{
                 required: true
             }
         },
@@ -169,7 +189,7 @@
                 maxlength: "廣告內容名稱不能超過30個字元。"
             },
             ad_link:{
-                required: "此欄位為必填欄位。",
+                required: "此欄位為必填欄位。"
             },
             display_text:{
                 required: "此欄位為必填欄位。",
@@ -177,6 +197,9 @@
             },
             upload_file:{
                 required: "必須上傳廣告圖片以建立廣告內容。"
+            },
+            price:{
+                required: "此欄位為必填欄位。"
             }
         }
     });

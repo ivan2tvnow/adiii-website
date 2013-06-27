@@ -18,6 +18,11 @@ class Campaign {
     static constraints = {
         name(blank: false, size: 1..30, unique: true)
         dailyBudget(min: 50)
+        hasEndDatetime validator: {val, obj ->
+            if (val == true && obj.startDatetime.after(obj.endDatetime)) {
+                return false
+            }
+        }
     }
 
     enum Currency{

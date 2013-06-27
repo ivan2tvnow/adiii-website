@@ -28,14 +28,12 @@ class CreativeController
         Creative creative = new Creative(name: params.ad_name,
                 link: params.ad_link,
                 displayText: params.display_text,
-                imageUrl: result)
+                imageUrl: result,
+                price: params.price)
         campaign.addToCreatives(creative)
 
         if(campaign.save())
         {
-            campaign.errors.each {
-                println it
-            }
             redirect(controller: "advertiser", action: "index")
         }
         else
@@ -44,6 +42,7 @@ class CreativeController
             campaign.errors.each {
                 error += (it.toString() +'\n')
             }
+            error = "資料出錯"
             redirect(controller: "advertiser", action: "index", params: [errors: error])
         }
     }
