@@ -104,6 +104,22 @@ class AdvertiserController
     }
 
     /*
+     *  URL: /advertiser/addvidadcreative/${campaign.id}
+     *  廣告主用以為廣告活動(campaign)新增影片廣告內容(creative)的頁面
+     *  注意URL的第三個segment為目前要為其建立內容的campaign ID
+     */
+    @Secured(['ROLE_ADVERTISER'])
+    def addmobileadcreative()
+    {
+        Integer count = Campaign.count()
+
+        Integer campId = params.int('id')
+        Campaign campaign = Campaign.get(campId)
+
+        render(view: "addmobileadcreative", model: [campaignCount: count, campaignId: campId])
+    }
+
+    /*
      *  URL: /advertiser/addmobadcreative/${campaign.id}
      *  廣告主用以為廣告活動(campaign)新增行動廣告內容(creative)的頁面
      *  注意URL的第三個segment為目前要為其建立內容的campaign ID

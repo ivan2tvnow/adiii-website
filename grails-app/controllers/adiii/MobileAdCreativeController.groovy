@@ -3,20 +3,24 @@ package adiii
 import grails.plugins.springsecurity.Secured
 import org.springframework.web.multipart.MultipartFile
 
-class VideoCreativeController
-{
-    def fileUploadService
+class MobileAdCreativeController {
 
+    def fileUploadService
+    /*
+         *  URL: /advertiser/vidocrrative/edit
+         *  影片廣告修改的傳導頁;
+         *  會讀取出指定ID的creative並導到 /advertiser/editvidadcreative
+         */
     def edit()
     {
         Map modelMap = [:]
         Integer crativeId = params.int('id')
-        VideoCreative creative = VideoCreative.get(crativeId)
+        MobileAdCreative creative = MobileAdCreative.get(crativeId)
 
         if (creative) {
             modelMap.creative = creative
             flash.message = params.message
-            render(view: "../advertiser/editvidadcreative", model: modelMap)
+            render(view: "../advertiser/editmobileadcreative", model: modelMap)
         }
         else
         {
@@ -44,7 +48,7 @@ class VideoCreativeController
         String extension = file.contentType.split("/")[1]
         String result = fileUploadService.uploadFile(file, "${campId}.${extension}")
 
-        VideoCreative creative = new VideoCreative(name: params.ad_name,
+        MobileAdCreative creative = new MobileAdCreative(name: params.ad_name,
                 link: params.ad_link,
                 displayText: params.display_text,
                 imageUrl: result,
@@ -65,13 +69,18 @@ class VideoCreativeController
             message = "資料出錯，請重新輸入"
             new File(result).delete()
 
-            redirect(controller: "advertiser", action: "addvidadcreative", id: campId, params: [message: message])
+            redirect(controller: "advertiser", action: "addmobileadcreative", id: campId, params: [message: message])
         }
     }
 
+    /*
+         *  URL: /advertiser/vidocrrative/update
+         *  實際進行廣告(creative)更新的action method;
+         *  當更新成功後, 將網頁導至/advertiser/index
+         */
     def update() {
         Integer crativeId = params.int('id')
-        VideoCreative creative = VideoCreative.get(crativeId)
+        MobileAdCreative creative = MobileAdCreative.get(crativeId)
 
         MultipartFile file = request.getFile('upload_file')
         String extension = file.contentType.split("/")[1]

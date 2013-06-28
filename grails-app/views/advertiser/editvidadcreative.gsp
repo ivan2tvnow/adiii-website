@@ -55,10 +55,10 @@
 <div class="container">
     <div id="row">
         <div class="well">
-            <h2>修改廣告內容</h2>
+            <h2>修改影片廣告內容</h2>
         </div>
         <div class="well">
-            <g:uploadForm url="[controller: 'videoCreative', action: 'update', id: creative.id]" id="creative_form" class="form-horizontal">
+            <g:uploadForm url="[controller: 'videoAdCreative', action: 'update', id: creative.id]" id="creative_form" class="form-horizontal">
                 <g:if test='${flash.message}'>
                     <div class='login_message'>${flash.message}</div>
                 </g:if>

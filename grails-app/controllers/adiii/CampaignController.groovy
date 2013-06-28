@@ -78,7 +78,15 @@ class CampaignController
 
         if(user.save(flush: true))
         {
-            redirect(controller: "advertiser", action: "addvidadcreative", id: campaign.id)
+            if (campaign.campaignType == "video_ad")
+            {
+                redirect(controller: "advertiser", action: "addvidadcreative", id: campaign.id)
+            }
+            else if (campaign.campaignType == "mobile_ad")
+            {
+                redirect(controller: "advertiser", action: "addmobileadcreative", id: campaign.id)
+            }
+
         }
         else
         {

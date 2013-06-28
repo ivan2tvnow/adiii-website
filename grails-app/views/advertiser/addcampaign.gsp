@@ -139,7 +139,7 @@
             <legend>廣告活動類型</legend>
 
             <label class="radio" for="mobile_ad">
-                <g:radio name="campaign_type" value="mobile_ad" disabled="true"/>
+                <g:radio name="campaign_type" value="mobile_ad" checked="false"/>
                 行動裝置廣告 (如AdMob與Airpush所提供之廣告類型)
             </label>
 

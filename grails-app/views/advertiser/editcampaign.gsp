@@ -150,7 +150,7 @@
                             <g:radio name="campaign_type" value="mobile_ad" checked="true"/>
                         </g:if>
                         <g:else>
-                            <g:radio name="campaign_type" value="mobile_ad" checked="false"/>
+                            <g:radio name="campaign_type" value="mobile_ad" checked="false" disabled="true"/>
                         </g:else>
                         行動裝置廣告 (如AdMob與Airpush所提供之廣告類型)
                     </label>
@@ -160,7 +160,7 @@
                             <g:radio name="campaign_type" value="video_ad" checked="true"/>
                         </g:if>
                         <g:else>
-                            <g:radio name="campaign_type" value="video_ad" checked="false"/>
+                            <g:radio name="campaign_type" value="video_ad" checked="false" disabled="true"/>
                         </g:else>
                         影音廣告 (建立符合VAST 3.0規格之廣告內容)
                     </label>
