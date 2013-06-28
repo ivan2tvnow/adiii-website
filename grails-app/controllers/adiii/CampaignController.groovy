@@ -14,7 +14,8 @@ class CampaignController
     def edit()
     {
         Map modelMap = [:]
-        Campaign campaign = Campaign.get(params.id)
+        Integer campId = params.int('id')
+        Campaign campaign = Campaign.get(campId)
 
         if(campaign != null)
         {
@@ -62,7 +63,8 @@ class CampaignController
         if(user == null)
         {
             String message = "尚未登入"
-            redirect(controller: "advertiser", action: "index", params: [message: message])
+            redirect(controller: "adiii", action: "index", params: [message: message])
+            return
         }
 
         try{
@@ -85,7 +87,7 @@ class CampaignController
                 println message
             }
             message = "資料出錯"
-            redirect(controller: "advertiser", action: "index", params: [message: message])
+            redirect(controller: "advertiser", action: "addcampaign", params: [message: message])
         }
     }
 
@@ -97,7 +99,8 @@ class CampaignController
     @Secured(['ROLE_ADVERTISER'])
     def update()
     {
-        Campaign campaign = Campaign.get(params.campaign_id)
+        Integer campId = params.int('id')
+        Campaign campaign = Campaign.get(campId)
         Date startDate = Date.parse("yyyy/MM/dd HH:mm", "${params.start_date} ${params.start_hour}:${params.start_min}")
         Date endDate = new Date()
         if (params?.check_end_date == 'on')
@@ -106,6 +109,7 @@ class CampaignController
         }
         Boolean checkEndDate = params?.check_end_date == 'on' ? true : false
 
+        println campId
         campaign.setProperties(name: params.campaign_name,
                 startDatetime: startDate,
                 hasEndDatetime: checkEndDate,
@@ -117,6 +121,7 @@ class CampaignController
         if(campaign.save(flush: true))
         {
             message = "修改成功"
+            redirect(controller: "advertiser", action: "index", params: [message: message])
         }
         else
         {
@@ -125,8 +130,7 @@ class CampaignController
                 println message
             }
             message = "資料出錯"
+            redirect(action: "edit", id: campId, params: [message: message])
         }
-
-        redirect(controller: "advertiser", action: "index", params: [message: message])
     }
 }

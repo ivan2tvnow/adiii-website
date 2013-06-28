@@ -58,7 +58,7 @@
             <h2>修改廣告活動</h2>
         </div>
         <div class="well">
-            <g:form controller="campaign" action="update" method="post" id="campaign_form" class="form-horizontal">
+            <g:form url="[controller: 'campaign', action: 'update', id: campaign.id]"  id="campaign_form" class="form-horizontal">
                 <fieldset>
                     <legend>基本資訊</legend>
                     <div class="control-group">
@@ -67,7 +67,6 @@
                         </label>
                         <div class="controls">
                             <g:textField name="campaign_name" required="true" maxlength="30" value="${campaign.name}"/>
-                            <g:hiddenField id="campaign_id" name="campaign_id" value="${campaign.id}" />
                             <span class="add-on">
                                 <a id="campaign_name_info" class="btn btn-mini btn-info">
                                     <i class="icon-info-sign icon-white"></i>

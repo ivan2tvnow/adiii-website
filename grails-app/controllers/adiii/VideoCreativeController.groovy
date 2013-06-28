@@ -10,7 +10,8 @@ class VideoCreativeController
     def edit()
     {
         Map modelMap = [:]
-        VideoCreative creative = VideoCreative.get(params.id)
+        Integer crativeId = params.int('id')
+        VideoCreative creative = VideoCreative.get(crativeId)
 
         if (creative) {
             modelMap.creative = creative
@@ -35,6 +36,7 @@ class VideoCreativeController
             String message = "找不到相對應廣告"
             println message
             redirect(controller: "advertiser", action: "index", params: [message: message])
+            return
         }
 
         MultipartFile file = request.getFile('upload_file')
@@ -62,13 +64,13 @@ class VideoCreativeController
             message = "資料出錯"
             new File(result).delete()
 
-            redirect(controller: "advertiser", action: "index", params: [message: message])
+            redirect(controller: "advertiser", action: "addvidadcreative", id: campId, params: [message: message])
         }
     }
 
     def update() {
-        VideoCreative creative = VideoCreative.get(params.id)
-        String fileToDelete = creative.imageUrl
+        Integer crativeId = params.int('id')
+        VideoCreative creative = VideoCreative.get(crativeId)
 
         MultipartFile file = request.getFile('upload_file')
         String extension = file.contentType.split("/")[1]
@@ -95,7 +97,7 @@ class VideoCreativeController
             }
             message = "資料出錯"
 
-            redirect(controller: "advertiser", action: "index", params: [message: message])
+            redirect(action: "edit", id: params.id, params: [message: message])
         }
     }
 }

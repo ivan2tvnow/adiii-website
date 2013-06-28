@@ -33,9 +33,6 @@
   </style>
 </head>
 <body>
-<g:if test='${flash.message}'>
-    <script>alert("${flash.message}");</script>
-</g:if>
 <div class="navbar navbar-static-top">
     <div class="navbar-inner">
         <div class="container">
