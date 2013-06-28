@@ -17,6 +17,11 @@
         display: inline;
         margin-left: 5px;
     }
+    .login_message {
+        font-size: 20px;
+        padding: 6px 25px 20px 25px;
+        color: #c33;
+    }
     </style>
 </head>
 <body>
@@ -50,11 +55,13 @@
 <div class="container">
     <div id="row">
         <div class="well">
-            <h2>建立新影片廣告內容</h2>
-            <span>您目前共有 ${campaignCount} 個影片廣告活動</span>
+            <h2>修改廣告內容</h2>
         </div>
         <div class="well">
             <g:uploadForm url="[controller: 'videoCreative', action: 'update', id: creative.id]" id="creative_form" class="form-horizontal">
+                <g:if test='${flash.message}'>
+                    <div class='login_message'>${flash.message}</div>
+                </g:if>
                 <fieldset>
                     <legend>廣告內容資訊</legend>
                     <div class="control-group">

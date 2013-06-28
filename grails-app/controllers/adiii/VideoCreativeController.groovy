@@ -15,6 +15,7 @@ class VideoCreativeController
 
         if (creative) {
             modelMap.creative = creative
+            flash.message = params.message
             render(view: "../advertiser/editvidadcreative", model: modelMap)
         }
         else
@@ -61,7 +62,7 @@ class VideoCreativeController
             campaign.errors.each {
                 message += (it.toString() +'\n')
             }
-            message = "資料出錯"
+            message = "資料出錯，請重新輸入"
             new File(result).delete()
 
             redirect(controller: "advertiser", action: "addvidadcreative", id: campId, params: [message: message])
@@ -95,7 +96,7 @@ class VideoCreativeController
             creative.errors.each {
                 message += (it.toString() +'\n')
             }
-            message = "資料出錯"
+            message = "資料出錯，請重新輸入"
 
             redirect(action: "edit", id: params.id, params: [message: message])
         }

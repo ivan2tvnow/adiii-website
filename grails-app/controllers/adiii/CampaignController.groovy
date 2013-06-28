@@ -27,6 +27,7 @@ class CampaignController
                 String.format("%02d", it)
             })
             modelMap.hourList = hourList
+            flash.message = params.message
 
             render(view: "../advertiser/editcampaign", model: modelMap)
         }
@@ -86,7 +87,7 @@ class CampaignController
                 message += (it.toString() +'\n')
                 println message
             }
-            message = "資料出錯"
+            message = "資料出錯，請重新輸入"
             redirect(controller: "advertiser", action: "addcampaign", params: [message: message])
         }
     }
@@ -129,7 +130,7 @@ class CampaignController
                 message += (it.toString() +'\n')
                 println message
             }
-            message = "資料出錯"
+            message = "資料出錯，請重新輸入"
             redirect(action: "edit", id: campId, params: [message: message])
         }
     }

@@ -22,6 +22,11 @@
         display: inline;
         margin-left: 5px;
     }
+    .login_message {
+        font-size: 20px;
+        padding: 6px 25px 20px 25px;
+        color: #c33;
+    }
     </style>
 </head>
 <body>
@@ -59,6 +64,9 @@
         </div>
         <div class="well">
             <g:form url="[controller: 'campaign', action: 'update', id: campaign.id]"  id="campaign_form" class="form-horizontal">
+                <g:if test='${flash.message}'>
+                    <div class='login_message'>${flash.message}</div>
+                </g:if>
                 <fieldset>
                     <legend>基本資訊</legend>
                     <div class="control-group">
