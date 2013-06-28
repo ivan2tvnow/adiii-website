@@ -118,7 +118,6 @@ class CampaignController
         }
         Boolean checkEndDate = params?.check_end_date == 'on' ? true : false
 
-        println campId
         campaign.setProperties(name: params.campaign_name,
                 startDatetime: startDate,
                 hasEndDatetime: checkEndDate,
@@ -141,5 +140,56 @@ class CampaignController
             message = "資料出錯，請重新輸入"
             redirect(action: "edit", id: campId, params: [message: message])
         }
+    }
+
+    @Secured(['ROLE_ADVERTISER'])
+    def select() {
+        def campaignIdList = [0]
+        def campaignIds = params.list('campaign').get(0)
+        campaignIds.each() { campaignId ->
+            if (campaignId.key.isLong() && "on".equals(campaignId.value)) {
+                campaignIdList.add(campaignId.key)
+            }
+        }
+
+        if (params.submit == "刪除廣告")
+        {
+            redirect(action: "delete", params: [campaignIdList: campaignIdList])
+        }
+        else
+        {
+            redirect(controller: "advertiser", action: "index")
+        }
+
+    }
+
+    @Secured(['ROLE_ADVERTISER'])
+    def delete()
+    {
+        User user = springSecurityService.getCurrentUser()
+        if(user == null)
+        {
+            String message = "尚未登入"
+            redirect(controller: "adiii", action: "index", params: [message: message])
+            return
+        }
+
+        for (campaignId in params.campaignIdList)
+        {
+            Campaign campaign = Campaign.get(campaignId)
+            try{
+                if (user.campaigns.remove(campaign))
+                {
+                    campaign.delete()
+                }
+            }
+            catch(Exception e)
+            {
+                log.error(e.toString(), e)
+            }
+
+        }
+
+        redirect(controller: "advertiser", action: "index")
     }
 }

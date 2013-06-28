@@ -62,6 +62,7 @@
       </div>
   </header>
   <div class="container">
+    <g:form controller="campaign" action="select" method="post" id="campaign_form" class="form-horizontal">
     <div id="row">
         <div class="well">
             <h2>廣告活動</h2>
@@ -72,7 +73,12 @@
             <a href="${createLink(controller: 'advertiser', action: 'addcampaign')}" class="btn btn-primary">建立新廣告活動</a>
             <a href="#" class="btn btn-primary disabled">進行投放</a>
             <a href="#" class="btn btn-primary disabled">暫停投放</a>
-            <a href="#" class="btn btn-danger disabled">刪除廣告</a>
+            <g:if test="${campaigns.size() <= 0}">
+                <a href="#" class="btn btn-danger disabled">刪除廣告</a>
+            </g:if>
+            <g:else>
+                <input type="submit" name="submit" class="btn btn-danger" value="刪除廣告"/>
+            </g:else>
 
             <div id="report_range" class="pull-right" style="background: #fff; cursor: pointer; padding: 5px 10px; border: 1px solid #ccc">
                 <i class="icon-calendar icon-large"></i>
@@ -106,7 +112,7 @@
                 <g:else>
                     <g:each in="${campaigns}" var="campaign">
                         <tr>
-                            <td style="vertical-align:middle"><input type="checkbox"></td>
+                            <td style="vertical-align:middle"><g:checkBox id="check${campaign.id}" name="campaign.${campaign.id}" value="on" checked="unchecked" /></td>
                             <td><a href="${createLink(controller: 'advertiser', action: 'campaign', id: "${campaign.id}")}"><strong class="text-info">${campaign.name}</strong></a>
                                 <a id="" class="btn btn-mini btn-info pull-right" href="${createLink(controller: 'campaign', action: 'edit', id: "${campaign.id}")}">
                                     <i class="icon-pencil icon-white"></i>
@@ -132,6 +138,7 @@
             </table>
         </div>
     </div>
+    </g:form>
 </div>
 <footer class="footer">
     <div class="container">

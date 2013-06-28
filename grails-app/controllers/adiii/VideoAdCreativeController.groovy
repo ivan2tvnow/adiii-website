@@ -7,7 +7,7 @@ class VideoAdCreativeController
 {
     def fileUploadService
     /*
-         *  URL: /advertiser/vidocrrative/edit
+         *  URL: /advertiser/vidoadcrrative/edit
          *  影片廣告修改的傳導頁;
          *  會讀取出指定ID的creative並導到 /advertiser/editvidadcreative
          */
@@ -29,7 +29,7 @@ class VideoAdCreativeController
     }
 
     /*
-     *  URL: /advertiser/creative/save/${campaign.id}
+     *  URL: /advertiser/vidoadcrrative/save/${campaign.id}
      *  實際進行廣告內容(creative)儲存的action method; 當儲存成功後, 將網頁導至/advertiser/index.
      */
     @Secured(['ROLE_ADVERTISER'])
@@ -58,7 +58,7 @@ class VideoAdCreativeController
         if(campaign.save())
         {
             String message = "廣告新增成功"
-            redirect(controller: "advertiser", action: "index", params: [message: message])
+            redirect(controller: "advertiser", action: "campaign", id: campId, params: [message: message])
         }
         else
         {
@@ -74,7 +74,7 @@ class VideoAdCreativeController
     }
 
     /*
-         *  URL: /advertiser/vidocrrative/update
+         *  URL: /advertiser/vidoadcrrative/update
          *  實際進行廣告(creative)更新的action method;
          *  當更新成功後, 將網頁導至/advertiser/index
          */
@@ -87,7 +87,7 @@ class VideoAdCreativeController
         String result = fileUploadService.uploadFile(file, "${creative.campaign.id}.${extension}")
 
 
-        creative .setProperties(name: params.ad_name,
+        creative.setProperties(name: params.ad_name,
                 link: params.ad_link,
                 displayText: params.display_text,
                 imageUrl: result,
@@ -97,7 +97,7 @@ class VideoAdCreativeController
         {
             String message = "修改成功"
 
-            redirect(controller: "advertiser", action: "index", params: [message: message])
+            redirect(controller: "advertiser", action: "campaign", id: creative.campaign.id, params: [message: message])
         }
         else
         {
