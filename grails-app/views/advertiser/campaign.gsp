@@ -61,6 +61,7 @@
       </div>
   </header>
   <div class="container">
+  <g:form url="[controller: 'creative', action: 'select', id: campaignId]" id="creative_form" class="form-horizontal">
     <div id="row">
         <div class="well">
             <h2>${campaignName}</h2>
@@ -75,7 +76,12 @@
             </g:elseif>
             <a href="#" class="btn btn-primary disabled">進行投放</a>
             <a href="#" class="btn btn-primary disabled">暫停投放</a>
-            <a href="#" class="btn btn-danger disabled">刪除內容</a>
+            <g:if test="${creatives.size() <= 0}">
+                <a href="#" class="btn btn-danger disabled">刪除內容</a>
+            </g:if>
+            <g:else>
+                <input type="submit" name="submit" class="btn btn-danger" value="刪除內容"/>
+            </g:else>
 
             <div id="report_range" class="pull-right" style="background: #fff; cursor: pointer; padding: 5px 10px; border: 1px solid #ccc">
                 <i class="icon-calendar icon-large"></i>
@@ -108,7 +114,7 @@
                 <g:else>
                     <g:each in="${creatives}" var="creative">
                         <tr>
-                            <td style="vertical-align:middle"><input type="checkbox"></td>
+                            <td style="vertical-align:middle"><g:checkBox id="check${creative.id}" name="creative.${creative.id}" value="on" checked="unchecked" /></td>
                             <td><a href="${createLink(controller: 'advertiser', action: 'campaign')}"><strong class="text-info">${creative.name}</strong></a>
                                 <g:if test="${campaignType == 'video_ad'}">
                                     <a id="" class="btn btn-mini btn-info pull-right" href="${createLink(controller: 'videoAdCreative', action: 'edit', id: "${creative.id}")}">
@@ -135,6 +141,7 @@
             </table>
         </div>
     </div>
+  </g:form>
 </div>
 <footer class="footer">
     <div class="container">

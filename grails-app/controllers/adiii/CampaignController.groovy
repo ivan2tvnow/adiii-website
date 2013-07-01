@@ -165,7 +165,6 @@ class CampaignController
         {
             redirect(controller: "advertiser", action: "index")
         }
-
     }
 
     /*
@@ -179,8 +178,7 @@ class CampaignController
         User user = springSecurityService.getCurrentUser()
         if(user == null)
         {
-            String message = "尚未登入"
-            redirect(controller: "adiii", action: "index", params: [message: message])
+            redirect(controller: "adiii", action: "index", params: [message: "尚未登入"])
             return
         }
 
