@@ -6,7 +6,6 @@ import org.springframework.web.multipart.MultipartFile
 class CreativeController
 {
     def fileUploadService
-    protected String addPage = "addcreative"
     protected String editPage = "editcreative"
     /*
          *  URL: /advertiser/vidoadcreative/edit
@@ -31,6 +30,7 @@ class CreativeController
     @Secured(['ROLE_ADVERTISER'])
     def save()
     {
+        def fileToDelete
         Integer campId = params.int('id')
         Campaign campaign = Campaign.get(campId)
         if (!campaign) {
@@ -42,6 +42,7 @@ class CreativeController
 
         withParamSetup() { creative ->
             campaign.addToCreatives(creative)
+            fileToDelete = creative.imageUrl
         }
 
 
@@ -57,9 +58,9 @@ class CreativeController
                 message += (it.toString() +'\n')
             }
             message = "資料出錯，請重新輸入"
-            new File(result).delete()
+            new File(fileToDelete).delete()
 
-            redirect(controller: "advertiser", action: addPage, id: campId, params: [message: message])
+            goBackToEdit(campId, message)
         }
     }
 
@@ -68,6 +69,7 @@ class CreativeController
          *  實際進行廣告(creative)更新的action method;
          *  當更新成功後, 將網頁導至/advertiser/index
          */
+    @Secured(['ROLE_ADVERTISER'])
     def update() {
         def creative
         withCreative() { c->
@@ -107,6 +109,7 @@ class CreativeController
          *  對於多個creative進行動作
          *  此方法會根據傳過來的submit類別再導到對應的方法
          */
+    @Secured(['ROLE_ADVERTISER'])
     def select()
     {
         def creativeIdList = [0]
@@ -133,6 +136,7 @@ class CreativeController
          *  刪除所選的creative
          *  摻除完成後會回到creative顯示頁
          */
+    @Secured(['ROLE_ADVERTISER'])
     def delete()
     {
         Campaign campaign = Campaign.get(params.campId)
@@ -173,7 +177,8 @@ class CreativeController
         }
     }
 
-    protected def withParamSetup(id="id", Closure c) {
+    protected def withParamSetup(id="id", Closure c)
+    {
         Integer campId = params.int(id)
         MultipartFile file = request.getFile('upload_file')
         String extension = file.contentType.split("/")[1]
@@ -186,5 +191,10 @@ class CreativeController
                 price: params.price)
 
         c.call creative
+    }
+
+    protected def goBackToEdit(campId, message)
+    {
+        redirect(controller: "advertiser", action: "addcreative", id: campId, params: [message: message])
     }
 }

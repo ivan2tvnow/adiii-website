@@ -15,8 +15,14 @@ class Creative
         name(blank: false, size: 1..30, unique: true)
         link blank: false, url: true, validator: {val, obj ->
             try {
-                new URL(val).openStream()
-                return true
+                def url = new URL(val)
+                def connection = url.openConnection()
+                connection.setRequestMethod("GET")
+                connection.connect()
+                if (connection.responseCode == 200 || connection.responseCode == 201) {
+                   return true
+                }
+                return false
             } catch (Exception e) {
                 return false
             }

@@ -4,7 +4,6 @@ import org.springframework.web.multipart.MultipartFile
 
 class VideoAdCreativeController extends CreativeController
 {
-    protected String addPage = "addvidadcreative"
     protected String editPage = "editvidadcreative"
 
     protected def withCreative(id="id", Closure c)
@@ -33,5 +32,10 @@ class VideoAdCreativeController extends CreativeController
                 price: params.price)
 
         c.call creative
+    }
+
+    protected def goBackToEdit(campId, message)
+    {
+        redirect(controller: "advertiser", action: "addvidadcreative", id: campId, params: [message: message])
     }
 }
