@@ -67,8 +67,12 @@
             <span>您目前共有${creativeCount}個廣告活動</span>
         </div>
         <div class="well">
-
-            <a href="${createLink(controller: 'advertiser', action: 'addvidadcreative', params: [id: campaignId])}" class="btn btn-primary">建立新廣告內容</a>
+            <g:if test="${campaignType == 'video_ad'}">
+                <a href="${createLink(controller: 'advertiser', action: 'addvidadcreative', params: [id: campaignId])}" class="btn btn-primary">建立新廣告內容</a>
+            </g:if>
+            <g:elseif test="${campaignType == 'mobile_ad'}">
+                <a href="${createLink(controller: 'advertiser', action: 'addmobileadcreative', params: [id: campaignId])}" class="btn btn-primary">建立新廣告內容</a>
+            </g:elseif>
             <a href="#" class="btn btn-primary disabled">進行投放</a>
             <a href="#" class="btn btn-primary disabled">暫停投放</a>
             <a href="#" class="btn btn-danger disabled">刪除內容</a>
@@ -106,9 +110,16 @@
                         <tr>
                             <td style="vertical-align:middle"><input type="checkbox"></td>
                             <td><a href="${createLink(controller: 'advertiser', action: 'campaign')}"><strong class="text-info">${creative.name}</strong></a>
-                                <a id="" class="btn btn-mini btn-info pull-right" href="${createLink(controller: 'videoAdCreative', action: 'edit', id: "${creative.id}")}">
-                                    <i class="icon-pencil icon-white"></i>
-                                </a>
+                                <g:if test="${campaignType == 'video_ad'}">
+                                    <a id="" class="btn btn-mini btn-info pull-right" href="${createLink(controller: 'videoAdCreative', action: 'edit', id: "${creative.id}")}">
+                                        <i class="icon-pencil icon-white"></i>
+                                    </a>
+                                </g:if>
+                                <g:elseif test="${campaignType == 'mobile_ad'}">
+                                    <a id="" class="btn btn-mini btn-info pull-right" href="${createLink(controller: 'mobileAdCreative', action: 'edit', id: "${creative.id}")}">
+                                        <i class="icon-pencil icon-white"></i>
+                                    </a>
+                                </g:elseif>
                             </td>
                             <td>${creative.id}</td>
                             <td>影像</td>

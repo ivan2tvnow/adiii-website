@@ -142,6 +142,11 @@ class CampaignController
         }
     }
 
+    /*
+         *  URL: /advertiser/campaign/select
+         *  對於多個campaign進行動作
+         *  此方法會根據傳過來的submit類別再導到對應的方法
+         */
     @Secured(['ROLE_ADVERTISER'])
     def select() {
         def campaignIdList = [0]
@@ -163,6 +168,11 @@ class CampaignController
 
     }
 
+    /*
+         *  URL: /advertiser/campaign/select
+         *  刪除所選的campaign
+         *  摻除完成後會回到campaign顯示頁
+         */
     @Secured(['ROLE_ADVERTISER'])
     def delete()
     {

@@ -41,6 +41,7 @@ class AdvertiserController
                 modelMap.campaignName = campaign.name
                 modelMap.campaignId = campaign.id
                 modelMap.creatives = campaign.creatives
+                modelMap.campaignType = campaign.campaignType
                 modelMap.creativeCount = campaign.creatives?.size()
                 render(view: "campaign", model: modelMap)
             }
