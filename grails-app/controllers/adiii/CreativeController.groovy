@@ -162,6 +162,11 @@ class CreativeController
         redirect(controller: "advertiser", action: "campaign", id: params.campId)
     }
 
+    /*
+         *  (not an action method)
+         *  回傳所選id的creative
+         *  若找不到則會用文字顯示
+         */
     protected def withCreative(id="id", Closure c)
     {
         def creative = Creative.get(params[id])
@@ -175,6 +180,10 @@ class CreativeController
         }
     }
 
+    /*
+         *  (not an action method)
+         *  以傳入的參數新增一個creative
+         */
     protected def withParamSetup(id="id", Closure c)
     {
         def creative = new Creative(name: params.ad_name,
@@ -185,12 +194,20 @@ class CreativeController
         c.call creative
     }
 
+    /*
+         *  (not an action method)
+         *  將request裡面的檔案存到系統中
+         */
     protected String uploadFile(fileName) {
         MultipartFile file = request.getFile('upload_file')
         String extension = file.contentType.split("/")[1]
         return fileUploadService.uploadFile(file, "${fileName}.${extension}")
     }
 
+    /*
+         *  (not an action method)
+         *  導回新增creative的頁面
+         */
     protected def goBackToEdit(campId, message)
     {
         redirect(controller: "advertiser", action: "addcreative", id: campId, params: [message: message])

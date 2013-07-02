@@ -46,8 +46,50 @@ class ApiController
 
         def campaign = getCampaign(apiKey)
         def vastClosure = makeVastClosure(campaign)
+        session['user'] = keyGenerator((('A'..'Z') + ('0'..'9')).join(), 11)
 
         render(contentType: "application/xml", vastClosure)
+    }
+
+    /*
+     *   URL: /api/impression?sessionKey=${user.apiKey}&id=${creative.id}
+     *   增加指定creative裡面的impression值
+     */
+    def impression()
+    {
+        if (session["user"] == params.sessionKey && !session["impression"])
+        {
+            session["impression"] = true
+            def creative = Creative.get(params.id)
+
+            //add impression info
+            withClientInfo { info ->
+                def impressions = new Impression(info)
+                creative.addToImpressions(impressions)
+                creative.save(failOnError: true)
+            }
+        }
+    }
+
+    /*
+     *   URL: /api/impression?click=${user.apiKey}&id=${creative.id}
+     *   增加指定creative裡面的click值
+     */
+    def click()
+    {
+        if (session["user"] == params.sessionKey && session["impression"])
+        {
+            def creative = Creative.get(params.id)
+
+            //add click info
+            withClientInfo { info ->
+                def clicks = new Click(info)
+                creative.addToClicks(clicks)
+                creative.save(failOnError: true)
+            }
+        }
+        session["user"] = null
+        session["impression"] = false
     }
 
     /*
@@ -129,7 +171,7 @@ class ApiController
     def getCampaign(String apiKey)
     {
         def query = Campaign.where {
-            User.findByApikey(apiKey) && creatives.size() > 0
+            user.apikey == apiKey && creatives.size() > 0
         }
         def campaigns = query.list()
 
@@ -248,5 +290,24 @@ class ApiController
         }
 
         return vastClosure
+    }
+
+    /*
+     *   (not an action method)
+     *   抓取client端數值：IP、時間、裝置ID
+     */
+    private void withClientInfo(Closure c) {
+        def returnValue = [ipAddress: request.getRemoteAddr(), createdDatetime: new Date(), deviceId: params.data]
+        c.call returnValue
+    }
+
+    /*
+     *   (not an action method)
+     *   產生一串亂數的字碼
+     */
+    def keyGenerator = { String alphabet, int n ->
+        new Random().with {
+            (1..n).collect { alphabet[ nextInt( alphabet.length() ) ] }.join()
+        }
     }
 }
