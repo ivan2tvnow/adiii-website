@@ -30,7 +30,6 @@ class CreativeController
     @Secured(['ROLE_ADVERTISER'])
     def save()
     {
-        def fileToDelete
         Integer campId = params.int('id')
         Campaign campaign = Campaign.get(campId)
         if (!campaign) {
@@ -42,25 +41,24 @@ class CreativeController
 
         withParamSetup() { creative ->
             campaign.addToCreatives(creative)
-            fileToDelete = creative.imageUrl
-        }
+            if(campaign.save() && creative.save())
+            {
+                creative.imageUrl = uploadFile(creative.id)
+                creative.save()
 
-
-        if(campaign.save())
-        {
-            String message = "廣告新增成功"
-            redirect(controller: "advertiser", action: "campaign", id: campId, params: [message: message])
-        }
-        else
-        {
-            String message = ""
-            campaign.errors.each {
-                message += (it.toString() +'\n')
+                String message = "廣告新增成功"
+                redirect(controller: "advertiser", action: "campaign", id: campId, params: [message: message])
             }
-            message = "資料出錯，請重新輸入"
-            new File(fileToDelete).delete()
+            else
+            {
+                String message = ""
+                campaign.errors.each {
+                    message += (it.toString() +'\n')
+                }
+                message = "資料出錯，請重新輸入"
 
-            goBackToEdit(campId, message)
+                goBackToEdit(campId, message)
+            }
         }
     }
 
@@ -78,7 +76,7 @@ class CreativeController
 
         MultipartFile file = request.getFile('upload_file')
         String extension = file.contentType.split("/")[1]
-        String result = fileUploadService.uploadFile(file, "${creative.campaign.id}.${extension}")
+        String result = fileUploadService.uploadFile(file, "${params.id}.${extension}")
 
         creative.setProperties(name: params.ad_name,
                 link: params.ad_link,
@@ -179,18 +177,18 @@ class CreativeController
 
     protected def withParamSetup(id="id", Closure c)
     {
-        Integer campId = params.int(id)
-        MultipartFile file = request.getFile('upload_file')
-        String extension = file.contentType.split("/")[1]
-        String result = fileUploadService.uploadFile(file, "${campId}.${extension}")
-
         def creative = new Creative(name: params.ad_name,
                 link: params.ad_link,
                 displayText: params.display_text,
-                imageUrl: result,
                 price: params.price)
 
         c.call creative
+    }
+
+    protected String uploadFile(fileName) {
+        MultipartFile file = request.getFile('upload_file')
+        String extension = file.contentType.split("/")[1]
+        return fileUploadService.uploadFile(file, "${fileName}.${extension}")
     }
 
     protected def goBackToEdit(campId, message)

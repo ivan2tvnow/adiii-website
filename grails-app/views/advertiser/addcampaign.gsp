@@ -139,12 +139,12 @@
             <legend>廣告活動類型</legend>
 
             <label class="radio" for="mobile_ad">
-                <g:radio name="campaign_type" value="mobile_ad" checked="false"/>
+                <g:radio name="campaign_type" value="mobile_ad" checked="true"/>
                 行動裝置廣告 (如AdMob與Airpush所提供之廣告類型)
             </label>
 
             <label class="radio" for="video_ad">
-                <g:radio name="campaign_type" value="video_ad" checked="true"/>
+                <g:radio name="campaign_type" value="video_ad" checked="false"/>
                 影音廣告 (建立符合VAST 3.0規格之廣告內容)
             </label>
         </fieldset>

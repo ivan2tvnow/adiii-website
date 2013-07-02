@@ -129,7 +129,7 @@ class ApiController
     def getCampaign(String apiKey)
     {
         def query = Campaign.where {
-            user.apiKey == apiKey && creatives.size() > 0
+            User.findByApikey(apiKey) && creatives.size() > 0
         }
         def campaigns = query.list()
 

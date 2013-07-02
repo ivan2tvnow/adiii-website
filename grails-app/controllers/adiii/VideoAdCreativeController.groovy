@@ -20,15 +20,10 @@ class VideoAdCreativeController extends CreativeController
     }
 
     protected def withParamSetup(id="id", Closure c) {
-        Integer campId = params.int(id)
-        MultipartFile file = request.getFile('upload_file')
-        String extension = file.contentType.split("/")[1]
-        String result = fileUploadService.uploadFile(file, "${campId}.${extension}")
-
         VideoAdCreative creative = new VideoAdCreative(name: params.ad_name,
                 link: params.ad_link,
                 displayText: params.display_text,
-                imageUrl: result,
+                imageUrl: "tmp",
                 price: params.price)
 
         c.call creative

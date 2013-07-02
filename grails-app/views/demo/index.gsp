@@ -36,8 +36,14 @@
     <div class="navbar-inner">
         <div class="container">
             <ul class="pull-right nav">
-                <li><a href="${createLink(controller: "user", action: "account")}">您好，Test Advertiser</a></li>
-                <li><a href="${createLink(controller: "user", action: "logout")}">登出</a></li>
+                <sec:ifNotLoggedIn>
+                    <li><a href="${createLink(controller: "login", action: "auth")}">登入</a></li>
+                    <li><a href="${createLink(controller: "user", action: "signup")}">註冊</a></li>
+                </sec:ifNotLoggedIn>
+                <sec:ifLoggedIn>
+                    <li><a href="${createLink(controller: "user", action: "account")}">您好，<sec:username /></a></li>
+                    <li><a href="${createLink(controller: "logout")}">登出</a></li>
+                </sec:ifLoggedIn>
             </ul>
         </div>
     </div>
@@ -60,7 +66,7 @@
             <h2>廣告呈現測試</h2>
             <form class="form-inline" onsubmit="return false;">
                 <label>使用者金鑰：</label>
-                <input type="text" id="api_key_text" class="input-small span4" disabled="disabled" value="testuserapikey">
+                <input type="text" id="api_key_text" class="input-small span4" value="testuserapikey">
                 <button type="submit" id="submit_button" class="btn btn-info">取得廣告內容</button>
             </form>
         </div>

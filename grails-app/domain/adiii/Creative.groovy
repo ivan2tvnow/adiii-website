@@ -30,4 +30,14 @@ class Creative
         displayText(blank:false, size: 1..48)
         imageUrl(blank:false)
     }
+
+    def afterDelete () {
+        def fileToDelete = new File(imageUrl)
+        try {
+            fileToDelete.delete()
+        } catch (Exception e) {
+            println e
+        }
+    }
+
 }
