@@ -50,7 +50,7 @@
     <div class="container">
         <h1><a class="brand" href="${createLink(controller: "adiii")}">Adiii</a></h1>
         <ul class="nav nav-pills">
-            <li class="active"><a class="nav-tab" href="#">廣告活動</a></li>
+            <li class="active"><a class="nav-tab" href="${createLink(controller: "advertiser", action: "index")}">廣告活動</a><</li>
             <li><a class="nav-tab" href="${createLink(controller: "advertiser", action: "reports")}">報告</a></li>
             <li><a class="nav-tab" href="${createLink(controller: "advertiser", action: "account")}">帳戶資訊</a></li>
             <li><a class="nav-tab" href="${createLink(controller: "support")}">技術支援</a></li>
@@ -145,24 +145,15 @@
                 <fieldset>
                     <legend>廣告活動類型</legend>
 
-                    <label class="radio" for="mobile_ad">
+                    <label class="radio" for="campaign_type">
                         <g:if test="${campaign.campaignType=='mobile_ad'}">
-                            <g:radio name="campaign_type" value="mobile_ad" checked="true"/>
+                            <g:hiddenField name="campaign_type" value="mobile_ad"/>
+                            行動裝置廣告 (如AdMob與Airpush所提供之廣告類型)
                         </g:if>
-                        <g:else>
-                            <g:radio name="campaign_type" value="mobile_ad" checked="false" disabled="true"/>
-                        </g:else>
-                        行動裝置廣告 (如AdMob與Airpush所提供之廣告類型)
-                    </label>
-
-                    <label class="radio" for="video_ad">
-                        <g:if test="${campaign.campaignType=='mobile_ad'}">
-                            <g:radio name="campaign_type" value="video_ad" checked="true"/>
-                        </g:if>
-                        <g:else>
-                            <g:radio name="campaign_type" value="video_ad" checked="false" disabled="true"/>
-                        </g:else>
-                        影音廣告 (建立符合VAST 3.0規格之廣告內容)
+                        <g:elseif test="${campaign.campaignType=='video_ad'}">
+                            <g:hiddenField name="campaign_type" value="video_ad"/>
+                            影音廣告 (建立符合VAST 3.0規格之廣告內容)
+                        </g:elseif>
                     </label>
                 </fieldset>
                 <div class="form-actions">

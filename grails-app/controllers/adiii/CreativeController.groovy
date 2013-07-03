@@ -74,9 +74,7 @@ class CreativeController
             creative = c
         }
 
-        MultipartFile file = request.getFile('upload_file')
-        String extension = file.contentType.split("/")[1]
-        String result = fileUploadService.uploadFile(file, "${params.id}.${extension}")
+        String result = uploadFile(params.id)
 
         creative.setProperties(name: params.ad_name,
                 link: params.ad_link,
