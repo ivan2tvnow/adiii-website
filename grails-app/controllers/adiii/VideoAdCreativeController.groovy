@@ -1,10 +1,7 @@
 package adiii
 
-import org.springframework.web.multipart.MultipartFile
-
 class VideoAdCreativeController extends CreativeController
 {
-    protected String editPage = "editvidadcreative"
 
     protected def withCreative(id="id", Closure c)
     {
@@ -29,8 +26,13 @@ class VideoAdCreativeController extends CreativeController
         c.call creative
     }
 
-    protected def goBackToEdit(campId, message)
+    protected def goBackToAdd(modelMap)
     {
-        redirect(controller: "advertiser", action: "addvidadcreative", id: campId, params: [message: message])
+        render(view: "../advertiser/addvidadcreative", model: modelMap)
+    }
+
+    protected def goBackToEdit(modelMap)
+    {
+        render(view: "../advertiser/editvidadcreative", model: modelMap)
     }
 }

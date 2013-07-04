@@ -22,6 +22,9 @@
         padding: 6px 25px 20px 25px;
         color: #c33;
     }
+    .errorMesseage {
+        color: #c33;
+    }
     </style>
 </head>
 <body>
@@ -70,12 +73,13 @@
                             廣告名稱：<em class="red">*</em>
                         </label>
                         <div class="controls">
-                            <g:textField name="ad_name" required="true"/>
+                            <g:textField name="ad_name" value="${creative.name}" required="true"/>
                             <span class="add-on">
                                 <a id="ad_name_info" class="btn btn-mini btn-info">
                                     <i class="icon-info-sign icon-white"></i>
                                 </a>
                             </span>
+                            <g:if test="${errorMesseage.contains("name")}"><div class="errorMesseage">請輸入正確名稱</div></g:if>
                         </div>
                     </div>
 
@@ -84,12 +88,13 @@
                             廣告連結：<em class="red">*</em>
                         </label>
                         <div class="controls">
-                            <g:textField class="span4" name="ad_link" value="http://" required="true"/>
+                            <g:textField class="span4" name="ad_link" value="${creative.link}" required="true"/>
                             <span class="add-on">
                                 <a id="ad_link_info" class="btn btn-mini btn-info">
                                     <i class="icon-info-sign icon-white"></i>
                                 </a>
                             </span>
+                            <g:if test="${errorMesseage.contains("link")}"><div class="errorMesseage">請輸入有效的連結</div></g:if>
                         </div>
                     </div>
 
@@ -98,12 +103,13 @@
                             顯示文字：<em class="red">*</em>
                         </label>
                         <div class="controls">
-                            <g:textField class="span4" name="display_text" required="true" length="48"/>
+                            <g:textField class="span4" name="display_text" value="${creative.displayText}" required="true" length="48"/>
                             <span class="add-on">
                                 <a id="display_text_info" class="btn btn-mini btn-info">
                                     <i class="icon-info-sign icon-white"></i>
                                 </a>
                             </span>
+                            <g:if test="${errorMesseage.contains("displayText")}"><div class="errorMesseage">請輸入正確的文字</div></g:if>
                         </div>
                     </div>
 
@@ -118,6 +124,7 @@
                                     <i class="icon-info-sign icon-white"></i>
                                 </a>
                             </span>
+                            <g:if test="${errorMesseage.contains("imageUrl")}"><div class="errorMesseage">請輸入符合規範的圖片</div></g:if>
                         </div>
                     </div>
                     <div class="control-group">
@@ -125,12 +132,13 @@
                             出價：<em class="red">*</em>
                         </label>
                         <div class="controls">
-                            <g:textField class="span4" name="price" required="true" value="1.0" length="48"/>
+                            <g:textField class="span4" name="price" required="true" value="${creative.price}" length="48"/>
                             <span class="add-on">
                                 <a id="price_info" class="btn btn-mini btn-info">
                                     <i class="icon-info-sign icon-white"></i>
                                 </a>
                             </span>
+                            <g:if test="${errorMesseage.contains("price")}"><div class="errorMesseage">請輸入正確的價格</div></g:if>
                         </div>
                     </div>
                 </fieldset>

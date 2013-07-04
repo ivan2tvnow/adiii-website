@@ -22,6 +22,9 @@
         padding: 6px 25px 20px 25px;
         color: #c33;
     }
+    .errorMesseage {
+        color: #c33;
+    }
     </style>
 </head>
 <body>
@@ -75,6 +78,7 @@
                                     <i class="icon-info-sign icon-white"></i>
                                 </a>
                             </span>
+                            <g:if test="${errorMesseage.contains("name")}"><div class="errorMesseage">請輸入正確名稱</div></g:if>
                         </div>
                     </div>
 
@@ -89,6 +93,7 @@
                                     <i class="icon-info-sign icon-white"></i>
                                 </a>
                             </span>
+                            <g:if test="${errorMesseage.contains("link")}"><div class="errorMesseage">請輸入有效的連結</div></g:if>
                         </div>
                     </div>
 
@@ -103,6 +108,7 @@
                                     <i class="icon-info-sign icon-white"></i>
                                 </a>
                             </span>
+                            <g:if test="${errorMesseage.contains("displayText")}"><div class="errorMesseage">請輸入正確的文字</div></g:if>
                         </div>
                     </div>
 
@@ -117,6 +123,7 @@
                                     <i class="icon-info-sign icon-white"></i>
                                 </a>
                             </span>
+                            <g:if test="${errorMesseage.contains("imageUrl")}"><div class="errorMesseage">請輸入符合規範的圖片</div></g:if>
                         </div>
                     </div>
                     <div class="control-group">
@@ -130,6 +137,7 @@
                                     <i class="icon-info-sign icon-white"></i>
                                 </a>
                             </span>
+                            <g:if test="${errorMesseage.contains("price")}"><div class="errorMesseage">請輸入正確的價格</div></g:if>
                         </div>
                     </div>
                 </fieldset>

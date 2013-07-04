@@ -50,7 +50,7 @@
     <div class="container">
         <h1><a class="brand" href="${createLink(controller: "adiii")}">Adiii</a></h1>
         <ul class="nav nav-pills">
-            <li class="active"><a class="nav-tab" href="${createLink(controller: "advertiser", action: "index")}">廣告活動</a><</li>
+            <li class="active"><a class="nav-tab" href="${createLink(controller: "advertiser", action: "index")}">廣告活動</a></li>
             <li><a class="nav-tab" href="${createLink(controller: "advertiser", action: "reports")}">報告</a></li>
             <li><a class="nav-tab" href="${createLink(controller: "advertiser", action: "account")}">帳戶資訊</a></li>
             <li><a class="nav-tab" href="${createLink(controller: "support")}">技術支援</a></li>

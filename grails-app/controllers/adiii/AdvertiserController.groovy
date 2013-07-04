@@ -97,12 +97,13 @@ class AdvertiserController
     @Secured(['ROLE_ADVERTISER'])
     def addvidadcreative()
     {
-        Integer count = Campaign.count()
+        Map modelMap = [:]
+        modelMap.errorMesseage = []
+        modelMap.campaignCount = Campaign.count()
+        modelMap.campaignId = params.int('id')
+        modelMap.creative = new VideoAdCreative(link: 'http://www.example.com', price: 1.0)
 
-        Integer campId = params.int('id')
-        Campaign campaign = Campaign.get(campId)
-
-        render(view: "addvidadcreative", model: [campaignCount: count, campaignId: campId])
+        render(view: "addvidadcreative", model: modelMap)
     }
 
     /*
@@ -113,12 +114,13 @@ class AdvertiserController
     @Secured(['ROLE_ADVERTISER'])
     def addmobileadcreative()
     {
-        Integer count = Campaign.count()
+        Map modelMap = [:]
+        modelMap.errorMesseage = []
+        modelMap.campaignCount = Campaign.count()
+        modelMap.campaignId = params.int('id')
+        modelMap.creative = new MobileAdCreative(link: 'http://www.example.com', price: 1.0)
 
-        Integer campId = params.int('id')
-        Campaign campaign = Campaign.get(campId)
-
-        render(view: "addmobileadcreative", model: [campaignCount: count, campaignId: campId])
+        render(view: "addmobileadcreative", model: modelMap)
     }
 
     /*

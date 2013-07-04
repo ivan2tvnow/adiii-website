@@ -6,7 +6,6 @@ import org.springframework.web.multipart.MultipartFile
 class CreativeController
 {
     def fileUploadService
-    protected String editPage = "editcreative"
     /*
          *  URL: /advertiser/vidoadcreative/edit
          *  影片廣告修改的傳導頁;
@@ -18,8 +17,8 @@ class CreativeController
         Map modelMap = [:]
         withCreative() { creative ->
             modelMap.creative = creative
-            flash.message = params.message
-            render(view: "../advertiser/" + editPage, model: modelMap)
+            modelMap.errorMesseage = []
+            goBackToEdit(modelMap)
         }
     }
 
@@ -40,24 +39,14 @@ class CreativeController
         }
 
         withParamSetup() { creative ->
+            validateCreative(creative, campId)
             campaign.addToCreatives(creative)
             if(campaign.save() && creative.save())
             {
                 creative.imageUrl = uploadFile(creative.id)
                 creative.save()
 
-                String message = "廣告新增成功"
-                redirect(controller: "advertiser", action: "campaign", id: campId, params: [message: message])
-            }
-            else
-            {
-                String message = ""
-                campaign.errors.each {
-                    message += (it.toString() +'\n')
-                }
-                message = "資料出錯，請重新輸入"
-
-                goBackToEdit(campId, message)
+                redirect(controller: "advertiser", action: "campaign", id: campId)
             }
         }
     }
@@ -68,35 +57,20 @@ class CreativeController
          *  當更新成功後, 將網頁導至/advertiser/index
          */
     @Secured(['ROLE_ADVERTISER'])
-    def update() {
-        def creative
-        withCreative() { c->
-            creative = c
-        }
-
-        String result = uploadFile(params.id)
-
-        creative.setProperties(name: params.ad_name,
-                link: params.ad_link,
-                displayText: params.display_text,
-                imageUrl: result,
-                price: params.price)
-
-        if(creative.save())
-        {
-            String message = "修改成功"
-
-            redirect(controller: "advertiser", action: "campaign", id: creative.campaign.id, params: [message: message])
-        }
-        else
-        {
-            String message = ""
-            creative.errors.each {
-                message += (it.toString() +'\n')
+    def update()
+    {
+        withCreative() { creative ->
+            String tmp = validateImg()
+            String result = tmp == 'tmp'?uploadFile(params.id):tmp
+            creative.setProperties(name: params.ad_name,
+                    link: params.ad_link,
+                    displayText: params.display_text,
+                    imageUrl: result,
+                    price: params.price)
+            validateCreative(creative, -1)
+            if(creative.save()) {
+                redirect(controller: "advertiser", action: "campaign", id: creative.campaign.id)
             }
-            message = "資料出錯，請重新輸入"
-
-            redirect(action: "edit", id: params.id, params: [message: message])
         }
     }
 
@@ -178,6 +152,61 @@ class CreativeController
         }
     }
 
+    protected String validateImg() {
+        return "tmp"
+    }
+
+    protected def validateCreative(creative, campId)
+    {
+        if (!creative.validate())
+        {
+            List errorMesseage = []
+            if (creative.errors.hasFieldErrors("name"))
+            {
+                errorMesseage.add("name")
+                creative.name = null
+            }
+
+            if (creative.errors.hasFieldErrors("link"))
+            {
+                errorMesseage.add("link")
+                creative.link = null
+            }
+
+            if (creative.errors.hasFieldErrors("displayText"))
+            {
+                errorMesseage.add("displayText")
+                creative.displayText = null
+            }
+
+            if (creative.errors.hasFieldErrors("imageUrl"))
+            {
+                errorMesseage.add("imageUrl")
+                creative.imageUrl = null
+            }
+
+            if (creative.errors.hasFieldErrors("price"))
+            {
+                errorMesseage.add("price")
+                creative.price = null
+            }
+
+            Map modelMap = [:]
+            modelMap.creative = creative
+            modelMap.errorMesseage = errorMesseage
+            flash.message = "資料有誤"
+            if (campId == -1)
+            {
+                goBackToEdit(modelMap)
+            } else
+            {
+                modelMap.count = Campaign.count()
+                modelMap.campaignId = campId
+                goBackToAdd(modelMap)
+            }
+        }
+    }
+
     /*
          *  (not an action method)
          *  以傳入的參數新增一個creative
@@ -196,7 +225,8 @@ class CreativeController
          *  (not an action method)
          *  將request裡面的檔案存到系統中
          */
-    protected String uploadFile(fileName) {
+    protected String uploadFile(fileName)
+    {
         MultipartFile file = request.getFile('upload_file')
         String extension = file.contentType.split("/")[1]
         return fileUploadService.uploadFile(file, "${fileName}.${extension}")
@@ -206,8 +236,17 @@ class CreativeController
          *  (not an action method)
          *  導回新增creative的頁面
          */
-    protected def goBackToEdit(campId, message)
+    protected def goBackToAdd(modelMap)
     {
-        redirect(controller: "advertiser", action: "addcreative", id: campId, params: [message: message])
+        render(view: "../advertiser/addcreative", model: modelMap)
+    }
+
+    /*
+         *  (not an action method)
+         *  導回編輯creative的頁面
+         */
+    protected def goBackToEdit(modelMap)
+    {
+        render(view: "../advertiser/editcreative", model: modelMap)
     }
 }
