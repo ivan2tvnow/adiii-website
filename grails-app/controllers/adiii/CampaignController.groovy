@@ -27,7 +27,7 @@ class CampaignController
                 String.format("%02d", it)
             })
             modelMap.hourList = hourList
-            flash.message = params.message
+            modelMap.errorMesseage = []
 
             render(view: "../advertiser/editcampaign", model: modelMap)
         }
@@ -57,8 +57,7 @@ class CampaignController
                 startDatetime: startDate,
                 hasEndDatetime: checkEndDate,
                 endDatetime: endDate,
-                dailyBudget: params.int('daily_budget'),
-                campaignType: params.campaign_type)
+                dailyBudget: params.int('daily_budget'))
 
         User user = springSecurityService.getCurrentUser()
         if(user == null)
@@ -76,27 +75,18 @@ class CampaignController
             log.error(e.toString(), e)
         }
 
+        validateCampaign(campaign, 'save')
         if(user.save(flush: true))
         {
-            if (campaign.campaignType == "video_ad")
+            if (params.campaign_type == "video_ad")
             {
                 redirect(controller: "advertiser", action: "addvidadcreative", id: campaign.id)
             }
-            else if (campaign.campaignType == "mobile_ad")
+            else if (params.campaign_type == "mobile_ad")
             {
                 redirect(controller: "advertiser", action: "addmobileadcreative", id: campaign.id)
             }
 
-        }
-        else
-        {
-            String message = ""
-            user.errors.each {
-                message += (it.toString() +'\n')
-                println message
-            }
-            message = "資料出錯，請重新輸入"
-            redirect(controller: "advertiser", action: "addcampaign", params: [message: message])
         }
     }
 
@@ -122,23 +112,12 @@ class CampaignController
                 startDatetime: startDate,
                 hasEndDatetime: checkEndDate,
                 endDatetime: endDate,
-                dailyBudget: params.int('daily_budget'),
-                campaignType: params.campaign_type)
+                dailyBudget: params.int('daily_budget'))
 
-        String message = ""
+        validateCampaign(campaign, 'update')
         if(campaign.save(flush: true))
         {
-            message = "修改成功"
-            redirect(controller: "advertiser", action: "index", params: [message: message])
-        }
-        else
-        {
-            campaign.errors.each {
-                message += (it.toString() +'\n')
-                println message
-            }
-            message = "資料出錯，請重新輸入"
-            redirect(action: "edit", id: campId, params: [message: message])
+            redirect(controller: "advertiser", action: "index")
         }
     }
 
@@ -199,5 +178,57 @@ class CampaignController
         }
 
         redirect(controller: "advertiser", action: "index")
+    }
+
+    protected def validateCampaign(Campaign campaign, type)
+    {
+        List errorMesseage = []
+        if (!campaign.validate())
+        {
+            if (campaign.errors.hasFieldErrors("name"))
+            {
+                errorMesseage.add("name")
+                campaign.name = null
+            }
+
+            if (campaign.errors.hasFieldErrors("dailyBudget"))
+            {
+                errorMesseage.add("dailyBudget")
+                campaign.dailyBudget = null
+            }
+
+            if (campaign.errors.hasFieldErrors("startDatetime"))
+            {
+                errorMesseage.add("startDatetime")
+            }
+
+            if (campaign.errors.hasFieldErrors("endDatetime") || campaign.errors.hasFieldErrors("hasEndDatetime"))
+            {
+                errorMesseage.add("endDatetime")
+            }
+
+            Map modelMap = [:]
+            modelMap.campaign = campaign
+            modelMap.startDate = campaign.startDatetime.format("yyyy/MM/dd")
+            modelMap.endDate = campaign.endDatetime.format("yyyy/MM/dd")
+
+            List hourList = (0..23).collect({
+                String.format("%02d", it)
+            })
+            modelMap.hourList = hourList
+            modelMap.errorMesseage = errorMesseage
+            flash.message = "資料有誤"
+
+            if (type == 'save')
+            {
+                modelMap.campaignCount = Campaign.count()
+                modelMap.selectHour = campaign.startDatetime.hours
+                render(view: "../advertiser/addcampaign", model: modelMap)
+            }
+            else if (type == 'update')
+            {
+                render(view: "../advertiser/editcampaign", model: modelMap)
+            }
+        }
     }
 }

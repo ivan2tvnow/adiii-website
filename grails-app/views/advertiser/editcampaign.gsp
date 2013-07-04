@@ -27,6 +27,9 @@
         padding: 6px 25px 20px 25px;
         color: #c33;
     }
+    .errorMesseage {
+        color: #c33;
+    }
     </style>
 </head>
 <body>
@@ -80,6 +83,7 @@
                                     <i class="icon-info-sign icon-white"></i>
                                 </a>
                             </span>
+                            <g:if test="${errorMesseage.contains("name")}"><div class="errorMesseage">請輸入正確名稱</div></g:if>
                         </div>
                         <span class="help-block"></span>
                     </div>
@@ -100,6 +104,7 @@
                                     <i class="icon-info-sign icon-white"></i>
                                 </a>
                             </span>
+                            <g:if test="${errorMesseage.contains("startDatetime")}"><div class="errorMesseage">請輸入正確時間</div></g:if>
                         </div>
                     </div>
 
@@ -125,6 +130,7 @@
                                     <i class="icon-info-sign icon-white"></i>
                                 </a>
                             </span>
+                            <g:if test="${errorMesseage.contains("endDatetime")}"><div class="errorMesseage">請輸入正確時間</div></g:if>
                         </div>
                     </div>
 
@@ -139,22 +145,9 @@
                                     <i class="icon-info-sign icon-white"></i>
                                 </a>
                             </span>
+                            <g:if test="${errorMesseage.contains("dailyBudget")}"><div class="errorMesseage">請輸入正確的價錢</div></g:if>
                         </div>
                     </div>
-                </fieldset>
-                <fieldset>
-                    <legend>廣告活動類型</legend>
-
-                    <label class="radio" for="campaign_type">
-                        <g:if test="${campaign.campaignType=='mobile_ad'}">
-                            <g:hiddenField name="campaign_type" value="mobile_ad"/>
-                            行動裝置廣告 (如AdMob與Airpush所提供之廣告類型)
-                        </g:if>
-                        <g:elseif test="${campaign.campaignType=='video_ad'}">
-                            <g:hiddenField name="campaign_type" value="video_ad"/>
-                            影音廣告 (建立符合VAST 3.0規格之廣告內容)
-                        </g:elseif>
-                    </label>
                 </fieldset>
                 <div class="form-actions">
                     <input type="submit" class="btn btn-primary" value="儲存並繼續"/>

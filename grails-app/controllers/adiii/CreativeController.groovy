@@ -152,10 +152,19 @@ class CreativeController
         }
     }
 
+    /*
+         *  (not an action method)
+         *  檢查圖片是否符合格式
+         */
     protected String validateImg() {
         return "tmp"
     }
 
+    /*
+         *  (not an action method)
+         *  檢查輸入的creative 資料是否正確
+         *  若不正確，則導回前一個畫面，並顯示錯誤訊息
+         */
     protected def validateCreative(creative, campId)
     {
         if (!creative.validate())

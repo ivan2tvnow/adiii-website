@@ -8,8 +8,6 @@ class Campaign {
     Date startDatetime
     Boolean hasEndDatetime = false
     Date endDatetime
-    String campaignType
-
     Date createdDatetime = new Date()
 
     static belongsTo = [user: User]

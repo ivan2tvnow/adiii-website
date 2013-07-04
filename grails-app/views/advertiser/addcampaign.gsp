@@ -27,6 +27,9 @@
         padding: 6px 25px 20px 25px;
         color: #c33;
     }
+    .errorMesseage {
+        color: #c33;
+    }
     </style>
 </head>
 <body>
@@ -75,12 +78,13 @@
                     廣告活動名稱：<em class="red">*</em>
                 </label>
                 <div class="controls">
-                    <g:textField name="campaign_name" required="true" maxlength="30"/>
+                    <g:textField name="campaign_name" value="${campaign.name}" required="true" maxlength="30"/>
                     <span class="add-on">
                         <a id="campaign_name_info" class="btn btn-mini btn-info">
                             <i class="icon-info-sign icon-white"></i>
                         </a>
                     </span>
+                    <g:if test="${errorMesseage.contains("name")}"><div class="errorMesseage">請輸入正確名稱</div></g:if>
                 </div>
                 <span class="help-block"></span>
             </div>
@@ -100,6 +104,7 @@
                             <i class="icon-info-sign icon-white"></i>
                         </a>
                     </span>
+                    <g:if test="${errorMesseage.contains("startDatetime")}"><div class="errorMesseage">請輸入正確時間</div></g:if>
                 </div>
             </div>
 
@@ -118,6 +123,7 @@
                             <i class="icon-info-sign icon-white"></i>
                         </a>
                     </span>
+                    <g:if test="${errorMesseage.contains("endDatetime")}"><div class="errorMesseage">請輸入正確時間</div></g:if>
                 </div>
             </div>
 
@@ -126,12 +132,13 @@
                     每日預算 (點)：<em class="red">*</em>
                 </label>
                 <div class="controls">
-                    <g:field class="span2" type="number" name="daily_budget" required="true" value="50" maxlength="5"/>
+                    <g:field class="span2" type="number" name="daily_budget" required="true"  value="${campaign.dailyBudget}" maxlength="5"/>
                     <span class="add-on">
                         <a id="daily_budget_info" class="btn btn-mini btn-info">
                             <i class="icon-info-sign icon-white"></i>
                         </a>
                     </span>
+                    <g:if test="${errorMesseage.contains("dailyBudget")}"><div class="errorMesseage">請輸入正確的價錢</div></g:if>
                 </div>
             </div>
         </fieldset>

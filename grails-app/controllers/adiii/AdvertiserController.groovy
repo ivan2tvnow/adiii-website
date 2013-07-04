@@ -20,7 +20,6 @@ class AdvertiserController
 
         modelMap.campaignCount = advertiser.campaigns.size()
         modelMap.campaigns = advertiser.campaigns.toList()
-        flash.message = params.message
 
         render(view: "index", model: modelMap)
     }
@@ -41,7 +40,6 @@ class AdvertiserController
                 modelMap.campaignName = campaign.name
                 modelMap.campaignId = campaign.id
                 modelMap.creatives = campaign.creatives
-                modelMap.campaignType = campaign.campaignType
                 modelMap.creativeCount = campaign.creatives?.size()
                 render(view: "campaign", model: modelMap)
             }
@@ -66,6 +64,8 @@ class AdvertiserController
         Map modelMap = [:]
         // TODO: the work of counting the total number of owned campaigns must be cached.
         modelMap.campaignCount = Campaign.count()
+        Campaign campaign = new Campaign(dailyBudget: 50)
+        modelMap.campaign = campaign
 
         Calendar tmpCal = Calendar.getInstance(TimeZone.getTimeZone('GMT+8:00'))
         modelMap.startDate = tmpCal.format("yyyy/MM/dd")
@@ -85,6 +85,7 @@ class AdvertiserController
             selectHour = tmpCal.format("HH")
         }
         modelMap.selectHour = selectHour
+        modelMap.errorMesseage = []
 
         render(view: "addcampaign", model: modelMap)
     }

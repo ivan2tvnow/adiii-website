@@ -68,12 +68,8 @@
             <span>您目前共有${creativeCount}個廣告活動</span>
         </div>
         <div class="well">
-            <g:if test="${campaignType == 'video_ad'}">
-                <a href="${createLink(controller: 'advertiser', action: 'addvidadcreative', params: [id: campaignId])}" class="btn btn-primary">建立新廣告內容</a>
-            </g:if>
-            <g:elseif test="${campaignType == 'mobile_ad'}">
-                <a href="${createLink(controller: 'advertiser', action: 'addmobileadcreative', params: [id: campaignId])}" class="btn btn-primary">建立新廣告內容</a>
-            </g:elseif>
+            <a href="${createLink(controller: 'advertiser', action: 'addvidadcreative', params: [id: campaignId])}" class="btn btn-primary">建立影片廣告內容</a>
+            <a href="${createLink(controller: 'advertiser', action: 'addmobileadcreative', params: [id: campaignId])}" class="btn btn-primary">建立行動廣告內容</a>
             <a href="#" class="btn btn-primary disabled">進行投放</a>
             <a href="#" class="btn btn-primary disabled">暫停投放</a>
             <g:if test="${creatives.size() <= 0}">
@@ -116,12 +112,12 @@
                         <tr>
                             <td style="vertical-align:middle"><g:checkBox id="check${creative.id}" name="creative.${creative.id}" value="on" checked="unchecked" /></td>
                             <td><a href="${createLink(controller: 'advertiser', action: 'campaign')}"><strong class="text-info">${creative.name}</strong></a>
-                                <g:if test="${campaignType == 'video_ad'}">
+                                <g:if test="${creative instanceof adiii.VideoAdCreative}">
                                     <a id="" class="btn btn-mini btn-info pull-right" href="${createLink(controller: 'videoAdCreative', action: 'edit', id: "${creative.id}")}">
                                         <i class="icon-pencil icon-white"></i>
                                     </a>
                                 </g:if>
-                                <g:elseif test="${campaignType == 'mobile_ad'}">
+                                <g:elseif test="${creative instanceof adiii.MobileAdCreative}">
                                     <a id="" class="btn btn-mini btn-info pull-right" href="${createLink(controller: 'mobileAdCreative', action: 'edit', id: "${creative.id}")}">
                                         <i class="icon-pencil icon-white"></i>
                                     </a>
