@@ -46,6 +46,8 @@ class ApiController
 
         def campaign = getCampaign(apiKey)
         def vastClosure = makeVastClosure(campaign)
+
+        def interaction = new Interaction()
         session['user'] = keyGenerator((('A'..'Z') + ('0'..'9')).join(), 11)
 
         render(contentType: "application/xml", vastClosure)
@@ -109,7 +111,6 @@ class ApiController
             campaign.hasEndDatetime = false
             campaign.endDatetime = campaign.startDatetime + 7
             campaign.dailyBudget = 50
-            campaign.campaignType = 'video_ad'
 
             User user = User.findByEmail('test.user@gmail.com')
             println user
@@ -290,6 +291,19 @@ class ApiController
         }
 
         return vastClosure
+    }
+
+    def getCampaignNames()
+    {
+        List result = []
+        def campaigns = Campaign.getAll()
+        campaigns.each { campaign->
+            result.add(campaign.name)
+        }
+
+        render(contentType: "text/json") {
+            [name: result]
+        }
     }
 
     /*
