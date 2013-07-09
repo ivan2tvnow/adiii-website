@@ -1,24 +1,25 @@
 package adiii
 
 import grails.converters.JSON
-import groovy.json.JsonOutput
 import groovy.json.JsonSlurper
-import groovy.xml.MarkupBuilder
 import org.codehaus.groovy.grails.web.context.ServletContextHolder
 
-class ApiController
-{
+class ApiController {
     /*
      *  URL: /api/search?adId=${campaignId}&apiKey=${user.apiKey}
      *  當廣告主已知廣告ID時, 可透過此API呼叫直接取得廣告活動內容.
      */
-    def search()
-    {
+
+    def search() {
         def apiKey = params.apiKey
         def adId = params.adId
 
-        def campaign = Campaign.get(adId)
-        def vastClosure = makeVastClosure(campaign)
+        SessionData sessionData = new SessionData()
+        sessionData.deviceId = 'ABC'
+        sessionData.campaign = Campaign.get(adId)
+        sessionData.accessKey = keyGenerator((('A'..'Z') + ('0'..'9')).join(), 11)
+        sessionData.creative = getRandomCreative(sessionData.campaign, 'videoAd')
+        def vastClosure = makeVastClosure(sessionData)
 
         render(contentType: "application/xml", vastClosure)
     }
@@ -27,42 +28,57 @@ class ApiController
      *  URL: /api/getAd?apiKey=${user.apiKey}
      *  Adiii SDK取得廣告的主要API, 本方法應取得開發者驗證資訊, 使用者資訊等, 以利本平台演算法推播最適當的廣告.
      */
-    def getAd()
-    {
+
+    def getAd() {
         def apiKey = params.apiKey
-        if(!apiKey)
-        {
+        if (!apiKey) {
             def errorMap = getErrorMap(104)
             render errorMap as JSON
             return
         }
 
-        if(params.apiKey instanceof String[])
-        {
+        if (params.apiKey instanceof String[]) {
             def errorMap = getErrorMap(105)
             render errorMap as JSON
             return
         }
 
-        def campaign = getCampaign(apiKey)
-        def vastClosure = makeVastClosure(campaign)
+        if (!User.findByApikey(apiKey)) {
+            def errorMap = getErrorMap(106)
+            render errorMap as JSON
+            return
+        }
 
-        def interaction = new Interaction()
-        session['user'] = keyGenerator((('A'..'Z') + ('0'..'9')).join(), 11)
+        SessionData sessionData = new SessionData()
+        sessionData.deviceId = 'ABC'
+        sessionData.campaign = getCampaign()
+        sessionData.accessKey = keyGenerator((('A'..'Z') + ('0'..'9')).join(), 11)
+        sessionData.creative = getRandomCreative(sessionData.campaign, 'videoAd')
 
-        render(contentType: "application/xml", vastClosure)
+        if (sessionData.save(flush: true))
+        {
+            def vastClosure = makeVastClosure(sessionData)
+            render(contentType: "application/xml", vastClosure)
+        }
+        else
+        {
+            render sessionData.errors
+        }
+
     }
 
     /*
      *   URL: /api/impression?sessionKey=${user.apiKey}&id=${creative.id}
      *   增加指定creative裡面的impression值
      */
+
     def impression()
     {
-        if (session["user"] == params.sessionKey && !session["impression"])
-        {
-            session["impression"] = true
-            def creative = Creative.get(params.id)
+        //TODO: needs further improvement of the database accessing performance.
+        SessionData sessionData = SessionData.findByAccessKey(params.data)
+        if (sessionData && !sessionData.impression) {
+            sessionData.impression = true
+            def creative = sessionData.creative
 
             //add impression info
             withClientInfo { info ->
@@ -70,38 +86,47 @@ class ApiController
                 creative.addToImpressions(impressions)
                 creative.save(failOnError: true)
             }
+
+            render 'success'
         }
+
+        render 'session not found'
     }
 
     /*
      *   URL: /api/impression?click=${user.apiKey}&id=${creative.id}
      *   增加指定creative裡面的click值
      */
-    def click()
-    {
-        if (session["user"] == params.sessionKey && session["impression"])
-        {
-            def creative = Creative.get(params.id)
 
-            //add click info
-            withClientInfo { info ->
-                def clicks = new Click(info)
-                creative.addToClicks(clicks)
-                creative.save(failOnError: true)
+    def click() {
+        SessionData sessionData = SessionData.findByAccessKey(params.data)
+        if (sessionData) {
+            if (sessionData.impression == true)
+            {
+                def creative = sessionData.creative
+
+                //add click info
+                withClientInfo { info ->
+                    def clicks = new Click(info)
+                    creative.addToClicks(clicks)
+                    creative.save(failOnError: true)
+                }
             }
+            sessionData.delete()
+
+            render 'success'
         }
-        session["user"] = null
-        session["impression"] = false
+
+        render 'session not found'
     }
 
     /*
      *  URL: /api/campaign (using POST)
      *  用以新增, 修改, 刪除廣告活動的API.
      */
-    def campaigns()
-    {
-        try
-        {
+
+    def campaigns() {
+        try {
             def slurper = new JsonSlurper()
             def result = slurper.parseText(request.inputStream.text)
 
@@ -115,8 +140,7 @@ class ApiController
             User user = User.findByEmail('test.user@gmail.com')
             println user
             user.addToCampaigns(campaign)
-            if(!user.save(flush: true))
-            {
+            if (!user.save(flush: true)) {
                 user.errors.each {
                     println it
                 }
@@ -127,15 +151,11 @@ class ApiController
             storagePath = servletContext.getRealPath('assets')
 
             def storageDir = new File(storagePath)
-            if(!storageDir.exists())
-            {
+            if (!storageDir.exists()) {
                 print "Creating directory ${storagePath}: "
-                if(storageDir.mkdirs())
-                {
+                if (storageDir.mkdirs()) {
                     println "SUCCESS"
-                }
-                else
-                {
+                } else {
                     println "FAILED"
                 }
             }
@@ -144,24 +164,65 @@ class ApiController
             def file = new File(storageDir, "${campaign.id}.png")
             file.setBytes(result.adImage.decodeBase64())
 
-            Creative creative = new Creative()
+            VideoAdCreative creative = new VideoAdCreative()
             creative.name = "creative_${result.campaignName}"
             creative.link = result.adLink
             creative.displayText = result.displayText
             creative.imageUrl = file.absolutePath
+            creative.price = 10.0
 
             campaign.addToCreatives(creative)
+            if (!campaign.validate() && !creative.validate()) {
+                def errorList = []
+                campaign.errors.allErrors.each {
+                    errorList.add(it)
+                }
+                creative.errors.allErrors.each {
+                    errorList.add(it)
+                }
+
+                render(contentType: "text/json") {
+                    [error: errorList]
+                }
+            }
             campaign.save()
 
             def map = [:]
             map.adId = campaign.id
             render map as JSON
         }
-        catch(any)
-        {
-            log.error(any.toString(), any)
-            render any as JSON
+        catch (any) {
+            //log.error(any.toString(), any)
+            //render any as JSON
+            render "an error happened!!"
         }
+    }
+
+    /*
+     *  (not an action method)
+     *   抓取所有campain
+     */
+
+    def getCampaignNames() {
+        List result = []
+        def campaigns = Campaign.getAll()
+        campaigns.each { campaign ->
+            result.add(campaign.name)
+        }
+
+        render(contentType: "text/json") {
+            [name: result]
+        }
+    }
+
+    /*
+         *   (not an action method)
+         *   抓取client端數值：IP、時間、裝置ID
+         */
+
+    private void withClientInfo(Closure c) {
+        def returnValue = [ipAddress: request.getRemoteAddr(), createdDatetime: new Date(), deviceId: params.data]
+        c.call returnValue
     }
 
     /*
@@ -169,20 +230,17 @@ class ApiController
      *   取得要投放的廣告活動, 目前只有兩個方式:1)亂數挑選, 2)給予預設廣告活動.
      *
      */
-    def getCampaign(String apiKey)
-    {
+
+    private getCampaign() {
         def query = Campaign.where {
-            user.apikey == apiKey && creatives.size() > 0
+            creatives.size() > 0
         }
         def campaigns = query.list()
 
-        if(campaigns?.size())
-        {
+        if (campaigns?.size()) {
             def randomIndex = new Random().nextInt(campaigns.size())
             return campaigns.get(randomIndex)
-        }
-        else
-        {
+        } else {
             return getDefaultCampaign()
         }
     }
@@ -191,8 +249,8 @@ class ApiController
      *   (not an action method)
      *   給予預設廣告活動內容.
      */
-    def getDefaultCampaign()
-    {
+
+    private getDefaultCampaign() {
         def campaign = new Campaign(name: 'Adiii Advertising Platform',
                 startDatetime: new Date(),
                 hasEndDatetime: false,
@@ -212,22 +270,25 @@ class ApiController
      *   (not an action method)
      *   Error code與error message的對映.
      */
-    def getErrorMap(Integer errorCode)
-    {
+
+    private getErrorMap(Integer errorCode) {
         def map = [:]
-        switch(errorCode)
-        {
+        switch (errorCode) {
             case 104:
-                map.message= "Bad authentication data."
-                map.type= "AuthException"
+                map.message = "Bad authentication data."
+                map.type = "AuthException"
                 break
             case 105:
-                map.message= "Too many authentication data."
-                map.type= "AuthException"
+                map.message = "Too many authentication data."
+                map.type = "AuthException"
+                break
+            case 106:
+                map.message = "Api Key not found."
+                map.type = "AuthException"
                 break
         }
 
-        map.code= errorCode
+        map.code = errorCode
         return ['error': map]
     }
 
@@ -235,56 +296,53 @@ class ApiController
      *   (not an action method)
      *   根據廣告活動產生VAST格式內容closure.
      */
-    def makeVastClosure(Campaign campaign)
-    {
-        def adId = "adiii_${campaign.id}"
+
+    private makeVastClosure(SessionData sessionData) {
+        def adId = "adiii_${sessionData.campaign.id}"
 
         def host = "${request.scheme}://${request.serverName}:${request.serverPort}${request.contextPath}"
-        def impressionUrl = "${host}/imp?data=${campaign.id}%2Fotherdatafields?${host}/dot.gif"
-        def clickUrl = "${host}/imp;v7;x;223626133;0-0;0;47414737;0/0;31349900/31367776/1;;~aopt=0/0/ff/0;~cs=l%3fhttp://s0.2mdn.net/dot.gif"
+        def impressionUrl = "${host}/api/impression?data=${sessionData.accessKey}"
+        def clickUrl = "${host}/red?data=${sessionData.accessKey}"
 
         def vastClosure = {
             mkp.xmlDeclaration()
-            VAST(version:"3.0", 'xmlns:xsi': "http://www.w3.org/2001/XMLSchema-instance", 'xsi:noNamespaceSchemaLocation': "vast.xsd") {
-                Ad(id: adId){
-                    InLine(){
+            VAST(version: "3.0", 'xmlns:xsi': "http://www.w3.org/2001/XMLSchema-instance", 'xsi:noNamespaceSchemaLocation': "vast.xsd") {
+                Ad(id: adId) {
+                    InLine() {
                         AdSystem(version: "1.0")
-                        AdTitle("${campaign.name}")
+                        AdTitle("${sessionData.campaign.name}")
                         Description()
                         Advertiser()
                         Error()
-                        Impression(id: "adiii_${campaign.id}",
-                                   impressionUrl)
-                        Creatives(){
+                        Impression(id: "adiii_${sessionData.campaign.id}",
+                                impressionUrl)
+                        Creatives() {
                             Creative(id: "adiii_cr_0",
                                     sequence: "1",
-                                    adId: adId){
-                                Linear(){
+                                    adId: adId) {
+                                Linear() {
                                     Duration("00:00:52")
-                                    MediaFiles(){
+                                    MediaFiles() {
                                         MediaFile(id: "1", delivery: "streaming", type: "video/mp4", width: "854", height: "480",
                                                 "rtmp://rmcdn.f.2mdn.net/ondemand/MotifFiles/html/1379578/parisian_love_126566284014011.flv")
                                     }
                                 }
                             }
-                            for(creative in campaign.creatives)
-                            {
-                                Creative(id: "adiii_cr_${creative.id}",
-                                        sequence: "1",
-                                        adId: adId){
-                                    CompanionAds(){
-                                        Companion(id: "1", width: "550", height: "480"){
-                                            StaticResource(creativeType: "image/png",
-                                                           "${host}/assets/${creative.id}.png")
-                                            CompanionClickThrough(creative.link)
-                                            AltText()
-                                            AdParameters()
-                                        }
+                            Creative(id: "adiii_cr_${sessionData.creative.id}",
+                                    sequence: "1",
+                                    adId: adId) {
+                                CompanionAds() {
+                                    Companion(id: "1", width: "550", height: "480") {
+                                        StaticResource(creativeType: "image/png",
+                                                "${host}/assets/${sessionData.creative.id}.png")
+                                        CompanionClickThrough(sessionData.creative.link)
+                                        AltText()
+                                        AdParameters()
                                     }
                                 }
                             }
                         }
-                        Extensions(){}
+                        Extensions() {}
                     }
                 }
             }
@@ -293,35 +351,37 @@ class ApiController
         return vastClosure
     }
 
-    def getCampaignNames()
-    {
-        List result = []
-        def campaigns = Campaign.getAll()
-        campaigns.each { campaign->
-            result.add(campaign.name)
-        }
-
-        render(contentType: "text/json") {
-            [name: result]
-        }
-    }
-
-    /*
-     *   (not an action method)
-     *   抓取client端數值：IP、時間、裝置ID
-     */
-    private void withClientInfo(Closure c) {
-        def returnValue = [ipAddress: request.getRemoteAddr(), createdDatetime: new Date(), deviceId: params.data]
-        c.call returnValue
-    }
-
     /*
      *   (not an action method)
      *   產生一串亂數的字碼
      */
-    def keyGenerator = { String alphabet, int n ->
+    private keyGenerator = { String alphabet, int n ->
         new Random().with {
-            (1..n).collect { alphabet[ nextInt( alphabet.length() ) ] }.join()
+            (1..n).collect { alphabet[nextInt(alphabet.length())] }.join()
+        }
+    }
+
+    private getRandomCreative(Campaign campaign, type) {
+        def result = []
+        if (type == 'videoAd') {
+            campaign.creatives.each { creative ->
+                if (creative instanceof adiii.VideoAdCreative) {
+                    result.add(creative)
+                }
+            }
+        } else if (type == 'mobileAd') {
+            campaign.creatives.each { creative ->
+                if (creative instanceof adiii.MobileAdCreative) {
+                    result.add(creative)
+                }
+            }
+        }
+
+        if (result?.size()) {
+            def randomIndex = new Random().nextInt(result.size())
+            return result.get(randomIndex)
+        } else {
+            return new Creative()
         }
     }
 }

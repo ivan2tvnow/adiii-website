@@ -121,7 +121,7 @@
                                     (無廣告內容)
                                 </g:if>
                                 <g:else>
-                                    <a class="btn btn-mini btn-danger pull-right" href="${createLink(controller: "api", action: "search", params: [apiKey: "testuserapikey", adId: campaign.id])}">VAST</a>
+                                    <a class="btn btn-mini btn-danger pull-right" href="${createLink(controller: "api", action: "search", params: [apiKey: "FWFTKK0CI", adId: campaign.id])}">VAST</a>
                                 </g:else>
                             </td>
                             <td>${campaign.id}</td>

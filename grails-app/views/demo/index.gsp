@@ -66,7 +66,7 @@
             <h2>廣告呈現測試</h2>
             <form class="form-inline" onsubmit="return false;">
                 <label>使用者金鑰：</label>
-                <input type="text" id="api_key_text" class="input-small span4" value="testuserapikey">
+                <input type="text" id="api_key_text" class="input-small span4" value="FWFTKK0CI">
                 <button type="submit" id="submit_button" class="btn btn-info">取得廣告內容</button>
             </form>
         </div>
@@ -121,7 +121,7 @@
         });
         request.done(function(response) {
             $("#vast_textarea").html(response);
-            var xmlDoc = $.parseXML(response)
+            var xmlDoc = $.parseXML(response);
             var $xml = $(xmlDoc);
             var imgUrl = $xml.find("StaticResource").text();
             var adLink = $xml.find("CompanionClickThrough").text();
@@ -129,6 +129,13 @@
             $("#ad_image").remove();
             $("#ad_img_container").append('<a href="'+adLink+'"><img id="ad_image" src="'+imgUrl+'" width="400" class="text-center img-polaroid"></a>');
 
+            $.ajax({
+                url: $xml.find("Impression").text(),
+                type: "GET",
+                dataType: "text",
+                complete: function(){
+                }
+            });
         });
         request.fail(function(jqXHR, textStatus) {
             alert( "Request failed: " + textStatus );
