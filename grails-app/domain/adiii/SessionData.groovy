@@ -18,8 +18,8 @@ class SessionData {
         expireTime nullable: false
         impression blank: false
         click blank: false
-        campaign nullable: false
-        creative nullable: false
+        campaign nullable: true
+        creative nullable: true
     }
 
     static mapping = {

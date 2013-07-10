@@ -102,7 +102,7 @@ class ApiController {
     def click() {
         SessionData sessionData = SessionData.findByAccessKey(params.data)
         if (sessionData) {
-            if (sessionData.impression == true)
+            if (sessionData.impression && !sessionData.click)
             {
                 def creative = sessionData.creative
 
@@ -113,12 +113,16 @@ class ApiController {
                     creative.save(failOnError: true)
                 }
             }
+            sessionData.campaign = null
+            sessionData.creative = null
             sessionData.delete()
 
             render 'success'
         }
-
-        render 'session not found'
+        else
+        {
+            render 'session not found'
+        }
     }
 
     /*

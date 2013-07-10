@@ -128,7 +128,7 @@
             var adClick = $xml.find("ClickTracking").text();
 
             $("#ad_image").remove();
-            $("#ad_img_container").append('<a href="'+adLink+'" onclick="secfunct('+adClick+')">' +
+            $("#ad_img_container").append('<a href="'+adLink+'" onclick="secfunct(\''+adClick+'\')">' +
                     '<img id="ad_image" src="'+imgUrl+'" width="400" class="text-center img-polaroid"></a>');
 
             $.ajax({
@@ -150,7 +150,7 @@
             type: "GET",  // TODO: this should be 'POST'
             dataType: "text",
             complete: function(){
-                $("#request_url_text").val(this.url);
+                alert('success');
             }
         });
         request.fail(function(jqXHR, textStatus) {
