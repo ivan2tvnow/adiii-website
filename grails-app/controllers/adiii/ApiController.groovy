@@ -65,6 +65,7 @@ class ApiController {
             render sessionData.errors
         }
 
+        return
     }
 
     /*
@@ -302,7 +303,7 @@ class ApiController {
 
         def host = "${request.scheme}://${request.serverName}:${request.serverPort}${request.contextPath}"
         def impressionUrl = "${host}/api/impression?data=${sessionData.accessKey}"
-        def clickUrl = "${host}/red?data=${sessionData.accessKey}"
+        def clickUrl = "${host}/api/click?data=${sessionData.accessKey}"
 
         def vastClosure = {
             mkp.xmlDeclaration()
@@ -325,6 +326,9 @@ class ApiController {
                                     MediaFiles() {
                                         MediaFile(id: "1", delivery: "streaming", type: "video/mp4", width: "854", height: "480",
                                                 "rtmp://rmcdn.f.2mdn.net/ondemand/MotifFiles/html/1379578/parisian_love_126566284014011.flv")
+                                    }
+                                    VideoClicks() {
+                                        ClickTracking(clickUrl)
                                     }
                                 }
                             }

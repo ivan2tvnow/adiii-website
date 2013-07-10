@@ -9,8 +9,8 @@ class SessionData {
     Date expireTime = new Date()
     boolean impression = false
     boolean click = false
-    Campaign campaign
-    Creative creative
+
+    static belongsTo = [campaign: Campaign, creative: Creative]
 
     static constraints = {
         accessKey unique: true, blank: false

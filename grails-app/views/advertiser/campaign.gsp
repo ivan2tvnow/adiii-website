@@ -89,6 +89,7 @@
                 <tr>
                     <th><input type="checkbox"></th>
                     <th>內容名稱</th>
+                    <th>廣告ID</th>
                     <th>廣告類型</th>
                     <th>狀態</th>
                     <th>出價</th>
@@ -124,12 +125,22 @@
                                 </g:elseif>
                             </td>
                             <td>${creative.id}</td>
-                            <td>影像</td>
+                            <g:if test="${creative instanceof adiii.VideoAdCreative}">
+                                <td>影像</td>
+                            </g:if>
+                            <g:elseif test="${creative instanceof adiii.MobileAdCreative}">
+                                <td>行動</td>
+                            </g:elseif>
                             <td><strong class="text-warning">草稿</strong></td>
                             <td>0 點</td>
-                            <td>0</td>
-                            <td>0</td>
-                            <td>0‰</td>
+                            <td>${creative.impressions.size()}</td>
+                            <td>${creative.clicks.size()}</td>
+                            <g:if test="${creative.impressions.size() > 0}">
+                                <td>${creative.clicks.size() / creative.impressions.size() * 1000}‰</td>
+                            </g:if>
+                            <g:else>
+                                <td>0‰</td>
+                            </g:else>
                         </tr>
                     </g:each>
                 </g:else>

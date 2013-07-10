@@ -21,6 +21,17 @@ class AdvertiserController
         modelMap.campaignCount = advertiser.campaigns.size()
         modelMap.campaigns = advertiser.campaigns.toList()
 
+        modelMap.statistics = [:]
+        for (campaign in modelMap.campaigns) {
+            int total_impression = 0
+            int total_click = 0
+            for (creative in campaign.creatives) {
+                total_impression += creative.impressions.size()
+                total_click += creative.clicks.size()
+            }
+            modelMap.statistics.put(campaign.id, [impression: total_impression, click: total_click])
+        }
+
         render(view: "index", model: modelMap)
     }
 

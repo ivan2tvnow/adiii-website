@@ -91,7 +91,6 @@
                     <th><input type="checkbox"></th>
                     <th>活動名稱</th>
                     <th>活動ID</th>
-                    <th>廣告類型</th>
                     <th>狀態</th>
                     <th>每日預算</th>
                     <th>投放次數</th>
@@ -125,12 +124,16 @@
                                 </g:else>
                             </td>
                             <td>${campaign.id}</td>
-                            <td>影像</td>
                             <td><strong class="text-warning">草稿</strong></td>
                             <td>${campaign.dailyBudget} 點</td>
-                            <td>0</td>
-                            <td>0</td>
-                            <td>0‰</td>
+                            <td>${statistics[campaign.id].impression}</td>
+                            <td>${statistics[campaign.id].click}</td>
+                            <g:if test="${statistics[campaign.id].impression > 0}">
+                                <td>${statistics[campaign.id].click / statistics[campaign.id].impression * 1000}‰</td>
+                            </g:if>
+                            <g:else>
+                                <td>0‰</td>
+                            </g:else>
                         </tr>
                     </g:each>
                 </g:else>

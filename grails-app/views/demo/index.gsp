@@ -125,9 +125,11 @@
             var $xml = $(xmlDoc);
             var imgUrl = $xml.find("StaticResource").text();
             var adLink = $xml.find("CompanionClickThrough").text();
+            var adClick = $xml.find("ClickTracking").text();
 
             $("#ad_image").remove();
-            $("#ad_img_container").append('<a href="'+adLink+'"><img id="ad_image" src="'+imgUrl+'" width="400" class="text-center img-polaroid"></a>');
+            $("#ad_img_container").append('<a href="'+adLink+'" onclick="secfunct('+adClick+')">' +
+                    '<img id="ad_image" src="'+imgUrl+'" width="400" class="text-center img-polaroid"></a>');
 
             $.ajax({
                 url: $xml.find("Impression").text(),
@@ -136,6 +138,20 @@
                 complete: function(){
                 }
             });
+        });
+        request.fail(function(jqXHR, textStatus) {
+            alert( "Request failed: " + textStatus );
+        });
+    }
+
+    function secfunct(url) {
+        var request = $.ajax({
+            url: url,
+            type: "GET",  // TODO: this should be 'POST'
+            dataType: "text",
+            complete: function(){
+                $("#request_url_text").val(this.url);
+            }
         });
         request.fail(function(jqXHR, textStatus) {
             alert( "Request failed: " + textStatus );
