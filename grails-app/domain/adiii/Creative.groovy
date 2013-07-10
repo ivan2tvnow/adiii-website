@@ -1,5 +1,7 @@
 package adiii
 
+import org.codehaus.groovy.grails.web.context.ServletContextHolder
+
 class Creative
 {
     String name
@@ -31,9 +33,10 @@ class Creative
         imageUrl(blank:false)
     }
 
-    def afterDelete () {
-        def fileToDelete = new File(imageUrl)
+    def afterDelete()
+    {
         try {
+            def fileToDelete = new File(imageUrl)
             fileToDelete.delete()
         } catch (Exception e) {
             println e

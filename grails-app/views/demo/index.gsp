@@ -66,7 +66,7 @@
             <h2>廣告呈現測試</h2>
             <form class="form-inline" onsubmit="return false;">
                 <label>使用者金鑰：</label>
-                <input type="text" id="api_key_text" class="input-small span4" value="FWFTKK0CI">
+                <input type="text" id="api_key_text" class="input-small span4" value="JRO0DN8T8">
                 <button type="submit" id="submit_button" class="btn btn-info">取得廣告內容</button>
             </form>
         </div>
@@ -129,7 +129,7 @@
 
             $("#ad_image").remove();
             $("#ad_img_container").append('<a href="'+adLink+'" onclick="secfunct(\''+adClick+'\')">' +
-                    '<img id="ad_image" src="'+imgUrl+'" width="400" class="text-center img-polaroid"></a>');
+                  '<img id="ad_image" src="'+imgUrl+'" width="400" class="text-center img-polaroid" onerror="this.src=\'../assets/default.png\'"></a>');
 
             $.ajax({
                 url: $xml.find("Impression").text(),
