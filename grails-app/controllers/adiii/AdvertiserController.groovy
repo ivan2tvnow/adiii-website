@@ -6,6 +6,8 @@ class AdvertiserController
 {
     static allowedMethods = [index: ['GET', 'POST']]
     def springSecurityService
+    def NUM_PER_PAGE = 10
+    def SHOW_PAGE_LENGTH = 5
 
     /*
      *  URL: /advertiser/index
@@ -14,18 +16,32 @@ class AdvertiserController
     @Secured(['ROLE_ADVERTISER'])
     def index()
     {
-        Map modelMap = [:]
-
         User advertiser = springSecurityService.getCurrentUser()
+        int currentPage = 1
+        int offset = 1
+        if (params.page)
+        {
+            currentPage = params.page.toInteger()
+            offset = (currentPage - 1) * NUM_PER_PAGE
+        }
 
-        modelMap.campaignCount = advertiser.campaigns.size()
-        modelMap.campaigns = Campaign.list(max: 50, offset: 0, sort: "id", order: "desc", fetch: [user: advertiser])
+        int campaignCount = advertiser.campaigns.size()
+        int totalPage = Math.ceil(campaignCount / NUM_PER_PAGE)
+
+        Map modelMap = [:]
+        modelMap.currentPage = currentPage
+        modelMap.totalPage = totalPage
+        modelMap.campaignCount = campaignCount
+        modelMap.campaigns = Campaign.list(max: NUM_PER_PAGE, offset: offset, sort: "id", order: "desc", fetch: [user: advertiser])
+        modelMap.pageList = getPageList(currentPage, totalPage)
 
         modelMap.statistics = [:]
-        for (campaign in modelMap.campaigns) {
+        for (campaign in modelMap.campaigns)
+        {
             int total_impression = 0
             int total_click = 0
-            for (creative in campaign.creatives) {
+            for (creative in campaign.creatives)
+            {
                 total_impression += creative.impressions.size()
                 total_click += creative.clicks.size()
             }
@@ -141,7 +157,7 @@ class AdvertiserController
      *  注意URL的第三個segment為目前要為其建立內容的campaign ID
      */
     @Secured(['ROLE_ADVERTISER'])
-    def addmobadcampaign(){
+    def addmobadcampaign() {
         render(view: "addmobadcampaign")
     }
 
@@ -150,7 +166,7 @@ class AdvertiserController
      *  顯示廣告投放狀況的頁面
      */
     @Secured(['ROLE_ADVERTISER'])
-    def reports(){
+    def reports() {
         render(view: "reports")
     }
 
@@ -159,7 +175,28 @@ class AdvertiserController
      *  顯示廣告主帳戶狀況的頁面, 此頁面用以顯示與操作與金錢額度相關的資訊與操作.
      */
     @Secured(['ROLE_ADVERTISER'])
-    def account(){
+    def account() {
         render(view: "account")
+    }
+
+    private getPageList(current, total) {
+        def range = (SHOW_PAGE_LENGTH - 1) / 2
+
+        if (total < SHOW_PAGE_LENGTH)
+        {
+            return (1..total).toList()
+        }
+        else if (current <= (range + 1))
+        {
+            return (1..SHOW_PAGE_LENGTH).toList()
+        }
+        else if (current >= (total - range))
+        {
+            return ((total - SHOW_PAGE_LENGTH)..total).toList()
+        }
+        else
+        {
+            return ((current - range)..(current + range)).toList()
+        }
     }
 }

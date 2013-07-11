@@ -7,29 +7,32 @@
   <link rel="stylesheet" type="text/css" href="${resource(dir: "css", file: "bootstrap.css")}" />
   <link rel="stylesheet" type="text/css" href="${resource(dir: "css", file: "daterangepicker.css")}" />
   <style type="text/css">
-  header h1{
-      font-family: 'Lily Script One', cursive;
-      text-decoration: none;
-      line-height: 70px;
-  }
-  .row{
-      margin-top: 5px;
-      margin-bottom: 5px;
-  }
-  .table{
-      margin-top: 8px;
-      margin-bottom: 8px;
-  }
-  .table th {
-      text-align: center;
-  }
-  .table td {
-      text-align: center;
-  }
-  .nav-tab{
-      font-size: 18px;
-      padding: 4px;
-  }
+      header h1{
+          font-family: 'Lily Script One', cursive;
+          text-decoration: none;
+          line-height: 70px;
+      }
+      .row{
+          margin-top: 5px;
+          margin-bottom: 5px;
+      }
+      .table{
+          margin-top: 8px;
+          margin-bottom: 8px;
+      }
+      .table th {
+          text-align: center;
+      }
+      .table td {
+          text-align: center;
+      }
+      .nav-tab{
+          font-size: 18px;
+          padding: 4px;
+      }
+      .current_page{
+          font-size: 18px;
+      }
   </style>
 </head>
 <body>
@@ -139,6 +142,24 @@
                 </g:else>
                 </tbody>
             </table>
+            <div class="pagination pagination-right">
+                <ul>
+                    <g:if test="${currentPage > 1}">
+                        <li><g:link controller="advertiser" action="index" params="[page: (currentPage - 1)]">上一頁</g:link></li>
+                    </g:if>
+                    <g:each in="${pageList}" var="page">
+                        <g:if test="${page == currentPage}">
+                            <li class="current_page"><g:link controller="advertiser" action="index" params="[page: page]">${page}</g:link></li>
+                        </g:if>
+                        <g:else>
+                            <li><g:link controller="advertiser" action="index" params="[page: page]">${page}</g:link></li>
+                        </g:else>
+                    </g:each>
+                    <g:if test="${currentPage < totalPage}">
+                        <li><g:link controller="advertiser" action="index" params="[page: (currentPage + 1)]">下一頁</g:link></li>
+                    </g:if>
+                </ul>
+            </div>
         </div>
     </div>
     </g:form>
