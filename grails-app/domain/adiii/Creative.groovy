@@ -33,6 +33,10 @@ class Creative
         imageUrl(blank:false)
     }
 
+    static mapping = {
+        sort "id"
+    }
+
     def afterDelete()
     {
         try {

@@ -23,6 +23,10 @@ class Campaign {
         }
     }
 
+    static mapping = {
+        creatives sort: "id", order: "desc"
+    }
+
     enum Currency{
         NTD, USD
     }

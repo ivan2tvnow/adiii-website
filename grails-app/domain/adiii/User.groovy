@@ -27,6 +27,7 @@ class User {
 
 	static mapping = {
 		password column: '`password`'
+        campaigns sort: "id", order: "desc"
 	}
 
 	Set<Role> getAuthorities() {
