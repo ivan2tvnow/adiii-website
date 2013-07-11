@@ -166,8 +166,34 @@ class AdvertiserController
      *  顯示廣告投放狀況的頁面
      */
     @Secured(['ROLE_ADVERTISER'])
-    def reports() {
-        render(view: "reports")
+    def reports()
+    {
+        Map modelMap = [:]
+        Date today = new Date()
+        def lastDay = today - 14
+        modelMap.dateList = []
+        modelMap.impressionList = []
+        modelMap.clickList = []
+
+        (lastDay..today).each { d->
+            modelMap.dateList.add("\'${d.format("yyyy/MM/dd")}\'")
+
+            def dailyStates = DailyStat.getAll()
+            int impression = 0
+            int click = 0
+
+            for (dailyState in dailyStates) {
+                if (dailyState.statDate.format("yyyy/MM/dd") == d.format("yyyy/MM/dd")) {
+                    impression += dailyState.impression
+                    click += dailyState.click
+                }
+            }
+
+            modelMap.impressionList.add(impression)
+            modelMap.clickList.add(click)
+        }
+
+        render(view: "reports", model: modelMap)
     }
 
     /*
@@ -179,7 +205,8 @@ class AdvertiserController
         render(view: "account")
     }
 
-    private getPageList(current, total) {
+    private getPageList(current, total)
+    {
         def range = (SHOW_PAGE_LENGTH - 1) / 2
 
         if (total < SHOW_PAGE_LENGTH)

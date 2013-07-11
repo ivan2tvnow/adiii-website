@@ -31,19 +31,22 @@ class ApiController {
 
     def getAd() {
         def apiKey = params.apiKey
-        if (!apiKey) {
+        if (!apiKey)
+        {
             def errorMap = getErrorMap(104)
             render errorMap as JSON
             return
         }
 
-        if (params.apiKey instanceof String[]) {
+        if (params.apiKey instanceof String[])
+        {
             def errorMap = getErrorMap(105)
             render errorMap as JSON
             return
         }
 
-        if (!User.findByApikey(apiKey)) {
+        if (!User.findByApikey(apiKey))
+        {
             def errorMap = getErrorMap(106)
             render errorMap as JSON
             return
@@ -88,6 +91,13 @@ class ApiController {
                 creative.save(failOnError: true)
             }
 
+            def dailyState = DailyStat.find {
+                campaign == sessionData.campaign && statDate.format("yyyy/MM/dd") == new Date().format("yyyy/MM/dd")
+            } ?: new DailyStat(campaign: sessionData.campaign)
+
+            dailyState.impression ++
+            dailyState.save()
+
             render 'success'
         }
 
@@ -112,6 +122,13 @@ class ApiController {
                     creative.addToClicks(clicks)
                     creative.save(failOnError: true)
                 }
+
+                def dailyState = DailyStat.find {
+                    campaign == sessionData.campaign && statDate.format("yyyy/MM/dd") == new Date().format("yyyy/MM/dd")
+                } ?: new DailyStat(campaign: sessionData.campaign)
+
+                dailyState.click ++
+                dailyState.save()
             }
             sessionData.campaign = null
             sessionData.creative = null
