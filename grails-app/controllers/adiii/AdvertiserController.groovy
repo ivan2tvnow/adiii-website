@@ -19,7 +19,7 @@ class AdvertiserController
         User advertiser = springSecurityService.getCurrentUser()
 
         modelMap.campaignCount = advertiser.campaigns.size()
-        modelMap.campaigns = advertiser.campaigns.toList()
+        modelMap.campaigns = Campaign.list(max: 50, offset: 0, sort: "id", order: "desc", fetch: [user: advertiser])
 
         modelMap.statistics = [:]
         for (campaign in modelMap.campaigns) {
