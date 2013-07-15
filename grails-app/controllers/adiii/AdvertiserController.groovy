@@ -183,7 +183,7 @@ class AdvertiserController
             int click = 0
 
             for (dailyState in dailyStates) {
-                if (dailyState.statDate.format("yyyy/MM/dd") == d.format("yyyy/MM/dd")) {
+                if (dailyState.statDate == d.format("yyyy/MM/dd")) {
                     impression += dailyState.impression
                     click += dailyState.click
                 }

@@ -3,6 +3,7 @@ package adiii
 import grails.converters.JSON
 import groovy.json.JsonSlurper
 import org.codehaus.groovy.grails.web.context.ServletContextHolder
+import org.springframework.dao.OptimisticLockingFailureException
 
 class ApiController {
     /*
@@ -81,24 +82,44 @@ class ApiController {
         //TODO: needs further improvement of the database accessing performance.
         SessionData sessionData = SessionData.findByAccessKey(params.data)
         if (sessionData && !sessionData.impression) {
+            sessionData.lock()
             sessionData.impression = true
-            def creative = sessionData.creative
+
+            def creative = Creative.lock(sessionData.creative.id)
 
             //add impression info
             withClientInfo { info ->
                 def impressions = new Impression(info)
                 creative.addToImpressions(impressions)
-                creative.save(failOnError: true)
+
+                //TODO: deal with sync problem
+                try {
+                    creative.save(flush: true)
+                } catch (OptimisticLockingFailureException e) {
+                    println creative.errors
+                }
+
+            }
+
+            //TODO: deal with sync problem
+            try {
+                sessionData.save(flush: true)
+            } catch (OptimisticLockingFailureException e) {
+                println sessionData.errors
             }
 
             def dailyState = DailyStat.find {
-                campaign == sessionData.campaign && statDate.format("yyyy/MM/dd") == new Date().format("yyyy/MM/dd")
+                campaign == sessionData.campaign && statDate == new Date().format("yyyy/MM/dd")
             } ?: new DailyStat(campaign: sessionData.campaign)
 
-            dailyState.impression ++
-            dailyState.save()
+            assert dailyState.campaign == sessionData.campaign
+            assert dailyState.statDate == new Date().format("yyyy/MM/dd")
 
-            render 'success'
+            dailyState.impression ++
+            //TODO: deal with sync problem
+            dailyState.save(flush: true)
+
+            render dailyState.impression
         }
 
         render 'session not found'
@@ -112,19 +133,22 @@ class ApiController {
     def click() {
         SessionData sessionData = SessionData.findByAccessKey(params.data)
         if (sessionData) {
+            sessionData.lock()
             if (sessionData.impression && !sessionData.click)
             {
-                def creative = sessionData.creative
+                def creative = Creative.lock(sessionData.creative.id)
 
                 //add click info
                 withClientInfo { info ->
                     def clicks = new Click(info)
                     creative.addToClicks(clicks)
-                    creative.save(failOnError: true)
+
+                    //TODO: deal with sync problem
+                    creative.save(flush: true)
                 }
 
                 def dailyState = DailyStat.find {
-                    campaign == sessionData.campaign && statDate.format("yyyy/MM/dd") == new Date().format("yyyy/MM/dd")
+                    campaign == sessionData.campaign && statDate == new Date().format("yyyy/MM/dd")
                 } ?: new DailyStat(campaign: sessionData.campaign)
 
                 dailyState.click ++
@@ -321,6 +345,7 @@ class ApiController {
 
     private makeVastClosure(SessionData sessionData) {
         def adId = "adiii_${sessionData.campaign.id}"
+        def creative = Creative.get(sessionData.creative.id)
 
         def host = "${request.scheme}://${request.serverName}:${request.serverPort}${request.contextPath}"
         def impressionUrl = "${host}/api/impression?data=${sessionData.accessKey}"
@@ -353,14 +378,14 @@ class ApiController {
                                     }
                                 }
                             }
-                            Creative(id: "adiii_cr_${sessionData.creative.id}",
+                            Creative(id: "adiii_cr_${creative.id}",
                                     sequence: "1",
                                     adId: adId) {
                                 CompanionAds() {
                                     Companion(id: "1", width: "550", height: "480") {
                                         StaticResource(creativeType: "image/png",
-                                                "${host}/assets/${sessionData.creative.id}.png")
-                                        CompanionClickThrough(sessionData.creative.link)
+                                                "${host}/assets/${creative.id}.png")
+                                        CompanionClickThrough(creative.link)
                                         AltText()
                                         AdParameters()
                                     }
@@ -409,4 +434,5 @@ class ApiController {
             return new Creative()
         }
     }
+
 }
