@@ -6,7 +6,7 @@ class Click
     String ipAddress
     Date createdDatetime = new Date()
 
-    static belongsTo = Creative
+    static belongsTo = [creative: Creative]
 
     static constraints = {
         ipAddress(blank: false)

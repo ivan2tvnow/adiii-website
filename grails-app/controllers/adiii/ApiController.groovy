@@ -80,20 +80,6 @@ class ApiController {
             //TODO: deal with sync problem
             sessionData.save(flush: true)
 
-            //add dailyStat
-            def dailyState = DailyStat.find {
-                campaign == sessionData.campaign && statDate == new Date().format("yyyy/MM/dd")
-            } ?: new DailyStat(campaign: sessionData.campaign)
-
-            dailyState.lock()
-            dailyState.impression++
-            //TODO: deal with sync problem
-            try {
-                dailyState.save(flush: true)
-            } catch (OptimisticLockingFailureException e) {
-                println "exception"
-            }
-
             //add impression info
             withClientInfo { info ->
                 def impressions = new Impression(info)
@@ -108,7 +94,6 @@ class ApiController {
                 } catch (OptimisticLockingFailureException e) {
                     println "exception"
                 }
-
             }
 
             render 'success'
@@ -128,20 +113,6 @@ class ApiController {
         if (sessionData) {
             sessionData.lock()
             if (sessionData.impression && !sessionData.click) {
-                //add dailyStat
-                def dailyState = DailyStat.find {
-                    campaign == sessionData.campaign && statDate == new Date().format("yyyy/MM/dd")
-                } ?: new DailyStat(campaign: sessionData.campaign)
-
-                dailyState.lock()
-                dailyState.click++
-                //TODO: deal with sync problem
-                try {
-                    dailyState.save(flush: true)
-                } catch (OptimisticLockingFailureException e) {
-                    println "exception"
-                }
-
                 //add click info
                 withClientInfo { info ->
                     def clicks = new Click(info)

@@ -4,7 +4,7 @@ package adiii
 
 class CleanSessionJob {
     static triggers = {
-        simple startDelay: 60000, repeatInterval: 600000 // execute job once in 60 seconds
+        simple startDelay: 60000, repeatInterval: 600000 // execute job once in 600 seconds
     }
 
     def execute() {
