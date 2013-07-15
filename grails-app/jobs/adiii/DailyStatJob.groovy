@@ -68,6 +68,6 @@ class DailyStatJob {
             }
         }
 
-        println "State updated!"
+        //println "State updated!"
     }
 }

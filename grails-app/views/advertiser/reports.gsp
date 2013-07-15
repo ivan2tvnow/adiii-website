@@ -67,7 +67,24 @@
 <script src="http://code.highcharts.com/highcharts.js"></script>
 <script src="http://code.highcharts.com/modules/exporting.js"></script>
 <script>
-    $(function() {
+    $(document).ready(function() {
+        favfunct();
+    });
+
+    function favfunct() {
+        $.ajax({
+            url: "${createLink(controller: "ajaxApi", action: "getReports", absolute: true)}",
+            type: "GET",  // TODO: this should be 'POST'
+            data: { "target": "all" },
+            dataType: "json",
+            contentType: "application/json; charset=utf-8",
+            success: function(data){
+                showReport(data)
+            }
+        });
+    }
+
+    function showReport(data) {
         $('#chart_container').highcharts({
             chart: {
                 type: 'line',
@@ -79,7 +96,7 @@
                 x: -20 //center
             },
             xAxis: {
-                categories: ${dateList},
+                categories: data.date,
                 labels: {
                     y : 20, rotation: -45, align: 'right'
                 }
@@ -103,13 +120,13 @@
             },
             series: [{
                 name: '投放次數',
-                data: ${impressionList}
+                data: data.impression
             }, {
                 name: '點擊次數',
-                data: ${clickList}
+                data: data.click
             }]
         });
-    });
+    }
 </script>
 </body>
 </html>
