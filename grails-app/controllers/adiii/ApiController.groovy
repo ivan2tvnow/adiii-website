@@ -32,22 +32,19 @@ class ApiController {
 
     def getAd() {
         def apiKey = params.apiKey
-        if (!apiKey)
-        {
+        if (!apiKey) {
             def errorMap = getErrorMap(104)
             render errorMap as JSON
             return
         }
 
-        if (params.apiKey instanceof String[])
-        {
+        if (params.apiKey instanceof String[]) {
             def errorMap = getErrorMap(105)
             render errorMap as JSON
             return
         }
 
-        if (!User.findByApikey(apiKey))
-        {
+        if (!User.findByApikey(apiKey)) {
             def errorMap = getErrorMap(106)
             render errorMap as JSON
             return
@@ -59,13 +56,10 @@ class ApiController {
         sessionData.accessKey = keyGenerator((('A'..'Z') + ('0'..'9')).join(), 11)
         sessionData.creative = getRandomCreative(sessionData.campaign, 'videoAd')
 
-        if (sessionData.save(flush: true))
-        {
+        if (sessionData.save(flush: true)) {
             def vastClosure = makeVastClosure(sessionData)
             render(contentType: "application/xml", vastClosure)
-        }
-        else
-        {
+        } else {
             render sessionData.errors
         }
 
@@ -77,49 +71,47 @@ class ApiController {
      *   增加指定creative裡面的impression值
      */
 
-    def impression()
-    {
+    def impression() {
         //TODO: needs further improvement of the database accessing performance.
         SessionData sessionData = SessionData.findByAccessKey(params.data)
         if (sessionData && !sessionData.impression) {
             sessionData.lock()
             sessionData.impression = true
-
-            def creative = Creative.lock(sessionData.creative.id)
-
-            //add impression info
-            withClientInfo { info ->
-                def impressions = new Impression(info)
-                creative.addToImpressions(impressions)
-
-                //TODO: deal with sync problem
-                try {
-                    creative.save(flush: true)
-                } catch (OptimisticLockingFailureException e) {
-                    println creative.errors
-                }
-
-            }
-
             //TODO: deal with sync problem
-            try {
-                sessionData.save(flush: true)
-            } catch (OptimisticLockingFailureException e) {
-                println sessionData.errors
-            }
+            sessionData.save(flush: true)
 
+            //add dailyStat
             def dailyState = DailyStat.find {
                 campaign == sessionData.campaign && statDate == new Date().format("yyyy/MM/dd")
             } ?: new DailyStat(campaign: sessionData.campaign)
 
-            assert dailyState.campaign == sessionData.campaign
-            assert dailyState.statDate == new Date().format("yyyy/MM/dd")
-
-            dailyState.impression ++
+            dailyState.lock()
+            dailyState.impression++
             //TODO: deal with sync problem
-            dailyState.save(flush: true)
+            try {
+                dailyState.save(flush: true)
+            } catch (OptimisticLockingFailureException e) {
+                println "exception"
+            }
 
-            render dailyState.impression
+            //add impression info
+            withClientInfo { info ->
+                def impressions = new Impression(info)
+
+                //TODO: deal with sync problem
+                try {
+                    Creative.withTransaction {
+                        def creative = Creative.lock(sessionData.creative.id)
+                        creative.addToImpressions(impressions)
+                        creative.save(flush: true)
+                    }
+                } catch (OptimisticLockingFailureException e) {
+                    println "exception"
+                }
+
+            }
+
+            render 'success'
         }
 
         render 'session not found'
@@ -131,37 +123,47 @@ class ApiController {
      */
 
     def click() {
+        sleep 1000 //for sync problem
         SessionData sessionData = SessionData.findByAccessKey(params.data)
         if (sessionData) {
             sessionData.lock()
-            if (sessionData.impression && !sessionData.click)
-            {
-                def creative = Creative.lock(sessionData.creative.id)
-
-                //add click info
-                withClientInfo { info ->
-                    def clicks = new Click(info)
-                    creative.addToClicks(clicks)
-
-                    //TODO: deal with sync problem
-                    creative.save(flush: true)
-                }
-
+            if (sessionData.impression && !sessionData.click) {
+                //add dailyStat
                 def dailyState = DailyStat.find {
                     campaign == sessionData.campaign && statDate == new Date().format("yyyy/MM/dd")
                 } ?: new DailyStat(campaign: sessionData.campaign)
 
-                dailyState.click ++
-                dailyState.save()
+                dailyState.lock()
+                dailyState.click++
+                //TODO: deal with sync problem
+                try {
+                    dailyState.save(flush: true)
+                } catch (OptimisticLockingFailureException e) {
+                    println "exception"
+                }
+
+                //add click info
+                withClientInfo { info ->
+                    def clicks = new Click(info)
+
+                    //TODO: deal with sync problem
+                    try {
+                        Creative.withTransaction {
+                            def creative = Creative.lock(sessionData.creative.id)
+                            creative.addToClicks(clicks)
+                            creative.save(flush: true)
+                        }
+                    } catch (OptimisticLockingFailureException e) {
+                        println "exception"
+                    }
+                }
             }
             sessionData.campaign = null
             sessionData.creative = null
             sessionData.delete()
 
             render 'success'
-        }
-        else
-        {
+        } else {
             render 'session not found'
         }
     }
@@ -345,7 +347,6 @@ class ApiController {
 
     private makeVastClosure(SessionData sessionData) {
         def adId = "adiii_${sessionData.campaign.id}"
-        def creative = Creative.get(sessionData.creative.id)
 
         def host = "${request.scheme}://${request.serverName}:${request.serverPort}${request.contextPath}"
         def impressionUrl = "${host}/api/impression?data=${sessionData.accessKey}"
@@ -378,14 +379,14 @@ class ApiController {
                                     }
                                 }
                             }
-                            Creative(id: "adiii_cr_${creative.id}",
+                            Creative(id: "adiii_cr_${sessionData.creative.id}",
                                     sequence: "1",
                                     adId: adId) {
                                 CompanionAds() {
                                     Companion(id: "1", width: "550", height: "480") {
                                         StaticResource(creativeType: "image/png",
-                                                "${host}/assets/${creative.id}.png")
-                                        CompanionClickThrough(creative.link)
+                                                "${host}/assets/${sessionData.creative.id}.png")
+                                        CompanionClickThrough(sessionData.creative.link)
                                         AltText()
                                         AdParameters()
                                     }
