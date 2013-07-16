@@ -1,13 +1,14 @@
 package adiii
 
-
-
 class DailyStatJob {
+    def springSecurityService
+
     static triggers = {
         simple repeatInterval: 60000 // execute job once in 5 seconds
     }
 
     def execute() {
+        User advertiser = springSecurityService.getCurrentUser()
         def impressions = Impression.getAll()
         def clicks = Click.getAll()
         Map statMap = [:]
@@ -16,7 +17,7 @@ class DailyStatJob {
         {
             def parentCampaign = impression.creative.campaign
 
-            if (impression.createdDatetime.format("yyyy/MM/dd") == new Date().format("yyyy/MM/dd"))
+            if (impression.createdDatetime.format("yyyy/MM/dd") == new Date().format("yyyy/MM/dd") && parentCampaign.user == advertiser)
             {
                 if (!statMap.get(parentCampaign.id))
                 {
@@ -36,7 +37,7 @@ class DailyStatJob {
         {
             def parentCampaign = click.creative.campaign
 
-            if (click.createdDatetime.format("yyyy/MM/dd") == new Date().format("yyyy/MM/dd"))
+            if (click.createdDatetime.format("yyyy/MM/dd") == new Date().format("yyyy/MM/dd") && parentCampaign.user == advertiser)
             {
                 if (!statMap.get(parentCampaign.id))
                 {

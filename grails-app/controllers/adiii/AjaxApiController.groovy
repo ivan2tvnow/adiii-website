@@ -12,10 +12,20 @@ class AjaxApiController {
         def impressionList = []
         def clickList = []
 
+        def dailyStates
+        if (params.target == "all")
+        {
+            dailyStates = DailyStat.getAll()
+        }
+        else
+        {
+            def target_camp = Campaign.findByName(params.target)
+            dailyStates = DailyStat.findAllByCampaign(target_camp)
+        }
+
         (lastDay..today).each { d->
             dateList.add(d.format("yyyy/MM/dd"))
 
-            def dailyStates = DailyStat.getAll()
             int impression = 0
             int click = 0
 

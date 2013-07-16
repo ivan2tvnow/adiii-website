@@ -52,6 +52,8 @@
             <h2>報告</h2>
         </div>
         <div class="well">
+            <g:select name="campaign_name" id="campaign_name" from="${campaignList}" onchange="favfunct(this.options[this.options.selectedIndex].value);"/>
+
             <div id="chart_container">
 
             </div>
@@ -68,14 +70,14 @@
 <script src="http://code.highcharts.com/modules/exporting.js"></script>
 <script>
     $(document).ready(function() {
-        favfunct();
+        favfunct("all");
     });
 
-    function favfunct() {
+    function favfunct(camp) {
         $.ajax({
             url: "${createLink(controller: "ajaxApi", action: "getReports", absolute: true)}",
-            type: "GET",  // TODO: this should be 'POST'
-            data: { "target": "all" },
+            type: "GET",
+            data: { "target": camp },
             dataType: "json",
             contentType: "application/json; charset=utf-8",
             success: function(data){

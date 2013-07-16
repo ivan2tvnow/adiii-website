@@ -169,28 +169,10 @@ class AdvertiserController
     def reports()
     {
         Map modelMap = [:]
-        Date today = new Date()
-        def lastDay = today - 14
-        modelMap.dateList = []
-        modelMap.impressionList = []
-        modelMap.clickList = []
-
-        (lastDay..today).each { d->
-            modelMap.dateList.add("\'${d.format("yyyy/MM/dd")}\'")
-
-            def dailyStates = DailyStat.getAll()
-            int impression = 0
-            int click = 0
-
-            for (dailyState in dailyStates) {
-                if (dailyState.statDate == d.format("yyyy/MM/dd")) {
-                    impression += dailyState.impression
-                    click += dailyState.click
-                }
-            }
-
-            modelMap.impressionList.add(impression)
-            modelMap.clickList.add(click)
+        User advertiser = springSecurityService.getCurrentUser()
+        modelMap.campaignList = ['all']
+        advertiser.campaigns.each { campaign->
+            modelMap.campaignList.add(campaign.name)
         }
 
         render(view: "reports", model: modelMap)
@@ -205,6 +187,10 @@ class AdvertiserController
         render(view: "account")
     }
 
+    /*
+     *  (not an action method)
+     *  依據需求計算出該顯示出的分頁.
+     */
     private getPageList(current, total)
     {
         def range = (SHOW_PAGE_LENGTH - 1) / 2
