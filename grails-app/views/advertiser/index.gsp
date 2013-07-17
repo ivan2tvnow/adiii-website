@@ -144,6 +144,7 @@
             </table>
             <div class="pagination pagination-right">
                 <ul>
+                    <li><g:link controller="advertiser" action="index" params="[page: 1]">第一頁</g:link></li>
                     <g:if test="${currentPage > 1}">
                         <li><g:link controller="advertiser" action="index" params="[page: (currentPage - 1)]">上一頁</g:link></li>
                     </g:if>
@@ -158,6 +159,7 @@
                     <g:if test="${currentPage < totalPage}">
                         <li><g:link controller="advertiser" action="index" params="[page: (currentPage + 1)]">下一頁</g:link></li>
                     </g:if>
+                    <li><g:link controller="advertiser" action="index" params="[page: totalPage]">最終頁</g:link></li>
                 </ul>
             </div>
         </div>
