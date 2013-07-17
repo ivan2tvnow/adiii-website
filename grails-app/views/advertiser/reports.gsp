@@ -55,45 +55,49 @@
         <div class="well">
 
             <div id="chart_container" class="pull-left"></div>
-            <fieldset>
-                <legend>顯示資訊</legend>
-                <label for="campaign_name" class="control-label" >
-                    廣告活動：
-                </label>
-                <select name="campaign_name" id="campaign_name" onchange="">
-                    <option value="all">顯示全部</option>
-                    <g:each in="${campaignList}" var="campaign">
-                        <option value="${campaign.id}">${campaign.name}</option>
-                    </g:each>
-                </select>
+            <div id="report_config">
+                <fieldset>
+                    <legend>顯示資訊</legend>
+                    <label for="campaign_name" class="control-label" >
+                        廣告活動：
+                    </label>
+                    <select name="campaign_name" id="campaign_name" onchange="">
+                        <option value="all">顯示全部</option>
+                        <g:each in="${campaignList}" var="campaign">
+                            <option value="${campaign.id}">${campaign.name}</option>
+                        </g:each>
+                    </select>
 
-                <label for="campaign_name" class="control-label" >
-                    內容：
-                </label>
-                <g:select name="first_content" id="first_content" from="${fistContentList}" onchange=""/>
+                    <label for="campaign_name" class="control-label" >
+                        內容：
+                    </label>
+                    <g:select name="first_content" id="first_content" from="${fistContentList}" onchange=""/>
 
-                <label for="sec_content" class="control-label">
-                    <g:checkBox id="content_checkbox" name="content_checkbox" checked="false" /> 增加內容：
-                </label>
-                <g:select name="sec_content" id="sec_content" from="${secondContentList}" onchange=""/>
+                    <label for="sec_content" class="control-label">
+                        <g:checkBox id="content_checkbox" name="content_checkbox" checked="false" /> 增加內容：
+                    </label>
+                    <g:select name="sec_content" id="sec_content" from="${secondContentList}" onchange=""/>
 
-                <label for="start_date" class="control-label" >
-                    時間範圍：
-                </label>
-                <div class="input-append date" id="start_date_datepicker" data-date="${startDate}" data-date-format="yyyy-mm-dd">
-                    <g:textField class="span2" name="start_date" id="start_date" value="${startDate}" readonly="readonly"/>
-                    <span class="add-on"><i class="icon-calendar"></i></span>
-                </div>
-                <div class="input-append date" id="end_date_datepicker" data-date="${endDate}" data-date-format="yyyy-mm-dd">
-                    <g:textField class="span2" name="end_date" id="end_date" value="${endDate}" readonly="readonly"/>
-                    <span class="add-on"><i class="icon-calendar"></i></span>
-                </div>
+                    <label for="start_date" class="control-label" >
+                        時間範圍：
+                    </label>
+                    <div class="input-append date" id="start_date_datepicker" data-date="${startDate}" data-date-format="yyyy-mm-dd">
+                        <g:textField class="span2" name="start_date" id="start_date" value="${startDate}" readonly="readonly"/>
+                        <span class="add-on"><i class="icon-calendar"></i></span>
+                    </div>
+                    到
+                    <div class="input-append date" id="end_date_datepicker" data-date="${endDate}" data-date-format="yyyy-mm-dd">
+                        <g:textField class="span2" name="end_date" id="end_date" value="${endDate}" readonly="readonly"/>
+                        <span class="add-on"><i class="icon-calendar"></i></span>
+                    </div>
 
-                <div class="form-actions">
-                    <input type="button" class="btn btn-primary" value="確定" onclick="favfunct();"/>
-                </div>
+                    <div class="form-actions">
+                        <input type="button" class="btn btn-primary" value="確定" onclick="favfunct();"/>
+                    </div>
 
-            </fieldset>
+                </fieldset>
+            </div>
+
         </div>
     </div>
 </div>

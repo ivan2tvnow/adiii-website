@@ -6,7 +6,7 @@ class AdvertiserController
 {
     static allowedMethods = [index: ['GET', 'POST']]
     def springSecurityService
-    def NUM_PER_PAGE = 10
+    def NUM_PER_PAGE = 50
     def SHOW_PAGE_LENGTH = 5
 
     /*
