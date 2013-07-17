@@ -170,10 +170,12 @@ class AdvertiserController
     {
         Map modelMap = [:]
         User advertiser = springSecurityService.getCurrentUser()
-        modelMap.campaignList = ['all']
-        advertiser.campaigns.each { campaign->
-            modelMap.campaignList.add(campaign.name)
-        }
+        modelMap.campaignList = advertiser.campaigns.toList()
+        modelMap.fistContentList = ['impression', 'click', 'CTR']
+        modelMap.secondContentList = ['impression', 'click', 'CTR']
+        def today = new Date()
+        modelMap.startDate = (today - 7).format("yyyy-MM-dd")
+        modelMap.endDate = today.format("yyyy-MM-dd")
 
         render(view: "reports", model: modelMap)
     }
