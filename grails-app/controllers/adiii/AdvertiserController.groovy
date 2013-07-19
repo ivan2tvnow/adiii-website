@@ -71,7 +71,7 @@ class AdvertiserController
             }
             else
             {
-                redirect(controller: "advertiser", action: "addvidadcreative", id: campaign.id)
+                redirect(controller: "advertiser", action: "addcreative", id: campaign.id)
             }
         }
         else
@@ -120,8 +120,14 @@ class AdvertiserController
     def addcreative()
     {
         Map modelMap = [:]
+        modelMap.creativeList = []
         modelMap.campaignCount = Campaign.count()
         modelMap.campaignId = params.int('id')
+
+        def miniMap = [:]
+        miniMap.errorMesseage = []
+        miniMap.creative = new Creative(link: 'http://www.example.com', price: 1.0)
+        modelMap.creativeList.add(miniMap)
 
         render(view: "addcreative", model: modelMap)
     }

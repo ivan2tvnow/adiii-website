@@ -68,8 +68,7 @@
             <span>您目前共有${creativeCount}個廣告活動</span>
         </div>
         <div class="well">
-            <a href="${createLink(controller: 'advertiser', action: 'addvidadcreative', params: [id: campaignId])}" class="btn btn-primary">建立影片廣告內容</a>
-            <a href="${createLink(controller: 'advertiser', action: 'addmobileadcreative', params: [id: campaignId])}" class="btn btn-primary">建立行動廣告內容</a>
+            <a href="${createLink(controller: 'advertiser', action: 'addcreative', params: [id: campaignId])}" class="btn btn-primary">建立廣告內容</a>
             <a href="#" class="btn btn-primary disabled">進行投放</a>
             <a href="#" class="btn btn-primary disabled">暫停投放</a>
             <g:if test="${creatives.size() <= 0}">

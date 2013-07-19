@@ -6,27 +6,31 @@
     <link href='http://fonts.googleapis.com/css?family=Lily+Script+One' rel='stylesheet' type='text/css'>
     <link href="<g:resource dir="css" file="bootstrap.css"/>" rel="stylesheet" media="screen">
     <style type="text/css">
-    header h1{
+    header h1 {
         font-family: 'Lily Script One', cursive;
         text-decoration: none;
         line-height: 70px;
     }
-    label.error{
+
+    label.error {
         color: #FF0000;
         font-weight: 200;
         display: inline;
         margin-left: 5px;
     }
+
     .login_message {
         font-size: 20px;
         padding: 6px 25px 20px 25px;
         color: #c33;
     }
+
     .errorMesseage {
         color: #c33;
     }
     </style>
 </head>
+
 <body>
 <div class="navbar navbar-static-top">
     <div class="navbar-inner">
@@ -37,7 +41,7 @@
                     <li><a href="${createLink(controller: "user", action: "signup")}">註冊</a></li>
                 </sec:ifNotLoggedIn>
                 <sec:ifLoggedIn>
-                    <li><a href="${createLink(controller: "user", action: "account")}">您好，<sec:username /></a></li>
+                    <li><a href="${createLink(controller: "user", action: "account")}">您好，<sec:username/></a></li>
                     <li><a href="${createLink(controller: "logout")}">登出</a></li>
                 </sec:ifLoggedIn>
             </ul>
@@ -48,114 +52,152 @@
     <div class="container">
         <h1><a class="brand" href="${createLink(controller: "adiii")}">Adiii</a></h1>
         <ul class="nav nav-pills">
-            <li class="active"><a class="nav-tab" href="${createLink(controller: "advertiser", action: "index")}">廣告活動</a></li>
+            <li class="active"><a class="nav-tab"
+                                  href="${createLink(controller: "advertiser", action: "index")}">廣告活動</a></li>
             <li><a class="nav-tab" href="${createLink(controller: "advertiser", action: "reports")}">報告</a></li>
             <li><a class="nav-tab" href="${createLink(controller: "advertiser", action: "account")}">帳戶資訊</a></li>
             <li><a class="nav-tab" href="${createLink(controller: "support")}">技術支援</a></li>
         </ul>
     </div>
 </header>
+
 <div class="container">
     <div id="row">
         <div class="well">
             <h2>建立新廣告內容</h2>
             <span>您目前共有 ${campaignCount} 個廣告活動</span>
         </div>
+
         <div class="well">
-            <g:uploadForm url="[controller: 'creative', action: 'saveMulti', id: campaignId]" id="creative_form" class="form-horizontal">
-                <div id="creative_field">
-                    <fieldset>
-                        <legend>廣告內容 1</legend>
-                        <div class="control-group">
-                            <label class="control-label" for="ad_type.0">
-                                廣告類別：<em class="red">*</em>
-                            </label>
-                            <div class="controls">
-                                <select name="ad_type.0" id="ad_type.0">
-                                    <option value="video" selected="selected">影像</option>
-                                    <option value="mobile">行動</option>
-                                </select>
-                                <span class="add-on">
-                                    <a id="ad_type_info" class="btn btn-mini btn-info ad_type">
-                                        <i class="icon-info-sign icon-white"></i>
-                                    </a>
-                                </span>
-                            </div>
-                        </div>
+            <g:uploadForm url="[controller: 'creative', action: 'saveMulti', id: campaignId]" id="creative_form"
+                          class="form-horizontal">
+                <g:each in="${creativeList}" var="creativePair" status="i">
+                    <div id="creative_field_${i}">
+                        <fieldset>
+                            <legend>廣告內容 ${i+1}</legend>
 
-                        <div class="control-group">
-                            <label class="control-label" for="ad_name.0">
-                                廣告名稱：<em class="red">*</em>
-                            </label>
-                            <div class="controls">
-                                <g:textField name="ad_name.0" id="ad_name.0" class="ad_name" required="true"/>
-                                <span class="add-on">
-                                    <a id="ad_name_info" class="btn btn-mini btn-info ad_name_info">
-                                        <i class="icon-info-sign icon-white"></i>
-                                    </a>
-                                </span>
-                            </div>
-                        </div>
+                            <div class="control-group">
+                                <label class="control-label" for="ad_type.${i}">
+                                    廣告類別：<em class="red">*</em>
+                                </label>
 
-                        <div class="control-group">
-                            <label class="control-label" for="ad_link.0">
-                                廣告連結：<em class="red">*</em>
-                            </label>
-                            <div class="controls">
-                                <g:textField class="span4 ad_link" name="ad_link.0" id="ad_link.0" value="http://www.google.com" required="true"/>
-                                <span class="add-on">
-                                    <a id="ad_link_info" class="btn btn-mini btn-info ad_link_info">
-                                        <i class="icon-info-sign icon-white"></i>
-                                    </a>
-                                </span>
+                                <div class="controls">
+                                    <select name="ad_type.${i}" id="ad_type.${i}">
+                                        <g:if test="${creativePair.creative instanceof adiii.MobileAdCreative}">
+                                            <option value="video">影像廣告</option>
+                                            <option value="mobile" selected="selected">行動廣告</option>
+                                        </g:if>
+                                        <g:else>
+                                            <option value="video" selected="selected">影像廣告</option>
+                                            <option value="mobile">行動廣告</option>
+                                        </g:else>
+                                    </select>
+                                    <span class="add-on">
+                                        <a id="ad_type_info" class="btn btn-mini btn-info ad_type">
+                                            <i class="icon-info-sign icon-white"></i>
+                                        </a>
+                                    </span>
+                                </div>
                             </div>
-                        </div>
 
-                        <div class="control-group">
-                            <label class="control-label" for="display_text.0">
-                                顯示文字：<em class="red">*</em>
-                            </label>
-                            <div class="controls">
-                                <g:textField class="span4 display_text" name="display_text.0" id="display_text.0" required="true" length="48"/>
-                                <span class="add-on">
-                                    <a id="display_text_info" class="btn btn-mini btn-info display_text_info">
-                                        <i class="icon-info-sign icon-white"></i>
-                                    </a>
-                                </span>
-                            </div>
-                        </div>
+                            <div class="control-group">
+                                <label class="control-label" for="ad_name.${i}">
+                                    廣告名稱：<em class="red">*</em>
+                                </label>
 
-                        <div class="control-group">
-                            <label class="control-label" for="upload_file.0">
-                                廣告圖片：<em class="red">*</em>
-                            </label>
-                            <div class="controls">
-                                <input type="file" name="upload_file.0" id="upload_file.0" class="uploader" accept="image/*" required="true"/>
-                                <span class="add-on">
-                                    <a id="upload_file_info" class="btn btn-mini btn-info upload_file_info">
-                                        <i class="icon-info-sign icon-white"></i>
-                                    </a>
-                                </span>
+                                <div class="controls">
+                                    <g:textField name="ad_name.${i}" id="ad_name.${i}" class="ad_name" required="true"
+                                                 value="${creativePair.creative.name}"/>
+                                    <span class="add-on">
+                                        <a id="ad_name_info" class="btn btn-mini btn-info ad_name_info">
+                                            <i class="icon-info-sign icon-white"></i>
+                                        </a>
+                                    </span>
+                                    <g:if test="${creativePair.errorMesseage.contains("name")}"><div
+                                            class="errorMesseage">請輸入正確名稱</div></g:if>
+                                </div>
                             </div>
-                        </div>
-                        <div class="control-group">
-                            <label class="control-label" for="price.0">
-                                出價：<em class="red">*</em>
-                            </label>
-                            <div class="controls">
-                                <g:textField class="span4 price" name="price.0" id="price.0" required="true" length="48"/>
-                                <span class="add-on">
-                                    <a id="price_info" class="btn btn-mini btn-info price_info">
-                                        <i class="icon-info-sign icon-white"></i>
-                                    </a>
-                                </span>
+
+                            <div class="control-group">
+                                <label class="control-label" for="ad_link.${i}">
+                                    廣告連結：<em class="red">*</em>
+                                </label>
+
+                                <div class="controls">
+                                    <g:textField class="span4 ad_link" name="ad_link.${i}" id="ad_link.${i}"
+                                                 value="${creativePair.creative.link}" required="true"/>
+                                    <span class="add-on">
+                                        <a id="ad_link_info" class="btn btn-mini btn-info ad_link_info">
+                                            <i class="icon-info-sign icon-white"></i>
+                                        </a>
+                                    </span>
+                                    <g:if test="${creativePair.errorMesseage.contains("link")}"><div
+                                            class="errorMesseage">請輸入有效的連結</div></g:if>
+                                </div>
                             </div>
-                        </div>
-                    </fieldset>
-                </div>
+
+                            <div class="control-group">
+                                <label class="control-label" for="display_text.${i}">
+                                    顯示文字：<em class="red">*</em>
+                                </label>
+
+                                <div class="controls">
+                                    <g:textField class="span4 display_text" name="display_text.${i}"
+                                                 id="display_text.${i}" required="true" length="48"
+                                                 value="${creativePair.creative.displayText}"/>
+                                    <span class="add-on">
+                                        <a id="display_text_info" class="btn btn-mini btn-info display_text_info">
+                                            <i class="icon-info-sign icon-white"></i>
+                                        </a>
+                                    </span>
+                                    <g:if test="${creativePair.errorMesseage.contains("displayText")}"><div
+                                            class="errorMesseage">請輸入正確的文字</div></g:if>
+                                </div>
+                            </div>
+
+                            <div class="control-group">
+                                <label class="control-label" for="upload_file.${i}">
+                                    廣告圖片：<em class="red">*</em>
+                                </label>
+
+                                <div class="controls">
+                                    <input type="file" name="upload_file.${i}" id="upload_file.${i}" class="uploader"
+                                           accept="image/*" required="true"/>
+                                    <span class="add-on">
+                                        <a id="upload_file_info" class="btn btn-mini btn-info upload_file_info">
+                                            <i class="icon-info-sign icon-white"></i>
+                                        </a>
+                                    </span>
+                                    <g:if test="${creativePair.errorMesseage.contains("imageUrl")}"><div
+                                            class="errorMesseage">請輸入符合規範的圖片</div></g:if>
+                                </div>
+                            </div>
+
+                            <div class="control-group">
+                                <label class="control-label" for="price.${i}">
+                                    出價：<em class="red">*</em>
+                                </label>
+
+                                <div class="controls">
+                                    <g:textField class="span4 price" name="price.${i}" id="price.${i}" required="true"
+                                                 length="48" value="${creativePair.creative.price}"/>
+                                    <span class="add-on">
+                                        <a id="price_info" class="btn btn-mini btn-info price_info">
+                                            <i class="icon-info-sign icon-white"></i>
+                                        </a>
+                                    </span>
+                                    <g:if test="${creativePair.errorMesseage.contains("price")}"><div
+                                            class="errorMesseage">請輸入正確的價格</div></g:if>
+                                </div>
+                            </div>
+                        </fieldset>
+                    </div>
+                </g:each>
                 <div id="next_creative"></div>
+
                 <div class="form-actions">
-                    <a id="new_creative" class="btn btn-small btn-info pull-right" href="#"><i class="icon-plus icon-white"></i>新增廣告內容</a>
+                    <a id="new_creative" class="btn btn-small btn-info pull-right" href="#"><i
+                            class="icon-plus icon-white"></i>新增廣告內容</a>
                 </div>
 
                 <div class="form-actions">
@@ -170,15 +212,15 @@
 <script src="${resource(dir: "js", file: "bootstrap.min.js")}"></script>
 <script src="${resource(dir: "js", file: "jquery.validate.js")}"></script>
 <script>
-    var adCount = 1;
+    var adCount = ${creativeList.size()};
 
-    $(function() {
+    $(function () {
         addTextInfo();
         addValidate();
     });
 
     $("#creative_form").validate({
-        rules:{
+        rules: {
 
         },
         messages: {
@@ -186,8 +228,8 @@
         }
     });
 
-    $('#new_creative').click(function() {
-        $('#next_creative').append($('#creative_field').html());
+    $('#new_creative').click(function () {
+        $('#next_creative').append($('#creative_field_0').html());
 
         $('legend')[adCount].innerHTML = "廣告內容" + (adCount + 1);
 
@@ -195,7 +237,8 @@
         $('select')[adCount].name = "ad_type." + adCount;
 
         $('input.ad_name')[adCount].id = "ad_name." + adCount;
-        $('input.ad_name')[adCount].name = "ad_name." + adCount;;
+        $('input.ad_name')[adCount].name = "ad_name." + adCount;
+        ;
 
         $('input.ad_link')[adCount].id = "ad_link." + adCount;
         $('input.ad_link')[adCount].name = "ad_link." + adCount;
@@ -209,7 +252,7 @@
         $('input.price')[adCount].id = "price." + adCount;
         $('input.price')[adCount].name = "price." + adCount;
 
-        adCount ++;
+        adCount++;
         addValidate();
         addTextInfo();
     })
@@ -242,7 +285,7 @@
     }
 
     function addValidate() {
-        $('.ad_name').each(function(){
+        $('.ad_name').each(function () {
             $(this).rules("add", {
                 required: true,
                 maxlength: 30,
@@ -253,7 +296,7 @@
             });
         })
 
-        $('.ad_link').each(function(){
+        $('.ad_link').each(function () {
             $(this).rules("add", {
                 required: true,
                 messages: {
@@ -262,7 +305,7 @@
             });
         })
 
-        $('.display_text').each(function(){
+        $('.display_text').each(function () {
             $(this).rules("add", {
                 required: true,
                 maxlength: 48,
@@ -273,7 +316,7 @@
             });
         })
 
-        $('.uploader').each(function(){
+        $('.uploader').each(function () {
             $(this).rules("add", {
                 required: true,
                 messages: {
@@ -282,7 +325,7 @@
             });
         })
 
-        $('.uploader').each(function(){
+        $('.uploader').each(function () {
             $(this).rules("add", {
                 required: true,
                 messages: {

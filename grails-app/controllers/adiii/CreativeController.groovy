@@ -53,6 +53,7 @@ class CreativeController
 
     @Secured(['ROLE_ADVERTISER'])
     def saveMulti() {
+        List trunBackCreativeList = []
         def adTypeList = params.list('ad_type').get(0)
         def adNameList = params.list('ad_name').get(0)
         def adLinkList = params.list('ad_link').get(0)
@@ -75,26 +76,44 @@ class CreativeController
                         link: adLinkList[i],
                         displayText: displayTextList[i],
                         imageUrl: "tmp",
-                        price: priceList[i])
+                        price: priceList[i],
+                        campaign: campaign)
             }
             else if (adType.value == 'mobile') {
                 creative = new MobileAdCreative(name: adNameList[i],
                         link: adLinkList[i],
                         displayText: displayTextList[i],
                         imageUrl: "tmp",
-                        price: priceList[i])
+                        price: priceList[i], campaign: campaign)
             }
 
-            validateCreative(creative, campId)
-            campaign.addToCreatives(creative)
-            if(campaign.save() && creative.save())
+            def returnVal = validateCreative(creative)
+            if (returnVal != [:])
             {
-                creative.imageUrl = uploadFile(creative.id, i)
-                creative.save()
+                trunBackCreativeList.add(returnVal)
+            }
+            else {
+                campaign.addToCreatives(creative)
+                if(campaign.save() && creative.save())
+                {
+                    creative.imageUrl = uploadFile(creative.id, i)
+                    creative.save()
+                }
             }
         }
 
-        redirect(controller: "advertiser", action: "index")
+        if (trunBackCreativeList.size() > 0)
+        {
+            Map modelMap = [:]
+            modelMap.creativeList = trunBackCreativeList
+            modelMap.campaignCount = Campaign.count()
+            modelMap.campaignId = params.int('id')
+            goBackToAdd(modelMap)
+        }
+        else
+        {
+            redirect(controller: "advertiser", action: "index")
+        }
     }
 
     /*
@@ -113,8 +132,12 @@ class CreativeController
                     displayText: params.display_text,
                     imageUrl: result,
                     price: params.price)
-            validateCreative(creative, -1)
-            if(creative.save()) {
+            def returnVal = validateCreative(creative)
+            if (returnVal != [:]) {
+                goBackToEdit(returnVal)
+            }
+            else if (creative.save())
+            {
                 redirect(controller: "advertiser", action: "campaign", id: creative.campaign.id)
             }
         }
@@ -211,10 +234,14 @@ class CreativeController
          *  檢查輸入的creative 資料是否正確
          *  若不正確，則導回前一個畫面，並顯示錯誤訊息
          */
-    protected def validateCreative(creative, campId)
+    protected Map validateCreative(creative)
     {
+        Map modelMap = [:]
+
         if (!creative.validate())
         {
+            creative.errors.each {println it}
+
             List errorMesseage = []
             if (creative.errors.hasFieldErrors("name"))
             {
@@ -246,20 +273,12 @@ class CreativeController
                 creative.price = null
             }
 
-            Map modelMap = [:]
+
             modelMap.creative = creative
             modelMap.errorMesseage = errorMesseage
-            flash.message = "資料有誤"
-            if (campId == -1)
-            {
-                goBackToEdit(modelMap)
-            } else
-            {
-                modelMap.count = Campaign.count()
-                modelMap.campaignId = campId
-                goBackToAdd(modelMap)
-            }
         }
+
+        return modelMap
     }
 
     /*
