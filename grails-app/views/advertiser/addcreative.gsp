@@ -1,0 +1,296 @@
+<%@ page contentType="text/html;charset=UTF-8" %>
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Adiii</title>
+    <link href='http://fonts.googleapis.com/css?family=Lily+Script+One' rel='stylesheet' type='text/css'>
+    <link href="<g:resource dir="css" file="bootstrap.css"/>" rel="stylesheet" media="screen">
+    <style type="text/css">
+    header h1{
+        font-family: 'Lily Script One', cursive;
+        text-decoration: none;
+        line-height: 70px;
+    }
+    label.error{
+        color: #FF0000;
+        font-weight: 200;
+        display: inline;
+        margin-left: 5px;
+    }
+    .login_message {
+        font-size: 20px;
+        padding: 6px 25px 20px 25px;
+        color: #c33;
+    }
+    .errorMesseage {
+        color: #c33;
+    }
+    </style>
+</head>
+<body>
+<div class="navbar navbar-static-top">
+    <div class="navbar-inner">
+        <div class="container">
+            <ul class="pull-right nav">
+                <sec:ifNotLoggedIn>
+                    <li><a href="${createLink(controller: "login", action: "auth")}">登入</a></li>
+                    <li><a href="${createLink(controller: "user", action: "signup")}">註冊</a></li>
+                </sec:ifNotLoggedIn>
+                <sec:ifLoggedIn>
+                    <li><a href="${createLink(controller: "user", action: "account")}">您好，<sec:username /></a></li>
+                    <li><a href="${createLink(controller: "logout")}">登出</a></li>
+                </sec:ifLoggedIn>
+            </ul>
+        </div>
+    </div>
+</div>
+<header class="">
+    <div class="container">
+        <h1><a class="brand" href="${createLink(controller: "adiii")}">Adiii</a></h1>
+        <ul class="nav nav-pills">
+            <li class="active"><a class="nav-tab" href="${createLink(controller: "advertiser", action: "index")}">廣告活動</a></li>
+            <li><a class="nav-tab" href="${createLink(controller: "advertiser", action: "reports")}">報告</a></li>
+            <li><a class="nav-tab" href="${createLink(controller: "advertiser", action: "account")}">帳戶資訊</a></li>
+            <li><a class="nav-tab" href="${createLink(controller: "support")}">技術支援</a></li>
+        </ul>
+    </div>
+</header>
+<div class="container">
+    <div id="row">
+        <div class="well">
+            <h2>建立新廣告內容</h2>
+            <span>您目前共有 ${campaignCount} 個廣告活動</span>
+        </div>
+        <div class="well">
+            <g:uploadForm url="[controller: 'creative', action: 'saveMulti', id: campaignId]" id="creative_form" class="form-horizontal">
+                <div id="creative_field">
+                    <fieldset>
+                        <legend>廣告內容 1</legend>
+                        <div class="control-group">
+                            <label class="control-label" for="ad_type.0">
+                                廣告類別：<em class="red">*</em>
+                            </label>
+                            <div class="controls">
+                                <select name="ad_type.0" id="ad_type.0">
+                                    <option value="video" selected="selected">影像</option>
+                                    <option value="mobile">行動</option>
+                                </select>
+                                <span class="add-on">
+                                    <a id="ad_type_info" class="btn btn-mini btn-info ad_type">
+                                        <i class="icon-info-sign icon-white"></i>
+                                    </a>
+                                </span>
+                            </div>
+                        </div>
+
+                        <div class="control-group">
+                            <label class="control-label" for="ad_name.0">
+                                廣告名稱：<em class="red">*</em>
+                            </label>
+                            <div class="controls">
+                                <g:textField name="ad_name.0" id="ad_name.0" class="ad_name" required="true"/>
+                                <span class="add-on">
+                                    <a id="ad_name_info" class="btn btn-mini btn-info ad_name_info">
+                                        <i class="icon-info-sign icon-white"></i>
+                                    </a>
+                                </span>
+                            </div>
+                        </div>
+
+                        <div class="control-group">
+                            <label class="control-label" for="ad_link.0">
+                                廣告連結：<em class="red">*</em>
+                            </label>
+                            <div class="controls">
+                                <g:textField class="span4 ad_link" name="ad_link.0" id="ad_link.0" value="http://www.google.com" required="true"/>
+                                <span class="add-on">
+                                    <a id="ad_link_info" class="btn btn-mini btn-info ad_link_info">
+                                        <i class="icon-info-sign icon-white"></i>
+                                    </a>
+                                </span>
+                            </div>
+                        </div>
+
+                        <div class="control-group">
+                            <label class="control-label" for="display_text.0">
+                                顯示文字：<em class="red">*</em>
+                            </label>
+                            <div class="controls">
+                                <g:textField class="span4 display_text" name="display_text.0" id="display_text.0" required="true" length="48"/>
+                                <span class="add-on">
+                                    <a id="display_text_info" class="btn btn-mini btn-info display_text_info">
+                                        <i class="icon-info-sign icon-white"></i>
+                                    </a>
+                                </span>
+                            </div>
+                        </div>
+
+                        <div class="control-group">
+                            <label class="control-label" for="upload_file.0">
+                                廣告圖片：<em class="red">*</em>
+                            </label>
+                            <div class="controls">
+                                <input type="file" name="upload_file.0" id="upload_file.0" class="uploader" accept="image/*" required="true"/>
+                                <span class="add-on">
+                                    <a id="upload_file_info" class="btn btn-mini btn-info upload_file_info">
+                                        <i class="icon-info-sign icon-white"></i>
+                                    </a>
+                                </span>
+                            </div>
+                        </div>
+                        <div class="control-group">
+                            <label class="control-label" for="price.0">
+                                出價：<em class="red">*</em>
+                            </label>
+                            <div class="controls">
+                                <g:textField class="span4 price" name="price.0" id="price.0" required="true" length="48"/>
+                                <span class="add-on">
+                                    <a id="price_info" class="btn btn-mini btn-info price_info">
+                                        <i class="icon-info-sign icon-white"></i>
+                                    </a>
+                                </span>
+                            </div>
+                        </div>
+                    </fieldset>
+                </div>
+                <div id="next_creative"></div>
+                <div class="form-actions">
+                    <a id="new_creative" class="btn btn-small btn-info pull-right" href="#"><i class="icon-plus icon-white"></i>新增廣告內容</a>
+                </div>
+
+                <div class="form-actions">
+                    <input type="submit" class="btn btn-primary" value="儲存並完成">
+                    <input type="submit" class="btn" value="取消"/>
+                </div>
+            </g:uploadForm>
+        </div>
+    </div>
+</div>
+<script src="http://code.jquery.com/jquery.js"></script>
+<script src="${resource(dir: "js", file: "bootstrap.min.js")}"></script>
+<script src="${resource(dir: "js", file: "jquery.validate.js")}"></script>
+<script>
+    var adCount = 1;
+
+    $(function() {
+        addTextInfo();
+        addValidate();
+    });
+
+    $("#creative_form").validate({
+        rules:{
+
+        },
+        messages: {
+
+        }
+    });
+
+    $('#new_creative').click(function() {
+        $('#next_creative').append($('#creative_field').html());
+
+        $('legend')[adCount].innerHTML = "廣告內容" + (adCount + 1);
+
+        $('select')[adCount].id = "ad_type." + adCount;
+        $('select')[adCount].name = "ad_type." + adCount;
+
+        $('input.ad_name')[adCount].id = "ad_name." + adCount;
+        $('input.ad_name')[adCount].name = "ad_name." + adCount;;
+
+        $('input.ad_link')[adCount].id = "ad_link." + adCount;
+        $('input.ad_link')[adCount].name = "ad_link." + adCount;
+
+        $('input.display_text')[adCount].id = "display_text." + adCount;
+        $('input.display_text')[adCount].name = "display_text." + adCount;
+
+        $('input.uploader')[adCount].id = "upload_file." + adCount;
+        $('input.uploader')[adCount].name = "upload_file." + adCount;
+
+        $('input.price')[adCount].id = "price." + adCount;
+        $('input.price')[adCount].name = "price." + adCount;
+
+        adCount ++;
+        addValidate();
+        addTextInfo();
+    })
+
+    function addTextInfo() {
+        $('.ad_type').popover({
+            'trigger': 'hover',
+            'content': '廣告類別，可選擇影音廣告或是行動裝置廣告。'
+        });
+        $('.ad_name_info').popover({
+            'trigger': 'hover',
+            'content': '僅供識別之用，廣告受眾將不會看到此名稱。同一廣告活動中各廣告內容名稱必須是唯一的，此名稱最多允許輸入30個字元。'
+        });
+        $('.ad_link_info').popover({
+            'trigger': 'hover',
+            'content': '廣告受眾點擊廣告後將被導去的網路位址；請務必確認這是您希望受眾瀏覽的產品頁面。'
+        });
+        $('.display_text_info').popover({
+            'trigger': 'hover',
+            'content': '當廣告圖片無法顯示，或需要顯示代表廣告內容的文字時，將用以顯示的文字。'
+        });
+        $('.upload_file_info').popover({
+            'trigger': 'hover',
+            'content': '實際用以顯示的廣告圖片；最大檔案尺寸為500kb；並僅允許jpg、jpeg與png等圖片格式。'
+        });
+        $('.price_info').popover({
+            'trigger': 'hover',
+            'content': '廣告的單價。'
+        });
+    }
+
+    function addValidate() {
+        $('.ad_name').each(function(){
+            $(this).rules("add", {
+                required: true,
+                maxlength: 30,
+                messages: {
+                    required: "此欄位為必填欄位。",
+                    maxlength: "廣告內容名稱不能超過30個字元。"
+                }
+            });
+        })
+
+        $('.ad_link').each(function(){
+            $(this).rules("add", {
+                required: true,
+                messages: {
+                    required: "此欄位為必填欄位。"
+                }
+            });
+        })
+
+        $('.display_text').each(function(){
+            $(this).rules("add", {
+                required: true,
+                maxlength: 48,
+                messages: {
+                    required: "此欄位為必填欄位。",
+                    maxlength: "廣告內容名稱不能超過48個字元。"
+                }
+            });
+        })
+
+        $('.uploader').each(function(){
+            $(this).rules("add", {
+                required: true,
+                messages: {
+                    required: "必須上傳廣告圖片以建立廣告內容。"
+                }
+            });
+        })
+
+        $('.uploader').each(function(){
+            $(this).rules("add", {
+                required: true,
+                messages: {
+                    required: "此欄位為必填欄位。"
+                }
+            });
+        })
+    }
+</script>
+</body>
+</html>

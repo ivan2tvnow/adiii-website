@@ -51,6 +51,52 @@ class CreativeController
         }
     }
 
+    @Secured(['ROLE_ADVERTISER'])
+    def saveMulti() {
+        def adTypeList = params.list('ad_type').get(0)
+        def adNameList = params.list('ad_name').get(0)
+        def adLinkList = params.list('ad_link').get(0)
+        def displayTextList = params.list('display_text').get(0)
+        def priceList = params.list('price').get(0)
+        Integer campId = params.int('id')
+        Campaign campaign = Campaign.get(campId)
+        if (!campaign) {
+            String message = "找不到相對應廣告"
+            println message
+            redirect(controller: "advertiser", action: "index", params: [message: message])
+            return
+        }
+
+        adTypeList.each { adType ->
+            def creative
+            def i = adType.key
+            if (adType.value == 'video') {
+                creative = new VideoAdCreative(name: adNameList[i],
+                        link: adLinkList[i],
+                        displayText: displayTextList[i],
+                        imageUrl: "tmp",
+                        price: priceList[i])
+            }
+            else if (adType.value == 'mobile') {
+                creative = new MobileAdCreative(name: adNameList[i],
+                        link: adLinkList[i],
+                        displayText: displayTextList[i],
+                        imageUrl: "tmp",
+                        price: priceList[i])
+            }
+
+            validateCreative(creative, campId)
+            campaign.addToCreatives(creative)
+            if(campaign.save() && creative.save())
+            {
+                creative.imageUrl = uploadFile(creative.id, i)
+                creative.save()
+            }
+        }
+
+        redirect(controller: "advertiser", action: "index")
+    }
+
     /*
          *  URL: /advertiser/crrative/update
          *  實際進行廣告(creative)更新的action method;
@@ -234,9 +280,9 @@ class CreativeController
          *  (not an action method)
          *  將request裡面的檔案存到系統中
          */
-    protected String uploadFile(fileName)
+    protected String uploadFile(fileName, index)
     {
-        MultipartFile file = request.getFile('upload_file')
+        MultipartFile file = request.getFile("upload_file.${index}")
         String extension = file.contentType.split("/")[1]
         return fileUploadService.uploadFile(file, "${fileName}.${extension}")
     }

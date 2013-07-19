@@ -18,13 +18,12 @@ class AdvertiserController
     {
         User advertiser = springSecurityService.getCurrentUser()
         int currentPage = 1
-        int offset = 1
         if (params.page)
         {
             currentPage = params.page.toInteger()
-            offset = (currentPage - 1) * NUM_PER_PAGE
         }
 
+        int offset = (currentPage - 1) * NUM_PER_PAGE
         int campaignCount = advertiser.campaigns.size()
         int totalPage = Math.ceil(campaignCount / NUM_PER_PAGE)
 
@@ -115,6 +114,16 @@ class AdvertiserController
         modelMap.errorMesseage = []
 
         render(view: "addcampaign", model: modelMap)
+    }
+
+    @Secured(['ROLE_ADVERTISER'])
+    def addcreative()
+    {
+        Map modelMap = [:]
+        modelMap.campaignCount = Campaign.count()
+        modelMap.campaignId = params.int('id')
+
+        render(view: "addcreative", model: modelMap)
     }
 
     /*

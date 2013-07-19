@@ -78,15 +78,7 @@ class CampaignController
         validateCampaign(campaign, 'save')
         if(user.save(flush: true))
         {
-            if (params.campaign_type == "video_ad")
-            {
-                redirect(controller: "advertiser", action: "addvidadcreative", id: campaign.id)
-            }
-            else if (params.campaign_type == "mobile_ad")
-            {
-                redirect(controller: "advertiser", action: "addmobileadcreative", id: campaign.id)
-            }
-
+            redirect(controller: "advertiser", action: "addcreative", id: campaign.id)
         }
     }
 

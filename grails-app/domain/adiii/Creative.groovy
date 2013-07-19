@@ -1,7 +1,5 @@
 package adiii
 
-import org.codehaus.groovy.grails.web.context.ServletContextHolder
-
 class Creative
 {
     String name
