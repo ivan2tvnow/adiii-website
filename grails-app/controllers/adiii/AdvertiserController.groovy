@@ -116,6 +116,11 @@ class AdvertiserController
         render(view: "addcampaign", model: modelMap)
     }
 
+    /*
+     *  URL: /advertiser/addcreative/${campaign.id}
+     *  廣告主用以為廣告活動(campaign)新增廣告內容(creative)的頁面
+     *  注意URL的第三個segment為目前要為其建立內容的campaign ID
+     */
     @Secured(['ROLE_ADVERTISER'])
     def addcreative()
     {
@@ -123,6 +128,7 @@ class AdvertiserController
         modelMap.creativeList = []
         modelMap.campaignCount = Campaign.count()
         modelMap.campaignId = params.int('id')
+        modelMap.campaign = Campaign.get(modelMap.campaignId)
 
         def miniMap = [:]
         miniMap.errorMesseage = []
@@ -130,40 +136,6 @@ class AdvertiserController
         modelMap.creativeList.add(miniMap)
 
         render(view: "addcreative", model: modelMap)
-    }
-
-    /*
-     *  URL: /advertiser/addvidadcreative/${campaign.id}
-     *  廣告主用以為廣告活動(campaign)新增影片廣告內容(creative)的頁面
-     *  注意URL的第三個segment為目前要為其建立內容的campaign ID
-     */
-    @Secured(['ROLE_ADVERTISER'])
-    def addvidadcreative()
-    {
-        Map modelMap = [:]
-        modelMap.errorMesseage = []
-        modelMap.campaignCount = Campaign.count()
-        modelMap.campaignId = params.int('id')
-        modelMap.creative = new VideoAdCreative(link: 'http://www.example.com', price: 1.0)
-
-        render(view: "addvidadcreative", model: modelMap)
-    }
-
-    /*
-     *  URL: /advertiser/addvidadcreative/${campaign.id}
-     *  廣告主用以為廣告活動(campaign)新增影片廣告內容(creative)的頁面
-     *  注意URL的第三個segment為目前要為其建立內容的campaign ID
-     */
-    @Secured(['ROLE_ADVERTISER'])
-    def addmobileadcreative()
-    {
-        Map modelMap = [:]
-        modelMap.errorMesseage = []
-        modelMap.campaignCount = Campaign.count()
-        modelMap.campaignId = params.int('id')
-        modelMap.creative = new MobileAdCreative(link: 'http://www.example.com', price: 1.0)
-
-        render(view: "addmobileadcreative", model: modelMap)
     }
 
     /*

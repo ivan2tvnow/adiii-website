@@ -58,11 +58,10 @@
 <div class="container">
     <div id="row">
         <div class="well">
-            <h2>建立新行動裝置廣告內容</h2>
-            <span>您目前共有 ${campaignCount} 個行動裝置廣告活動</span>
+            <h2>修改廣告內容</h2>
         </div>
         <div class="well">
-            <g:uploadForm url="[controller: 'mobileAdCreative', action: 'save', id: campaignId]" id="creative_form" class="form-horizontal">
+            <g:uploadForm url="[controller: 'creative', action: 'update', id: creative.id]" id="creative_form" class="form-horizontal">
                 <g:if test='${flash.message}'>
                     <div class='login_message'>${flash.message}</div>
                 </g:if>
@@ -73,7 +72,7 @@
                             廣告名稱：<em class="red">*</em>
                         </label>
                         <div class="controls">
-                            <g:textField name="ad_name" value="${creative.name}" required="true"/>
+                            <g:textField name="ad_name" required="true" value="${creative.name}"/>
                             <span class="add-on">
                                 <a id="ad_name_info" class="btn btn-mini btn-info">
                                     <i class="icon-info-sign icon-white"></i>
@@ -103,7 +102,7 @@
                             顯示文字：<em class="red">*</em>
                         </label>
                         <div class="controls">
-                            <g:textField class="span4" name="display_text" value="${creative.displayText}" required="true" length="48"/>
+                            <g:textField class="span4" name="display_text" required="true" length="48" value="${creative.displayText}"/>
                             <span class="add-on">
                                 <a id="display_text_info" class="btn btn-mini btn-info">
                                     <i class="icon-info-sign icon-white"></i>
@@ -118,7 +117,7 @@
                             廣告圖片：<em class="red">*</em>
                         </label>
                         <div class="controls">
-                            <input type="file" name="upload_file" accept="image/*" required="true"/>
+                            <input type="file" name="upload_file.0" id="upload_file" accept="image/*" required="true"/>
                             <span class="add-on">
                                 <a id="upload_file_info" class="btn btn-mini btn-info">
                                     <i class="icon-info-sign icon-white"></i>

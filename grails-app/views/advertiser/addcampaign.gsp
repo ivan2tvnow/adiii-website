@@ -142,19 +142,6 @@
                 </div>
             </div>
         </fieldset>
-        <fieldset>
-            <legend>廣告活動類型</legend>
-
-            <label class="radio" for="mobile_ad">
-                <g:radio name="campaign_type" value="mobile_ad" checked="true"/>
-                行動裝置廣告 (如AdMob與Airpush所提供之廣告類型)
-            </label>
-
-            <label class="radio" for="video_ad">
-                <g:radio name="campaign_type" value="video_ad" checked="false"/>
-                影音廣告 (建立符合VAST 3.0規格之廣告內容)
-            </label>
-        </fieldset>
         <div class="form-actions">
             <input type="submit" class="btn btn-primary" value="儲存並繼續"/>
             <input type="submit" class="btn" value="取消"/>

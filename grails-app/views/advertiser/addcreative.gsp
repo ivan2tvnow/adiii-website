@@ -68,13 +68,13 @@
             <span>您目前共有 ${campaignCount} 個廣告活動</span>
         </div>
 
-        <div class="well">
-            <g:uploadForm url="[controller: 'creative', action: 'saveMulti', id: campaignId]" id="creative_form"
+        <div class="well span8">
+            <g:uploadForm url="[controller: 'creative', action: 'save', id: campaignId]" id="creative_form"
                           class="form-horizontal">
                 <g:each in="${creativeList}" var="creativePair" status="i">
                     <div id="creative_field_${i}">
                         <fieldset>
-                            <legend>廣告內容 ${i+1}</legend>
+                            <legend>廣告內容 ${i + 1}</legend>
 
                             <div class="control-group">
                                 <label class="control-label" for="ad_type.${i}">
@@ -196,7 +196,7 @@
                 <div id="next_creative"></div>
 
                 <div class="form-actions">
-                    <a id="new_creative" class="btn btn-small btn-info pull-right" href="#"><i
+                    <a id="new_creative" class="btn btn-small btn-info pull-right" href="#new_creative"><i
                             class="icon-plus icon-white"></i>新增廣告內容</a>
                 </div>
 
@@ -205,6 +205,33 @@
                     <input type="submit" class="btn" value="取消"/>
                 </div>
             </g:uploadForm>
+        </div>
+
+        <div class="well span4">
+            <table class="table-hover table-striped">
+                <thead><tr><th>廣告活動預覽</th></tr></thead>
+                <tbody>
+                <tr><td>活動名稱</td><td>${campaign.name}</td></tr>
+                <tr><td>開始時間</td><td>${campaign.startDatetime.format("yyyy-MM-dd")}</td></tr>
+                <tr><td>結束時間</td><td>${campaign.endDatetime.format("yyyy-MM-dd")}</td></tr>
+                <tr><td>每日預算</td><td>${campaign.dailyBudget}</td></tr>
+                <tr><td>總廣告數</td><td>${campaign.creatives.size()}</td></tr>
+                </tbody>
+            </table>
+            
+            <g:each in="${campaign.creatives}" var="creative" status="i">
+                <br/>
+                <table class="table-hover table-striped">
+                    <thead><tr><th>廣告${i}</th></tr></thead>
+                    <tbody>
+                    <tr><td>廣告名稱</td><td>${creative.name}</td></tr>
+                    <tr><td>廣告連結</td><td>${creative.link}</td></tr>
+                    <tr><td>顯示文字</td><td>${creative.displayText}</td></tr>
+                    <tr><td>廣告圖片</td><td>${creative.imageUrl}</td></tr>
+                    <tr><td>出價</td><td>${creative.price}</td></tr>
+                    </tbody>
+                </table>
+            </g:each>
         </div>
     </div>
 </div>
@@ -260,7 +287,7 @@
     function addTextInfo() {
         $('.ad_type').popover({
             'trigger': 'hover',
-            'content': '廣告類別，可選擇影音廣告或是行動裝置廣告。'
+            'content': '廣告類別，可選擇行動裝置廣告(如AdMob與Airpush所提供之廣告類型) 或 影音廣告(建立符合VAST 3.0規格之廣告內容)。'
         });
         $('.ad_name_info').popover({
             'trigger': 'hover',

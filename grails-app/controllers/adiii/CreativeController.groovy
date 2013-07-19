@@ -3,6 +3,9 @@ package adiii
 import grails.plugins.springsecurity.Secured
 import org.springframework.web.multipart.MultipartFile
 
+import javax.imageio.ImageIO
+import java.awt.image.BufferedImage
+
 class CreativeController
 {
     def fileUploadService
@@ -29,30 +32,6 @@ class CreativeController
     @Secured(['ROLE_ADVERTISER'])
     def save()
     {
-        Integer campId = params.int('id')
-        Campaign campaign = Campaign.get(campId)
-        if (!campaign) {
-            String message = "找不到相對應廣告"
-            println message
-            redirect(controller: "advertiser", action: "index", params: [message: message])
-            return
-        }
-
-        withParamSetup() { creative ->
-            validateCreative(creative, campId)
-            campaign.addToCreatives(creative)
-            if(campaign.save() && creative.save())
-            {
-                creative.imageUrl = uploadFile(creative.id)
-                creative.save()
-
-                redirect(controller: "advertiser", action: "campaign", id: campId)
-            }
-        }
-    }
-
-    @Secured(['ROLE_ADVERTISER'])
-    def saveMulti() {
         List trunBackCreativeList = []
         def adTypeList = params.list('ad_type').get(0)
         def adNameList = params.list('ad_name').get(0)
@@ -126,7 +105,7 @@ class CreativeController
     {
         withCreative() { creative ->
             String tmp = validateImg()
-            String result = tmp == 'tmp'?uploadFile(params.id):tmp
+            String result = tmp == 'tmp'?uploadFile(params.id, 0):tmp
             creative.setProperties(name: params.ad_name,
                     link: params.ad_link,
                     displayText: params.display_text,
@@ -225,8 +204,29 @@ class CreativeController
          *  (not an action method)
          *  檢查圖片是否符合格式
          */
-    protected String validateImg() {
-        return "tmp"
+    protected String validateImg()
+    {
+        MultipartFile file = request.getFile('upload_file')
+        if (!file) {
+            return "no Image"
+        }
+
+        if (!file.isEmpty()) {
+            BufferedImage image = ImageIO.read(file.getInputStream());
+            def allowContentTypes = ['image/png', 'image/jpeg', 'image/jpg', 'image/gif']
+
+            if (!allowContentTypes.contains(file.getContentType())) {
+                println("Image type must be one of: ${allowContentTypes}")
+                return "reject"
+            } else if (image.getWidth() > 360 && image.getHeight() > 50) {
+                println("Image too big")
+                return "reject"
+            } else {
+                return "tmp"
+            }
+        }
+
+        return "no Image"
     }
 
     /*
