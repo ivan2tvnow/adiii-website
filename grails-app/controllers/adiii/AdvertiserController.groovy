@@ -129,6 +129,7 @@ class AdvertiserController
         modelMap.campaignCount = Campaign.count()
         modelMap.campaignId = params.int('id')
         modelMap.campaign = Campaign.get(modelMap.campaignId)
+        modelMap.successList = []
 
         def miniMap = [:]
         miniMap.errorMesseage = []

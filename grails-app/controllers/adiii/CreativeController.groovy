@@ -33,6 +33,7 @@ class CreativeController
     def save()
     {
         List trunBackCreativeList = []
+        List successList = []
         def adTypeList = params.list('ad_type').get(0)
         def adNameList = params.list('ad_name').get(0)
         def adLinkList = params.list('ad_link').get(0)
@@ -77,6 +78,7 @@ class CreativeController
                 {
                     creative.imageUrl = uploadFile(creative.id, i)
                     creative.save()
+                    successList.add(creative.name)
                 }
             }
         }
@@ -87,6 +89,8 @@ class CreativeController
             modelMap.creativeList = trunBackCreativeList
             modelMap.campaignCount = Campaign.count()
             modelMap.campaignId = params.int('id')
+            modelMap.campaign = Campaign.get(modelMap.campaignId)
+            modelMap.successList = successList
             goBackToAdd(modelMap)
         }
         else

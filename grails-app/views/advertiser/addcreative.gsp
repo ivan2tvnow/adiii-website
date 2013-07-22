@@ -19,10 +19,9 @@
         margin-left: 5px;
     }
 
-    .login_message {
-        font-size: 20px;
-        padding: 6px 25px 20px 25px;
-        color: #c33;
+    .creative-table {
+        word-break: keep-all;
+        color: #424ccc;
     }
 
     .errorMesseage {
@@ -67,6 +66,14 @@
             <h2>建立新廣告內容</h2>
             <span>您目前共有 ${campaignCount} 個廣告活動</span>
         </div>
+
+        <g:if test="${successList.size() > 0}">
+            <div class="alert alert-success">
+                <button type="button" class="close" data-dismiss="alert">&times;</button>
+                <h4>通知!</h4>
+                <g:each in="${successList}" var="success">廣告新增成功：${success}</g:each>
+            </div>
+        </g:if>
 
         <div class="well span8">
             <g:uploadForm url="[controller: 'creative', action: 'save', id: campaignId]" id="creative_form"
@@ -221,7 +228,7 @@
             
             <g:each in="${campaign.creatives}" var="creative" status="i">
                 <br/>
-                <table class="table-hover table-striped">
+                <table class="table-hover table-striped creative-table">
                     <thead><tr><th>廣告${i}</th></tr></thead>
                     <tbody>
                     <tr><td>廣告名稱</td><td>${creative.name}</td></tr>
