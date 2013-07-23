@@ -6,7 +6,7 @@ class Impression
     String ipAddress
     Date createdDatetime = new Date()
 
-    static belongsTo = [creative: Creative]
+    static belongsTo = [campaign: Campaign]
 
     static constraints = {
         ipAddress(blank: false)

@@ -10,7 +10,7 @@ class SessionData {
     boolean impression = false
     boolean click = false
 
-    static belongsTo = [campaign: Campaign, creative: Creative]
+    static belongsTo = [campaign: Campaign]
 
     static constraints = {
         accessKey unique: true, blank: false
@@ -19,11 +19,9 @@ class SessionData {
         impression blank: false
         click blank: false
         campaign nullable: true
-        creative nullable: true
     }
 
     static mapping = {
-        creative cascade:'all-delete-orphan'
     }
 
     def beforeInsert() {

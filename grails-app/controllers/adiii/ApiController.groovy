@@ -18,10 +18,13 @@ class ApiController {
         sessionData.deviceId = 'ABC'
         sessionData.campaign = Campaign.get(adId)
         sessionData.accessKey = keyGenerator((('A'..'Z') + ('0'..'9')).join(), 11)
-        sessionData.creative = getRandomCreative(sessionData.campaign, 'videoAd')
-        def vastClosure = makeVastClosure(sessionData)
 
-        render(contentType: "application/xml", vastClosure)
+        if (sessionData.save(flush: true)) {
+            def vastClosure = makeVastClosure(sessionData)
+            render(contentType: "application/xml", vastClosure)
+        } else {
+            render sessionData.errors
+        }
     }
 
     /*
@@ -52,7 +55,6 @@ class ApiController {
         sessionData.deviceId = 'ABC'
         sessionData.campaign = getCampaign()
         sessionData.accessKey = keyGenerator((('A'..'Z') + ('0'..'9')).join(), 11)
-        sessionData.creative = getRandomCreative(sessionData.campaign, 'videoAd')
 
         if (sessionData.save(flush: true)) {
             def vastClosure = makeVastClosure(sessionData)
@@ -84,9 +86,9 @@ class ApiController {
                 //TODO: deal with sync problem
                 try {
                     Creative.withTransaction {
-                        def creative = Creative.lock(sessionData.creative.id)
-                        creative.addToImpressions(impressions)
-                        creative.save(flush: true)
+                        def campaign = Campaign.lock(params.id)
+                        campaign.addToImpressions(impressions)
+                        campaign.save(flush: true)
                     }
                 } catch (OptimisticLockingFailureException e) {
                     println "exception"
@@ -116,7 +118,7 @@ class ApiController {
                     //TODO: deal with sync problem
                     try {
                         Creative.withTransaction {
-                            def creative = Creative.lock(sessionData.creative.id)
+                            def creative = Creative.lock(params.id)
                             creative.addToClicks(clicks)
                             creative.save(flush: true)
                         }
@@ -126,7 +128,6 @@ class ApiController {
                 }
             }
             sessionData.campaign = null
-            sessionData.creative = null
             sessionData.delete()
 
             render 'success'
@@ -309,7 +310,7 @@ class ApiController {
         def adId = "adiii_${sessionData.campaign.id}"
 
         def host = "${request.scheme}://${request.serverName}:${request.serverPort}${request.contextPath}"
-        def impressionUrl = "${host}/api/impression?data=${sessionData.accessKey}"
+        def impressionUrl = "${host}/api/impression?data=${sessionData.accessKey}&id=${sessionData.campaign.id}"
         def clickUrl = "${host}/api/click?data=${sessionData.accessKey}"
 
         def vastClosure = {
@@ -339,16 +340,21 @@ class ApiController {
                                     }
                                 }
                             }
-                            Creative(id: "adiii_cr_${sessionData.creative.id}",
-                                    sequence: "1",
-                                    adId: adId) {
-                                CompanionAds() {
-                                    Companion(id: "1", width: "550", height: "480") {
-                                        StaticResource(creativeType: "image/png",
-                                                "${host}/assets/${sessionData.creative.id}.png")
-                                        CompanionClickThrough(sessionData.creative.link)
-                                        AltText()
-                                        AdParameters()
+                            for (creative in sessionData.campaign.creatives) {
+                                if (creative instanceof adiii.VideoAdCreative) {
+                                    Creative(id: "adiii_cr_${creative.id}",
+                                            sequence: "1",
+                                            adId: adId) {
+                                        CompanionAds() {
+                                            Companion(id: "1", width: "550", height: "480") {
+                                                StaticResource(creativeType: "image/png",
+                                                        "${host}/assets/${creative.id}.png")
+                                                CompanionClickThrough(creative.link)
+                                                CompanionClickTracking("${clickUrl}&id=${creative.id}")
+                                                AltText()
+                                                AdParameters()
+                                            }
+                                        }
                                     }
                                 }
                             }

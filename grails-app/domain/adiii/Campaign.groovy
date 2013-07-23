@@ -9,9 +9,10 @@ class Campaign {
     Boolean hasEndDatetime = false
     Date endDatetime
     Date createdDatetime = new Date()
+    String productType
 
     static belongsTo = [user: User]
-    static hasMany = [creatives: Creative]
+    static hasMany = [creatives: Creative, impressions: Impression]
 
     static constraints = {
         name(blank: false, size: 1..30, unique: true)
@@ -21,6 +22,7 @@ class Campaign {
                 return false
             }
         }
+        productType blank: true
     }
 
     static mapping = {

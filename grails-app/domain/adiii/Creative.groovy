@@ -9,7 +9,7 @@ class Creative
     BigDecimal price
 
     static belongsTo = [campaign: Campaign]
-    static hasMany = [impressions: Impression, clicks: Click]
+    static hasMany = [clicks: Click]
 
     static constraints = {
         name(blank: false, size: 1..30, unique: true)

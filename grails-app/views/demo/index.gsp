@@ -66,7 +66,7 @@
             <h2>廣告呈現測試</h2>
             <form class="form-inline" onsubmit="return false;">
                 <label>使用者金鑰：</label>
-                <input type="text" id="api_key_text" class="input-small span4" value="JRO0DN8T8">
+                <input type="text" id="api_key_text" class="input-small span4" value="QQ4DYMNPG">
                 <button type="submit" id="submit_button" class="btn btn-info">取得廣告內容</button>
             </form>
         </div>
@@ -123,9 +123,9 @@
             $("#vast_textarea").html(response);
             var xmlDoc = $.parseXML(response);
             var $xml = $(xmlDoc);
-            var imgUrl = $xml.find("StaticResource").text();
-            var adLink = $xml.find("CompanionClickThrough").text();
-            var adClick = $xml.find("ClickTracking").text();
+            var imgUrl = $xml.find("StaticResource").eq(0).text();
+            var adLink = $xml.find("CompanionClickThrough").eq(0).text();
+            var adClick = $xml.find("CompanionClickTracking").eq(0).text();
 
             $("#ad_image").remove();
             $("#ad_img_container").append('<a href="'+adLink+'" onclick="secfunct(\''+adClick+'\')">' +
@@ -150,7 +150,7 @@
             type: "GET",  // TODO: this should be 'POST'
             dataType: "text",
             complete: function(){
-                alert('success');
+                alert(url);
             }
         });
         request.fail(function(jqXHR, textStatus) {

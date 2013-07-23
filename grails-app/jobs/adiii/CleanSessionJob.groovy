@@ -17,7 +17,6 @@ class CleanSessionJob {
         def sessionDatas = querry.list()
         for (sessionData in sessionDatas) {
             sessionData.campaign = null
-            sessionData.creative = null
             sessionData.delete()
         }
     }
