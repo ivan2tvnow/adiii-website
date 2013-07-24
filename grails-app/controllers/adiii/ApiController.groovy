@@ -346,7 +346,8 @@ class ApiController {
                                             sequence: "1",
                                             adId: adId) {
                                         CompanionAds() {
-                                            Companion(id: "1", width: "550", height: "480") {
+                                            def imgSize = ImgTools.getImgSize(creative.imageUrl)
+                                            Companion(id: "1", width: imgSize.width, height: imgSize.hight) {
                                                 StaticResource(creativeType: "image/png",
                                                         "${host}/assets/${creative.id}.png")
                                                 CompanionClickThrough(creative.link)

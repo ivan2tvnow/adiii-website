@@ -185,6 +185,10 @@ class AdvertiserController
     {
         def range = (SHOW_PAGE_LENGTH - 1) / 2
 
+        if (total < 1) {
+            total = 1
+        }
+
         if (total < SHOW_PAGE_LENGTH)
         {
             return (1..total).toList()

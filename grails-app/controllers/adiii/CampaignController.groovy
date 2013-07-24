@@ -57,7 +57,8 @@ class CampaignController
                 startDatetime: startDate,
                 hasEndDatetime: checkEndDate,
                 endDatetime: endDate,
-                dailyBudget: params.int('daily_budget'))
+                dailyBudget: params.int('daily_budget'),
+                productType: 'no')
 
         User user = springSecurityService.getCurrentUser()
         if(user == null)
@@ -156,15 +157,17 @@ class CampaignController
         for (campaignId in params.campaignIdList)
         {
             Campaign campaign = Campaign.get(campaignId)
-            try{
-                if (user.campaigns.remove(campaign))
-                {
-                    campaign.delete()
+            if (campaign) {
+                try{
+                    if (user.campaigns.remove(campaign))
+                    {
+                        campaign.delete()
+                    }
                 }
-            }
-            catch(Exception e)
-            {
-                log.error(e.toString(), e)
+                catch(Exception e)
+                {
+                    log.error(e.toString(), e)
+                }
             }
 
         }

@@ -1,0 +1,20 @@
+package adiii
+
+import javax.imageio.ImageIO
+import java.awt.image.BufferedImage
+
+class ImgTools {
+
+    static Map getImgSize(imgPath) {
+        def retImg = [:]
+        File file = new File(imgPath)
+        if (file) {
+            def image = ImageIO.read(file);
+
+            retImg.width = image.getWidth()
+            retImg.hight = image.getHeight()
+        }
+
+        return retImg
+    }
+}

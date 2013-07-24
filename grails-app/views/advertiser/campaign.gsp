@@ -140,10 +140,10 @@
                                 </g:elseif>
                                 <td><strong class="text-warning">草稿</strong></td>
                                 <td>0 點</td>
-                                <td>${creative.campagin.impressions.size()}</td>
+                                <td>${creative.campaign.impressions.size()}</td>
                                 <td>${creative.clicks.size()}</td>
-                                <g:if test="${creative.impressions.size() > 0}">
-                                    <td>${creative.clicks.size() / creative.impressions.size() * 1000}‰</td>
+                                <g:if test="${creative.campaign.impressions.size() > 0}">
+                                    <td>${creative.clicks.size() / creative.campaign.impressions.size() * 1000}‰</td>
                                 </g:if>
                                 <g:else>
                                     <td>0‰</td>
