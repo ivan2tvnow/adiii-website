@@ -364,10 +364,15 @@ class ApiController {
                         Description()
                         Advertiser("${sessionData.campaign.user.firstname}")
                         Pricing(model: "CPM", currency: "USD", "${sessionData.campaign.dailyBudget}")
-                        Survey("<![CDATA[${host}/api/survey]]>")
-                        Error("<![CDATA[${host}/api/error]]>")
-                        Impression(id: "adiii_${sessionData.campaign.id}",
-                                "<![CDATA[${impressionUrl}]]>")
+                        Survey() {
+                            mkp.yieldUnescaped("<![CDATA[${host}/api/survey]]>")
+                        }
+                        Error() {
+                            mkp.yieldUnescaped("<![CDATA[${host}/api/error]]>")
+                        }
+                        Impression(id: "adiii_${sessionData.campaign.id}") {
+                            mkp.yieldUnescaped("<![CDATA[${impressionUrl}]]>")
+                        }
                         Creatives() {
                             Creative(id: "adiii_cr_0",
                                     sequence: "1",
@@ -375,8 +380,9 @@ class ApiController {
                                 Linear() {
                                     Duration("00:00:52")
                                     MediaFiles() {
-                                        MediaFile(id: "1", delivery: "streaming", type: "video/mp4", width: "854", height: "480",
-                                                "<![CDATA[rtmp://rmcdn.f.2mdn.net/ondemand/MotifFiles/html/1379578/parisian_love_126566284014011.flv]]>")
+                                        MediaFile(id: "1", delivery: "streaming", type: "video/mp4", width: "854", height: "480") {
+                                            mkp.yieldUnescaped("<![CDATA[rtmp://rmcdn.f.2mdn.net/ondemand/MotifFiles/html/1379578/parisian_love_126566284014011.flv]]>")
+                                        }
                                     }
                                     TrackingEvents()
                                     VideoClicks() {
@@ -393,14 +399,21 @@ class ApiController {
                                             adId: adId) {
                                         CompanionAds() {
                                             Companion(id: "${creative.id}", width: imgSize.width, height: imgSize.hight) {
-                                                StaticResource(creativeType: "image/png",
-                                                        "<![CDATA[${host}/assets/${creative.id}.png]]>")
+                                                StaticResource(creativeType: "image/png") {
+                                                    mkp.yieldUnescaped("<![CDATA[${host}/assets/${creative.id}.png]]>")
+                                                }
                                                 AdParameters()
                                                 AltText("${creative.displayText}")
-                                                CompanionClickThrough("<![CDATA[${host}/api/clicktTrough?id=${creative.id}]]>")
-                                                CompanionClickTracking("<![CDATA[${clickUrl}&id=${creative.id}]]>")
+                                                CompanionClickThrough() {
+                                                    mkp.yieldUnescaped("<![CDATA[${host}/api/clicktTrough?id=${creative.id}]]>")
+                                                }
+                                                CompanionClickTracking() {
+                                                    mkp.yieldUnescaped("<![CDATA[${clickUrl}&id=${creative.id}]]>")
+                                                }
                                                 TrakingEvents() {
-                                                    Tracking(event: "creativeView", "<![CDATA[${viewUlr}&id=${creative.id}]]>")
+                                                    Tracking(event: "creativeView") {
+                                                        mkp.yieldUnescaped("<![CDATA[${viewUlr}&id=${creative.id}]]>")
+                                                    }
                                                 }
                                             }
                                         }
@@ -455,6 +468,10 @@ class ApiController {
         } else {
             return new Creative()
         }
+    }
+
+    private makeCdata(input) {
+        mkp.yieldUnescaped("<![CDATA[${input}]]>")
     }
 
 }
