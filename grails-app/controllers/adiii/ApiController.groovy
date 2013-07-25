@@ -106,7 +106,7 @@ class ApiController {
      *   增加指定creative裡面的click值
      */
     def click() {
-        sleep 1000 //for sync problem
+        //sleep 1000 //for sync problem
         SessionData sessionData = SessionData.findByAccessKey(params.data)
         if (sessionData) {
             sessionData.lock()
@@ -134,6 +134,46 @@ class ApiController {
         } else {
             render 'session not found'
         }
+    }
+
+    /*
+     *  URL: /api/creativeView (using POST)
+     *  在creative出現時呼叫，用以統計顯示次數.
+     */
+    def creativeView() {
+        //TODO: needs further improvement of the database accessing performance.
+        SessionData sessionData = SessionData.findByAccessKey(params.data)
+        if (sessionData && !sessionData.impression) {
+            //add view info
+            withClientInfo { info ->
+                def creativeView = new CreativeView(info)
+
+                //TODO: deal with sync problem
+                try {
+                    Creative.withTransaction {
+                        def creative = Creative.lock(params.id)
+                        creative.addToCreativeViews(creativeView)
+                        creative.save(flush: true)
+                    }
+                } catch (OptimisticLockingFailureException e) {
+                    println "exception"
+                }
+            }
+
+            render 'success'
+        }
+
+        render 'session not found'
+    }
+
+    /*
+     *  URL: /api/clicktTrough (using POST)
+     *  用以導向creative所指的URL.
+     */
+    def clicktTrough() {
+        def creative = Creative.lock(params.id)
+
+        redirect(url: creative.link)
     }
 
     /*
@@ -312,6 +352,7 @@ class ApiController {
         def host = "${request.scheme}://${request.serverName}:${request.serverPort}${request.contextPath}"
         def impressionUrl = "${host}/api/impression?data=${sessionData.accessKey}&id=${sessionData.campaign.id}"
         def clickUrl = "${host}/api/click?data=${sessionData.accessKey}"
+        def viewUlr = "${host}/api/creativeView?data=${sessionData.accessKey}"
 
         def vastClosure = {
             mkp.xmlDeclaration()
@@ -321,10 +362,12 @@ class ApiController {
                         AdSystem(version: "1.0")
                         AdTitle("${sessionData.campaign.name}")
                         Description()
-                        Advertiser()
-                        Error()
+                        Advertiser("${sessionData.campaign.user.firstname}")
+                        Pricing(model: "CPM", currency: "USD", "${sessionData.campaign.dailyBudget}")
+                        Survey("<![CDATA[${host}/api/survey]]>")
+                        Error("<![CDATA[${host}/api/error]]>")
                         Impression(id: "adiii_${sessionData.campaign.id}",
-                                impressionUrl)
+                                "<![CDATA[${impressionUrl}]]>")
                         Creatives() {
                             Creative(id: "adiii_cr_0",
                                     sequence: "1",
@@ -333,34 +376,41 @@ class ApiController {
                                     Duration("00:00:52")
                                     MediaFiles() {
                                         MediaFile(id: "1", delivery: "streaming", type: "video/mp4", width: "854", height: "480",
-                                                "rtmp://rmcdn.f.2mdn.net/ondemand/MotifFiles/html/1379578/parisian_love_126566284014011.flv")
+                                                "<![CDATA[rtmp://rmcdn.f.2mdn.net/ondemand/MotifFiles/html/1379578/parisian_love_126566284014011.flv]]>")
                                     }
+                                    TrackingEvents()
                                     VideoClicks() {
                                         ClickTracking(clickUrl)
                                     }
+                                    Icons()
                                 }
                             }
                             for (creative in sessionData.campaign.creatives) {
                                 if (creative instanceof adiii.VideoAdCreative) {
+                                    def imgSize = ImgTools.getImgSize(creative.imageUrl)
                                     Creative(id: "adiii_cr_${creative.id}",
                                             sequence: "1",
                                             adId: adId) {
                                         CompanionAds() {
-                                            def imgSize = ImgTools.getImgSize(creative.imageUrl)
-                                            Companion(id: "1", width: imgSize.width, height: imgSize.hight) {
+                                            Companion(id: "${creative.id}", width: imgSize.width, height: imgSize.hight) {
                                                 StaticResource(creativeType: "image/png",
-                                                        "${host}/assets/${creative.id}.png")
-                                                CompanionClickThrough(creative.link)
-                                                CompanionClickTracking("${clickUrl}&id=${creative.id}")
-                                                AltText()
+                                                        "<![CDATA[${host}/assets/${creative.id}.png]]>")
                                                 AdParameters()
+                                                AltText("${creative.displayText}")
+                                                CompanionClickThrough("<![CDATA[${host}/api/clicktTrough?id=${creative.id}]]>")
+                                                CompanionClickTracking("<![CDATA[${clickUrl}&id=${creative.id}]]>")
+                                                TrakingEvents() {
+                                                    Tracking(event: "creativeView", "<![CDATA[${viewUlr}&id=${creative.id}]]>")
+                                                }
                                             }
                                         }
                                     }
                                 }
                             }
                         }
-                        Extensions() {}
+                        Extensions() {
+                            Extension(type: "product_type", "${sessionData.campaign.productType}")
+                        }
                     }
                 }
             }

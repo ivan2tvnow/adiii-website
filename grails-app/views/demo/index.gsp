@@ -66,7 +66,7 @@
             <h2>廣告呈現測試</h2>
             <form class="form-inline" onsubmit="return false;">
                 <label>使用者金鑰：</label>
-                <input type="text" id="api_key_text" class="input-small span4" value="QQ4DYMNPG">
+                <input type="text" id="api_key_text" class="input-small span4" value="TYKUOPQF2">
                 <button type="submit" id="submit_button" class="btn btn-info">取得廣告內容</button>
             </form>
         </div>
