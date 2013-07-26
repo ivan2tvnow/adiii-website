@@ -386,7 +386,9 @@ class ApiController {
                                     }
                                     TrackingEvents()
                                     VideoClicks() {
-                                        ClickTracking(clickUrl)
+                                        ClickTracking() {
+                                            mkp.yieldUnescaped("<![CDATA[${clickUrl}]]>")
+                                        }
                                     }
                                     Icons()
                                 }
