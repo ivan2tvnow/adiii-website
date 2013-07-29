@@ -1,6 +1,7 @@
 package adiii
 
 import grails.converters.JSON
+import grails.util.Environment
 import groovy.json.JsonSlurper
 import org.codehaus.groovy.grails.web.context.ServletContextHolder
 import org.springframework.dao.OptimisticLockingFailureException
@@ -216,14 +217,12 @@ class ApiController {
             }
 
             println campaign
-            def file = new File(storageDir, "${campaign.id}.png")
-            file.setBytes(result.adImage.decodeBase64())
 
             VideoAdCreative creative = new VideoAdCreative()
             creative.name = "creative_${result.campaignName}"
             creative.link = result.adLink
             creative.displayText = result.displayText
-            creative.imageUrl = file.absolutePath
+            creative.imageUrl = 'tmp'
             creative.price = 10.0
 
             campaign.addToCreatives(creative)
@@ -241,6 +240,11 @@ class ApiController {
                 }
             }
             campaign.save()
+
+            def file = new File(storageDir, "${campaign.id}.png")
+            file.setBytes(result.adImage.decodeBase64())
+            creative.imageUrl = file.absolutePath
+            creative.save()
 
             def map = [:]
             map.adId = campaign.id
@@ -354,6 +358,16 @@ class ApiController {
         def clickUrl = "${host}/api/click?data=${sessionData.accessKey}"
         def viewUlr = "${host}/api/creativeView?data=${sessionData.accessKey}"
 
+        def server
+        if (Environment.current == Environment.PRODUCTION)
+        {
+            server = "${request.scheme}://${request.serverName}/adiii"
+        }
+        else
+        {
+            server = host
+        }
+
         def vastClosure = {
             mkp.xmlDeclaration()
             VAST(version: "3.0", 'xmlns:xsi': "http://www.w3.org/2001/XMLSchema-instance", 'xsi:noNamespaceSchemaLocation': "vast.xsd") {
@@ -385,24 +399,22 @@ class ApiController {
                                         }
                                     }
                                     TrackingEvents()
-                                    VideoClicks() {
-                                        ClickTracking() {
-                                            mkp.yieldUnescaped("<![CDATA[${clickUrl}]]>")
-                                        }
-                                    }
+                                    VideoClicks()
                                     Icons()
                                 }
                             }
                             for (creative in sessionData.campaign.creatives) {
                                 if (creative instanceof adiii.VideoAdCreative) {
                                     def imgSize = ImgTools.getImgSize(creative.imageUrl)
+                                    def imgName = parseImgNameFromPath(creative.imageUrl)
+                                    def imgType = parseImgType(creative.imageUrl)
                                     Creative(id: "adiii_cr_${creative.id}",
                                             sequence: "1",
                                             adId: adId) {
                                         CompanionAds() {
                                             Companion(id: "${creative.id}", width: imgSize.width, height: imgSize.hight) {
-                                                StaticResource(creativeType: "image/png") {
-                                                    mkp.yieldUnescaped("<![CDATA[${host}/assets/${creative.id}.png]]>")
+                                                StaticResource(creativeType: "image/${imgType}") {
+                                                    mkp.yieldUnescaped("<![CDATA[${server}/assets/${imgName}]]>")
                                                 }
                                                 AdParameters()
                                                 AltText("${creative.displayText}")
@@ -412,7 +424,7 @@ class ApiController {
                                                 CompanionClickTracking() {
                                                     mkp.yieldUnescaped("<![CDATA[${clickUrl}&id=${creative.id}]]>")
                                                 }
-                                                TrakingEvents() {
+                                                TrackingEvents() {
                                                     Tracking(event: "creativeView") {
                                                         mkp.yieldUnescaped("<![CDATA[${viewUlr}&id=${creative.id}]]>")
                                                     }
@@ -424,7 +436,9 @@ class ApiController {
                             }
                         }
                         Extensions() {
-                            Extension(type: "product_type", "${sessionData.campaign.productType}")
+                            Extension(type: "ADIII") {
+                                ProductType("${sessionData.campaign.productType}")
+                            }
                         }
                     }
                 }
@@ -472,8 +486,41 @@ class ApiController {
         }
     }
 
-    private makeCdata(input) {
-        mkp.yieldUnescaped("<![CDATA[${input}]]>")
+    /*
+     *   (not an action method)
+     *   將creative的圖片從path中擷取出來
+     */
+    private String parseImgNameFromPath(String path)
+    {
+        if (path == "tmp")
+        {
+            return "defalut"
+        }
+
+        def pathArray = path.split("/")
+        return pathArray[pathArray.size() - 1].toString()
+    }
+
+
+    /*
+     *   (not an action method)
+     *   取得creative的圖片型態
+     */
+    private String parseImgType(String path)
+    {
+        if (path == "tmp")
+        {
+            return "png"
+        }
+
+        def imgName = parseImgNameFromPath(path)
+        def pathArray = imgName.split(/\./)
+        String type = pathArray[pathArray.size() - 1].toString()
+        if (type == "jpg")
+        {
+            type = "jpeg"
+        }
+        return type
     }
 
 }

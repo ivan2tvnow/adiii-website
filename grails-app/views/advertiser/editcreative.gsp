@@ -117,7 +117,7 @@
                             廣告圖片：<em class="red">*</em>
                         </label>
                         <div class="controls">
-                            <input type="file" name="upload_file.0" id="upload_file" accept="image/*" required="true"/>
+                            <input type="file" name="upload_file" id="upload_file" accept="image/*" required="true"/>
                             <span class="add-on">
                                 <a id="upload_file_info" class="btn btn-mini btn-info">
                                     <i class="icon-info-sign icon-white"></i>

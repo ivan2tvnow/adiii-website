@@ -17,7 +17,7 @@ class FileUploadService {
             if (System.properties['os.name'].toLowerCase().contains('windows')) {
                 storagePath = "C:/adiii/assets"
             } else {
-                storagePath = "/var/www/aiii/assets"
+                storagePath = "/var/www/adiii/assets"
             }
         }
         else

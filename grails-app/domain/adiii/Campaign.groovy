@@ -29,11 +29,13 @@ class Campaign {
         creatives sort: "id", order: "desc"
     }
 
-    enum Currency{
+    enum Currency {
         NTD, USD
     }
 
     enum ProductType {
-        FOOD, COSMETICS, ENTERTAINMENT, MALE_CLOTHES, FEMALE_CLOTHES, WEB_SITE, ANDROID_APP, IOS_APP
+        CEP, APPLIANCE, RECREATION, MALE_CLOTHES, FEMALE_CLOTHES, ACCESSORY, COSMETICS_HEALTH,
+        BOOK_MEDIA, FOOD, FUNITURE, DAILY_USE, MOM_BABY, SERVICE
     }
+
 }

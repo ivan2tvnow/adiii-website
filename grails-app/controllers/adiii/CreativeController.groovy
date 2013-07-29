@@ -67,6 +67,10 @@ class CreativeController
                         price: priceList[i], campaign: campaign)
             }
 
+            MultipartFile file = request.getFile("upload_file.${i}")
+            String tmp = validateImg(file)
+            creative.imageUrl = tmp
+
             def returnVal = validateCreative(creative)
             if (returnVal != [:])
             {
@@ -76,7 +80,7 @@ class CreativeController
                 campaign.addToCreatives(creative)
                 if(campaign.save() && creative.save())
                 {
-                    creative.imageUrl = uploadFile(creative.id, i)
+                    creative.imageUrl = uploadFile(params.id, file)
                     creative.save()
                     successList.add(creative.name)
                 }
@@ -108,8 +112,9 @@ class CreativeController
     def update()
     {
         withCreative() { creative ->
-            String tmp = validateImg()
-            String result = tmp == 'tmp'?uploadFile(params.id, 0):tmp
+            MultipartFile file = request.getFile("upload_file")
+            String tmp = validateImg(file)
+            String result = tmp == 'tmp'?uploadFile(params.id, file):tmp
             creative.setProperties(name: params.ad_name,
                     link: params.ad_link,
                     displayText: params.display_text,
@@ -208,11 +213,10 @@ class CreativeController
          *  (not an action method)
          *  檢查圖片是否符合格式
          */
-    protected String validateImg()
+    protected String validateImg(MultipartFile file)
     {
-        MultipartFile file = request.getFile('upload_file')
         if (!file) {
-            return "no Image"
+            return "reject"
         }
 
         if (!file.isEmpty()) {
@@ -222,7 +226,7 @@ class CreativeController
             if (!allowContentTypes.contains(file.getContentType())) {
                 println("Image type must be one of: ${allowContentTypes}")
                 return "reject"
-            } else if (image.getWidth() > 360 && image.getHeight() > 50) {
+            } else if (image.getWidth() > 600 && image.getHeight() > 500) {
                 println("Image too big")
                 return "reject"
             } else {
@@ -230,7 +234,7 @@ class CreativeController
             }
         }
 
-        return "no Image"
+        return "reject"
     }
 
     /*
@@ -303,9 +307,8 @@ class CreativeController
          *  (not an action method)
          *  將request裡面的檔案存到系統中
          */
-    protected String uploadFile(fileName, index)
+    protected String uploadFile(fileName, MultipartFile file)
     {
-        MultipartFile file = request.getFile("upload_file.${index}")
         String extension = file.contentType.split("/")[1]
         return fileUploadService.uploadFile(file, "${fileName}.${extension}")
     }
