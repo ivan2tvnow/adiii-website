@@ -58,6 +58,7 @@ class CampaignController
                 hasEndDatetime: checkEndDate,
                 endDatetime: endDate,
                 dailyBudget: params.int('daily_budget'),
+                status: "DRAFT",
                 productType: 'no')
 
         User user = springSecurityService.getCurrentUser()
@@ -133,6 +134,14 @@ class CampaignController
         {
             redirect(action: "delete", params: [campaignIdList: campaignIdList])
         }
+        else if (params.submit == "進行投放")
+        {
+            redirect(action: "publish", params: [campaignIdList: campaignIdList])
+        }
+        else if (params.submit == "暫停投放")
+        {
+            redirect(action: "pause", params: [campaignIdList: campaignIdList])
+        }
         else
         {
             redirect(controller: "advertiser", action: "index")
@@ -170,6 +179,46 @@ class CampaignController
                 }
             }
 
+        }
+
+        redirect(controller: "advertiser", action: "index")
+    }
+
+    /*
+         *  URL: /advertiser/campaign/select
+         *  投放所選的campaign
+         *  摻除完成後會回到campaign顯示頁
+         */
+    @Secured(['ROLE_ADVERTISER'])
+    def publish() {
+        for (campaignId in params.campaignIdList)
+        {
+            Campaign campaign = Campaign.get(campaignId)
+            if (campaign && (campaign.status == "READY" || campaign.status == "PAUSE"))
+            {
+                campaign.status = "START"
+                campaign.save()
+            }
+        }
+
+        redirect(controller: "advertiser", action: "index")
+    }
+
+    /*
+         *  URL: /advertiser/campaign/select
+         *  投放所選的campaign
+         *  摻除完成後會回到campaign顯示頁
+         */
+    @Secured(['ROLE_ADVERTISER'])
+    def pause() {
+        for (campaignId in params.campaignIdList)
+        {
+            Campaign campaign = Campaign.get(campaignId)
+            if (campaign && campaign.status == "START")
+            {
+                campaign.status = "PAUSE"
+                campaign.save()
+            }
         }
 
         redirect(controller: "advertiser", action: "index")

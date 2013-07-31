@@ -10,6 +10,7 @@ class Campaign {
     Date endDatetime
     Date createdDatetime = new Date()
     String productType
+    String status
 
     static belongsTo = [user: User]
     static hasMany = [creatives: Creative, impressions: Impression]
@@ -23,6 +24,7 @@ class Campaign {
             }
         }
         productType blank: true
+        status blank: true
     }
 
     static mapping = {
@@ -31,6 +33,19 @@ class Campaign {
 
     enum Currency {
         NTD, USD
+    }
+
+    def beforeUpdate() {
+        def todaty = new Date()
+
+        if (this.endDatetime < todaty)
+        {
+            this.status = "END"
+        }
+        else if (this.creatives.size() == 0)
+        {
+            this.status = "DRAFT"
+        }
     }
 
 }

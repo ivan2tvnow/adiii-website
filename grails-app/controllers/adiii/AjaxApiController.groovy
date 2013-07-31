@@ -2,8 +2,6 @@ package adiii
 
 class AjaxApiController {
 
-    def index() {}
-
     def getReports()
     {
         Date today = Date.parse("yyyy-MM-dd", "${params.end}")
@@ -59,9 +57,6 @@ class AjaxApiController {
         def clickMap = [name: "點擊次數", data: clickList]
         def ctrMap = [name: "CTR", data: ctrList]
 
-        /*render(contentType: "text/json") {
-            [date: dateList, impression: impressionList, click: clickList]
-        }    */
         render(contentType: "text/json") {
             date = dateList
             output = array {

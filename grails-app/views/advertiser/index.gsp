@@ -74,8 +74,18 @@
         <div class="well">
 
             <a href="${createLink(controller: 'advertiser', action: 'addcampaign')}" class="btn btn-primary">建立新廣告活動</a>
-            <a href="#" class="btn btn-primary disabled">進行投放</a>
-            <a href="#" class="btn btn-primary disabled">暫停投放</a>
+            <g:if test="${campaigns.size() <= 0}">
+                <a href="#" class="btn btn-primary disabled">進行投放</a>
+            </g:if>
+            <g:else>
+                <input type="submit" name="submit" class="btn btn-primary" value="進行投放"/>
+            </g:else>
+            <g:if test="${campaigns.size() <= 0}">
+                <a href="#" class="btn btn-primary disabled">暫停投放</a>
+            </g:if>
+            <g:else>
+                <input type="submit" name="submit" class="btn btn-primary" value="暫停投放"/>
+            </g:else>
             <g:if test="${campaigns.size() <= 0}">
                 <a href="#" class="btn btn-danger disabled">刪除廣告</a>
             </g:if>
@@ -91,7 +101,7 @@
             <table class="table table-hover table-striped">
                 <thead>
                 <tr>
-                    <th><input type="checkbox"></th>
+                    <th><input id="check_all" type="checkbox"></th>
                     <th>活動名稱</th>
                     <th>活動ID</th>
                     <th>狀態</th>
@@ -127,7 +137,21 @@
                                 </g:else>
                             </td>
                             <td>${campaign.id}</td>
-                            <td><strong class="text-warning">草稿</strong></td>
+                            <g:if test="${campaign.status == "DRAFT"}">
+                                <td><strong class="muted">草稿</strong></td>
+                            </g:if>
+                            <g:elseif test="${campaign.status == "READY"}">
+                                <td><strong class="text-info">尚未投放</strong></td>
+                            </g:elseif>
+                            <g:elseif test="${campaign.status == "START"}">
+                                <td><strong class="text-success">投放中</strong></td>
+                            </g:elseif>
+                            <g:elseif test="${campaign.status == "PAUSE"}">
+                                <td><strong class="text-warning">暫停中</strong></td>
+                            </g:elseif>
+                            <g:elseif test="${campaign.status == "END"}">
+                                <td><strong class="text-error">已結束</strong></td>
+                            </g:elseif>
                             <td>${campaign.dailyBudget} 點</td>
                             <td>${statistics[campaign.id].impression}</td>
                             <td>${statistics[campaign.id].click}</td>
@@ -144,22 +168,22 @@
             </table>
             <div class="pagination pagination-right">
                 <ul>
-                    <li><a class="page_link" href="#" onclick="changePage(1);">第一頁</a></li>
+                    <li><a href="#" onclick="changePage(1);">第一頁</a></li>
                     <g:if test="${currentPage > 1}">
-                        <li><a class="page_link" href="#" onclick="changePage(${currentPage - 1});">上一頁</a></li>
+                        <li><a href="#" onclick="changePage(${currentPage - 1});">上一頁</a></li>
                     </g:if>
                     <g:each in="${pageList}" var="page">
                         <g:if test="${page == currentPage}">
                             <li class="current_page"><a href="#">${page}</a></li>
                         </g:if>
                         <g:else>
-                            <li><a class="page_link" href="#" onclick="changePage(${page});">${page}</a></li>
+                            <li><a href="#" onclick="changePage(${page});">${page}</a></li>
                         </g:else>
                     </g:each>
                     <g:if test="${currentPage < totalPage}">
-                        <li><a class="page_link" href="#" onclick="changePage(${currentPage + 1});">下一頁</a></li>
+                        <li><a href="#" onclick="changePage(${currentPage + 1});">下一頁</a></li>
                     </g:if>
-                    <li><a class="page_link" href="#" onclick="changePage(${totalPage});">最終頁</a></li>
+                    <li><a href="#" onclick="changePage(${totalPage});">最終頁</a></li>
                 </ul>
             </div>
         </div>
@@ -183,6 +207,7 @@
         $('#report_range').daterangepicker(
                 {
                     ranges: {
+                        '至今': [new Date('01/01/2012'), new Date()],
                         '今天': [new Date(), new Date()],
                         '昨天': [moment().subtract('days', 1), moment().subtract('days', 1)],
                         '最近7天': [moment().subtract('days', 6), new Date()],
@@ -220,6 +245,17 @@
         );
         //Set the initial state of the picker label
         $('#report_range span').html(start_date + ' - ' + end_date);
+    });
+
+    $('#check_all').change(function() {
+        if(!this.checked)
+        {
+            $('input').attr('checked', false);
+        }
+        else
+        {
+            $('input').attr('checked', true);
+        }
     });
 
     function changePage(page) {

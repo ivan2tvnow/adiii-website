@@ -2,8 +2,7 @@ package adiii
 
 import grails.plugins.springsecurity.Secured
 
-class AdvertiserController
-{
+class AdvertiserController {
     static allowedMethods = [index: ['GET', 'POST']]
     def springSecurityService
     def NUM_PER_PAGE = 50
@@ -13,23 +12,21 @@ class AdvertiserController
      *  URL: /advertiser/index
      *  廣告主首頁, 即顯示所有廣告主可進行操作與顯示所有廣告活動的頁面.
      */
+
     @Secured(['ROLE_ADVERTISER'])
-    def index()
-    {
+    def index() {
         User advertiser = springSecurityService.getCurrentUser()
 
         int currentPage = 1
-        if (params.page)
-        {
+        if (params.page) {
             currentPage = params.page.toInteger()
         }
 
         int offset = (currentPage - 1) * NUM_PER_PAGE
         int campaignCount = advertiser.campaigns.size()
-        int totalPage = Math.ceil(campaignCount / NUM_PER_PAGE)
 
         Date endDate = new Date()
-        Date startDate = endDate - 30
+        Date startDate = Date.parse("yyyy-MM-dd", "2012-01-01")
         if (params.startDate && params.endDate) {
             startDate = Date.parse("yyyy-MM-dd", "${params.startDate}")
             endDate = Date.parse("yyyy-MM-dd", "${params.endDate}")
@@ -37,20 +34,21 @@ class AdvertiserController
 
         Map modelMap = [:]
         modelMap.currentPage = currentPage
-        modelMap.totalPage = totalPage
         modelMap.startDate = startDate
         modelMap.endDate = endDate
         modelMap.campaignCount = campaignCount
-        modelMap.campaigns = Campaign.findAllByStartDatetimeGreaterThanEqualsAndEndDatetimeLessThanEquals(startDate, endDate, [max: NUM_PER_PAGE, offset: offset, sort: "id", order: "desc", fetch: [user: advertiser]])
+        modelMap.campaigns = Campaign.findAllByCreatedDatetimeGreaterThanEqualsAndCreatedDatetimeLessThanEquals(startDate, endDate, [max: NUM_PER_PAGE, offset: offset, sort: "id", order: "desc", fetch: [user: advertiser]])
+
+        def campaignInRange = Campaign.countByCreatedDatetimeGreaterThanEqualsAndCreatedDatetimeLessThanEquals(startDate, endDate)
+        int totalPage = Math.ceil(campaignInRange / NUM_PER_PAGE)
+        modelMap.totalPage = totalPage
         modelMap.pageList = getPageList(currentPage, totalPage)
 
         modelMap.statistics = [:]
-        for (campaign in modelMap.campaigns)
-        {
+        for (campaign in modelMap.campaigns) {
             int total_impression = 0
             int total_click = 0
-            for (creative in campaign.creatives)
-            {
+            for (creative in campaign.creatives) {
                 total_click += creative.clicks.size()
             }
             total_impression += campaign.impressions.size()
@@ -64,28 +62,22 @@ class AdvertiserController
      *  URL: /advertiser/campaign/${campaign.id}, ex: /advertiser/campaign/5566
      *  廣告活動(campaign)資訊頁面, 顯示廣告活動的詳細資訊, 主要顯示其所包含的所有廣告內容(creatives)
      */
+
     @Secured(['ROLE_ADVERTISER'])
-    def campaign()
-    {
+    def campaign() {
         Campaign campaign = Campaign.get(params.id)
-        if(campaign != null)
-        {
-            if(campaign.creatives.size() > 0)
-            {
+        if (campaign != null) {
+            if (campaign.creatives.size() > 0) {
                 Map modelMap = [:]
                 modelMap.campaignName = campaign.name
                 modelMap.campaignId = campaign.id
                 modelMap.creatives = campaign.creatives
                 modelMap.creativeCount = campaign.creatives?.size()
                 render(view: "campaign", model: modelMap)
-            }
-            else
-            {
+            } else {
                 redirect(controller: "advertiser", action: "addcreative", id: campaign.id)
             }
-        }
-        else
-        {
+        } else {
             render "<h1>No such resource!</h1>"
         }
     }
@@ -94,9 +86,9 @@ class AdvertiserController
      *  URL: /advertiser/addcampaign
      *  廣告主用以新增廣告活動(campaign)的頁面
      */
+
     @Secured(['ROLE_ADVERTISER'])
-    def addcampaign()
-    {
+    def addcampaign() {
         Map modelMap = [:]
         // TODO: the work of counting the total number of owned campaigns must be cached.
         modelMap.campaignCount = Campaign.count()
@@ -115,8 +107,7 @@ class AdvertiserController
         modelMap.hourList = hourList
 
         String selectHour = tmpCal.format("HH")
-        if(tmpCal.get(Calendar.MINUTE) >= 30)
-        {
+        if (tmpCal.get(Calendar.MINUTE) >= 30) {
             tmpCal.add(Calendar.HOUR_OF_DAY, 1)
             selectHour = tmpCal.format("HH")
         }
@@ -131,9 +122,9 @@ class AdvertiserController
      *  廣告主用以為廣告活動(campaign)新增廣告內容(creative)的頁面
      *  注意URL的第三個segment為目前要為其建立內容的campaign ID
      */
+
     @Secured(['ROLE_ADVERTISER'])
-    def addcreative()
-    {
+    def addcreative() {
         Map modelMap = [:]
         modelMap.creativeList = []
         modelMap.campaignCount = Campaign.count()
@@ -154,6 +145,7 @@ class AdvertiserController
      *  廣告主用以為廣告活動(campaign)新增行動廣告內容(creative)的頁面
      *  注意URL的第三個segment為目前要為其建立內容的campaign ID
      */
+
     @Secured(['ROLE_ADVERTISER'])
     def addmobadcampaign() {
         render(view: "addmobadcampaign")
@@ -163,9 +155,9 @@ class AdvertiserController
      *  URL: /advertiser/reports
      *  顯示廣告投放狀況的頁面
      */
+
     @Secured(['ROLE_ADVERTISER'])
-    def reports()
-    {
+    def reports() {
         Map modelMap = [:]
         User advertiser = springSecurityService.getCurrentUser()
         modelMap.campaignList = advertiser.campaigns.toList()
@@ -182,6 +174,7 @@ class AdvertiserController
      *  URL: /advertiser/account
      *  顯示廣告主帳戶狀況的頁面, 此頁面用以顯示與操作與金錢額度相關的資訊與操作.
      */
+
     @Secured(['ROLE_ADVERTISER'])
     def account() {
         render(view: "account")
@@ -191,28 +184,21 @@ class AdvertiserController
      *  (not an action method)
      *  依據需求計算出該顯示出的分頁.
      */
-    private getPageList(current, total)
-    {
+
+    private getPageList(current, total) {
         def range = (SHOW_PAGE_LENGTH - 1) / 2
 
         if (total < 1) {
             total = 1
         }
 
-        if (total < SHOW_PAGE_LENGTH)
-        {
+        if (total < SHOW_PAGE_LENGTH) {
             return (1..total).toList()
-        }
-        else if (current <= (range + 1))
-        {
+        } else if (current <= (range + 1)) {
             return (1..SHOW_PAGE_LENGTH).toList()
-        }
-        else if (current >= (total - range))
-        {
+        } else if (current >= (total - range)) {
             return ((total - SHOW_PAGE_LENGTH)..total).toList()
-        }
-        else
-        {
+        } else {
             return ((current - range)..(current + range)).toList()
         }
     }

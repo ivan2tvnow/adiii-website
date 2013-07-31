@@ -24,7 +24,7 @@ class AdiiiController
         }
         else
         {
-            render view: 'index'
+            redirect(controller: "login", action: "auth")
         }
 
     }

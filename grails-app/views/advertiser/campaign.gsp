@@ -101,7 +101,6 @@
                         <th>內容名稱</th>
                         <th>廣告ID</th>
                         <th>廣告類型</th>
-                        <th>狀態</th>
                         <th>出價</th>
                         <th>投放次數</th>
                         <th>點擊次數</th>
@@ -138,7 +137,6 @@
                                 <g:elseif test="${creative instanceof adiii.MobileAdCreative}">
                                     <td>行動</td>
                                 </g:elseif>
-                                <td><strong class="text-warning">草稿</strong></td>
                                 <td>0 點</td>
                                 <td>${creative.campaign.impressions.size()}</td>
                                 <td>${creative.clicks.size()}</td>

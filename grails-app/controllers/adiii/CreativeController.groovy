@@ -78,6 +78,7 @@ class CreativeController
             }
             else {
                 campaign.addToCreatives(creative)
+                campaign.status = "READY"
                 if(campaign.save() && creative.save())
                 {
                     creative.imageUrl = uploadFile(params.id, file)
