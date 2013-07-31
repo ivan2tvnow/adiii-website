@@ -33,9 +33,4 @@ class Campaign {
         NTD, USD
     }
 
-    enum ProductType {
-        CEP, APPLIANCE, RECREATION, MALE_CLOTHES, FEMALE_CLOTHES, ACCESSORY, COSMETICS_HEALTH,
-        BOOK_MEDIA, FOOD, FUNITURE, DAILY_USE, MOM_BABY, SERVICE
-    }
-
 }

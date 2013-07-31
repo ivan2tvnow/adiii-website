@@ -17,6 +17,7 @@ class AdvertiserController
     def index()
     {
         User advertiser = springSecurityService.getCurrentUser()
+
         int currentPage = 1
         if (params.page)
         {
@@ -27,11 +28,20 @@ class AdvertiserController
         int campaignCount = advertiser.campaigns.size()
         int totalPage = Math.ceil(campaignCount / NUM_PER_PAGE)
 
+        Date endDate = new Date()
+        Date startDate = endDate - 30
+        if (params.startDate && params.endDate) {
+            startDate = Date.parse("yyyy-MM-dd", "${params.startDate}")
+            endDate = Date.parse("yyyy-MM-dd", "${params.endDate}")
+        }
+
         Map modelMap = [:]
         modelMap.currentPage = currentPage
         modelMap.totalPage = totalPage
+        modelMap.startDate = startDate
+        modelMap.endDate = endDate
         modelMap.campaignCount = campaignCount
-        modelMap.campaigns = Campaign.list(max: NUM_PER_PAGE, offset: offset, sort: "id", order: "desc", fetch: [user: advertiser])
+        modelMap.campaigns = Campaign.findAllByStartDatetimeGreaterThanEqualsAndEndDatetimeLessThanEquals(startDate, endDate, [max: NUM_PER_PAGE, offset: offset, sort: "id", order: "desc", fetch: [user: advertiser]])
         modelMap.pageList = getPageList(currentPage, totalPage)
 
         modelMap.statistics = [:]

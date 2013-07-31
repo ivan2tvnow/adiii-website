@@ -144,22 +144,22 @@
             </table>
             <div class="pagination pagination-right">
                 <ul>
-                    <li><g:link controller="advertiser" action="index" params="[page: 1]">第一頁</g:link></li>
+                    <li><a class="page_link" href="#" onclick="changePage(1);">第一頁</a></li>
                     <g:if test="${currentPage > 1}">
-                        <li><g:link controller="advertiser" action="index" params="[page: (currentPage - 1)]">上一頁</g:link></li>
+                        <li><a class="page_link" href="#" onclick="changePage(${currentPage - 1});">上一頁</a></li>
                     </g:if>
                     <g:each in="${pageList}" var="page">
                         <g:if test="${page == currentPage}">
-                            <li class="current_page"><g:link controller="advertiser" action="index" params="[page: page]">${page}</g:link></li>
+                            <li class="current_page"><a href="#">${page}</a></li>
                         </g:if>
                         <g:else>
-                            <li><g:link controller="advertiser" action="index" params="[page: page]">${page}</g:link></li>
+                            <li><a class="page_link" href="#" onclick="changePage(${page});">${page}</a></li>
                         </g:else>
                     </g:each>
                     <g:if test="${currentPage < totalPage}">
-                        <li><g:link controller="advertiser" action="index" params="[page: (currentPage + 1)]">下一頁</g:link></li>
+                        <li><a class="page_link" href="#" onclick="changePage(${currentPage + 1});">下一頁</a></li>
                     </g:if>
-                    <li><g:link controller="advertiser" action="index" params="[page: totalPage]">最終頁</g:link></li>
+                    <li><a class="page_link" href="#" onclick="changePage(${totalPage});">最終頁</a></li>
                 </ul>
             </div>
         </div>
@@ -175,6 +175,10 @@
 <script type="text/javascript" src="${resource(dir: "js", file: "moment.min.js")}"></script>
 <script type="text/javascript" src="${resource(dir: "js", file: "daterangepicker.js")}"></script>
 <script type="text/javascript">
+    var current_page = ${currentPage};
+    var start_date = "${startDate.format('yyyy-MM-dd')}";
+    var end_date = "${endDate.format('yyyy-MM-dd')}";
+
     $(document).ready(function() {
         $('#report_range').daterangepicker(
                 {
@@ -187,10 +191,10 @@
                     opens: 'left',
                     format: 'MM/DD/YYYY',
                     separator: ' to ',
-                    startDate: moment().subtract('days', 29),
-                    endDate: new Date(),
+                    startDate: new Date(start_date),
+                    endDate: new Date(end_date),
                     minDate: '01/01/2012',
-                    maxDate: '12/31/2013',
+                    maxDate: '12/31/2014',
                     locale: {
                         applyLabel: '確定',
                         clearLabel: "清除",
@@ -208,11 +212,24 @@
                 },
                 function(start, end) {
                     $('#report_range span').html(start.format('YYYY/MM/DD') + ' - ' + end.format('YYYY/MM/DD'));
+                    start_date = start.format('YYYY-MM-DD');
+                    end_date = end.format('YYYY-MM-DD');
+                    current_page = 1;
+                    reloadPage();
                 }
         );
         //Set the initial state of the picker label
-        $('#report_range span').html(moment().subtract('days', 29).format('YYYY/MM/DD') + ' - ' + moment().format('YYYY/MM/DD'));
+        $('#report_range span').html(start_date + ' - ' + end_date);
     });
+
+    function changePage(page) {
+        current_page = page;
+        reloadPage();
+    }
+
+    function reloadPage() {
+        $(window.location).attr("href", "${createLink(controller: "advertiser", action: "index", absolute: true)}?page=" + current_page + "&startDate=" + start_date + "&endDate=" + end_date);
+    }
 </script>
 </body>
 </html>

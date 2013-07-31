@@ -11,6 +11,7 @@ class ApiController {
      *  URL: /api/search?adId=${campaignId}&apiKey=${user.apiKey}
      *  當廣告主已知廣告ID時, 可透過此API呼叫直接取得廣告活動內容.
      */
+
     def search() {
         def apiKey = params.apiKey
         def adId = params.adId
@@ -32,6 +33,7 @@ class ApiController {
      *  URL: /api/getAd?apiKey=${user.apiKey}
      *  Adiii SDK取得廣告的主要API, 本方法應取得開發者驗證資訊, 使用者資訊等, 以利本平台演算法推播最適當的廣告.
      */
+
     def getAd() {
         def apiKey = params.apiKey
         if (!apiKey) {
@@ -71,6 +73,7 @@ class ApiController {
      *   URL: /api/impression?sessionKey=${user.apiKey}&id=${creative.id}
      *   增加指定creative裡面的impression值
      */
+
     def impression() {
         //TODO: needs further improvement of the database accessing performance.
         SessionData sessionData = SessionData.findByAccessKey(params.data)
@@ -106,26 +109,25 @@ class ApiController {
      *   URL: /api/impression?click=${user.apiKey}&id=${creative.id}
      *   增加指定creative裡面的click值
      */
+
     def click() {
         //sleep 1000 //for sync problem
         SessionData sessionData = SessionData.findByAccessKey(params.data)
-        if (sessionData) {
+        if (sessionData && sessionData.impression) {
             sessionData.lock()
-            if (sessionData.impression && !sessionData.click) {
-                //add click info
-                withClientInfo { info ->
-                    def clicks = new Click(info)
+            //add click info
+            withClientInfo { info ->
+                def click = new Click(info)
 
-                    //TODO: deal with sync problem
-                    try {
-                        Creative.withTransaction {
-                            def creative = Creative.lock(params.id)
-                            creative.addToClicks(clicks)
-                            creative.save(flush: true)
-                        }
-                    } catch (OptimisticLockingFailureException e) {
-                        println "exception"
+                //TODO: deal with sync problem
+                try {
+                    Creative.withTransaction {
+                        def creative = Creative.lock(params.id)
+                        creative.addToClicks(click)
+                        creative.save(flush: true)
                     }
+                } catch (OptimisticLockingFailureException e) {
+                    println "exception"
                 }
             }
             sessionData.campaign = null
@@ -141,6 +143,7 @@ class ApiController {
      *  URL: /api/creativeView (using POST)
      *  在creative出現時呼叫，用以統計顯示次數.
      */
+
     def creativeView() {
         //TODO: needs further improvement of the database accessing performance.
         SessionData sessionData = SessionData.findByAccessKey(params.data)
@@ -171,6 +174,7 @@ class ApiController {
      *  URL: /api/clicktTrough (using POST)
      *  用以導向creative所指的URL.
      */
+
     def clicktTrough() {
         def creative = Creative.lock(params.id)
 
@@ -181,6 +185,7 @@ class ApiController {
      *  URL: /api/campaign (using POST)
      *  用以新增, 修改, 刪除廣告活動的API.
      */
+
     def campaigns() {
         try {
             def slurper = new JsonSlurper()
@@ -261,6 +266,7 @@ class ApiController {
      *  (not an action method)
      *   抓取所有campain
      */
+
     def getCampaignNames() {
         List result = []
         def campaigns = Campaign.getAll()
@@ -277,6 +283,7 @@ class ApiController {
          *   (not an action method)
          *   抓取client端數值：IP、時間、裝置ID
          */
+
     private void withClientInfo(Closure c) {
         def returnValue = [ipAddress: request.getRemoteAddr(), createdDatetime: new Date(), deviceId: params.data]
         c.call returnValue
@@ -287,6 +294,7 @@ class ApiController {
      *   取得要投放的廣告活動, 目前只有兩個方式:1)亂數挑選, 2)給予預設廣告活動.
      *
      */
+
     private getCampaign() {
         def query = Campaign.where {
             creatives.size() > 0
@@ -305,6 +313,7 @@ class ApiController {
      *   (not an action method)
      *   給予預設廣告活動內容.
      */
+
     private getDefaultCampaign() {
         def campaign = new Campaign(name: 'Adiii Advertising Platform',
                 startDatetime: new Date(),
@@ -325,6 +334,7 @@ class ApiController {
      *   (not an action method)
      *   Error code與error message的對映.
      */
+
     private getErrorMap(Integer errorCode) {
         def map = [:]
         switch (errorCode) {
@@ -350,6 +360,7 @@ class ApiController {
      *   (not an action method)
      *   根據廣告活動產生VAST格式內容closure.
      */
+
     private makeVastClosure(SessionData sessionData) {
         def adId = "adiii_${sessionData.campaign.id}"
 
@@ -359,12 +370,9 @@ class ApiController {
         def viewUlr = "${host}/api/creativeView?data=${sessionData.accessKey}"
 
         def server
-        if (Environment.current == Environment.PRODUCTION)
-        {
+        if (Environment.current == Environment.PRODUCTION) {
             server = "${request.scheme}://${request.serverName}/adiii"
-        }
-        else
-        {
+        } else {
             server = host
         }
 
@@ -462,6 +470,7 @@ class ApiController {
      *   (not an action method)
      *   從campaign中取得隨機的creative
      */
+
     private getRandomCreative(Campaign campaign, type) {
         def result = []
         if (type == 'videoAd') {
@@ -490,10 +499,9 @@ class ApiController {
      *   (not an action method)
      *   將creative的圖片從path中擷取出來
      */
-    private String parseImgNameFromPath(String path)
-    {
-        if (path == "tmp")
-        {
+
+    private String parseImgNameFromPath(String path) {
+        if (path == "tmp") {
             return "defalut"
         }
 
@@ -501,23 +509,20 @@ class ApiController {
         return pathArray[pathArray.size() - 1].toString()
     }
 
-
     /*
      *   (not an action method)
      *   取得creative的圖片型態
      */
-    private String parseImgType(String path)
-    {
-        if (path == "tmp")
-        {
+
+    private String parseImgType(String path) {
+        if (path == "tmp") {
             return "png"
         }
 
         def imgName = parseImgNameFromPath(path)
         def pathArray = imgName.split(/\./)
         String type = pathArray[pathArray.size() - 1].toString()
-        if (type == "jpg")
-        {
+        if (type == "jpg") {
             type = "jpeg"
         }
         return type
