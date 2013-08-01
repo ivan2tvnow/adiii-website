@@ -72,4 +72,13 @@ class AjaxApiController {
             }
         }
     }
+
+    def getCampDateRange() {
+        Campaign campaign = Campaign.get(params.id)
+
+        render(contentType: "text/json") {
+            startDate = campaign.startDatetime.format("yyyy-MM-dd")
+            endDate = campaign.endDatetime.format("yyyy-MM-dd")
+        }
+    }
 }

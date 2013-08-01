@@ -174,6 +174,23 @@
         favfunct();
     });
 
+    $('#campaign_name').change(function(){
+        var camp_id = $(this).val();
+        if (camp_id != 'all') {
+            $.ajax({
+                url: "${createLink(controller: "ajaxApi", action: "getCampDateRange", absolute: true)}",
+                type: "GET",
+                data: { "id": camp_id },
+                dataType: "json",
+                contentType: "application/json; charset=utf-8",
+                success: function(data){
+                    $('#start_date').attr('value', data.startDate);
+                    $('#end_date').attr('value', data.endDate);
+                }
+            });
+        }
+    })
+
     function favfunct() {
         var campaign_name = $('#campaign_name').val()
         var first_content = $('#first_content').val()
