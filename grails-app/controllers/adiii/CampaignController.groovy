@@ -194,7 +194,7 @@ class CampaignController
         for (campaignId in params.campaignIdList)
         {
             Campaign campaign = Campaign.get(campaignId)
-            if (campaign && (campaign.status == "READY" || campaign.status == "PAUSE"))
+            if (campaign && (campaign.status == "READY" || campaign.status == "PAUSE") && campaign.status != "END")
             {
                 campaign.status = "START"
                 campaign.save()
@@ -214,7 +214,7 @@ class CampaignController
         for (campaignId in params.campaignIdList)
         {
             Campaign campaign = Campaign.get(campaignId)
-            if (campaign && campaign.status == "START")
+            if (campaign && campaign.status == "START" && campaign.status != "END")
             {
                 campaign.status = "PAUSE"
                 campaign.save()
