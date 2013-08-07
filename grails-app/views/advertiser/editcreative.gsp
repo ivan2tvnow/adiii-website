@@ -143,7 +143,7 @@
                 </fieldset>
                 <div class="form-actions">
                     <input type="submit" class="btn btn-primary" value="儲存並完成">
-                    <input type="submit" class="btn" value="取消"/>
+                    <a href="#" class="btn" onclick="history.go(-1);">取消</a>
                 </div>
             </g:uploadForm>
         </div>

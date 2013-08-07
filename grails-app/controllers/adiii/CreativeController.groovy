@@ -64,7 +64,8 @@ class CreativeController
                         link: adLinkList[i],
                         displayText: displayTextList[i],
                         imageUrl: "tmp",
-                        price: priceList[i], campaign: campaign)
+                        price: priceList[i],
+                        campaign: campaign)
             }
 
             MultipartFile file = request.getFile("upload_file.${i}")

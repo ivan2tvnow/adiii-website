@@ -9,11 +9,22 @@ class CheckCampStatusJob {
 
     def execute() {
         Date today = new Date()
-        def campaignList = Campaign.findByEndDatetimeLessThan(today)
+        def campaignList = Campaign.getAll()
 
         campaignList.each { campaign ->
-            campaign.status = "END"
-            campaign.save()
+            if (campaign.endDatetime < today && campaign.hasEndDatetime)
+            {
+                if (campaign.status != "END")
+                {
+                    campaign.status = "END"
+                    campaign.save()
+                }
+            }
+            else if (campaign.status == "END")
+            {
+                campaign.status = "READY"
+                campaign.save()
+            }
         }
     }
 }

@@ -197,6 +197,8 @@ class ApiController {
             campaign.hasEndDatetime = false
             campaign.endDatetime = campaign.startDatetime + 7
             campaign.dailyBudget = 50
+            campaign.productType = "food"
+            campaign.status = "READY"
 
             User user = User.findByEmail('test.user@gmail.com')
             println user
@@ -223,12 +225,13 @@ class ApiController {
 
             println campaign
 
-            VideoAdCreative creative = new VideoAdCreative()
+            def creative = new VideoAdCreative()
             creative.name = "creative_${result.campaignName}"
             creative.link = result.adLink
             creative.displayText = result.displayText
             creative.imageUrl = 'tmp'
             creative.price = 10.0
+            creative.campaign = campaign
 
             campaign.addToCreatives(creative)
             if (!campaign.validate() && !creative.validate()) {
@@ -246,7 +249,7 @@ class ApiController {
             }
             campaign.save()
 
-            def file = new File(storageDir, "${campaign.id}.png")
+            def file = new File(storageDir, "${creative.id}.png")
             file.setBytes(result.adImage.decodeBase64())
             creative.imageUrl = file.absolutePath
             creative.save()
@@ -256,9 +259,8 @@ class ApiController {
             render map as JSON
         }
         catch (any) {
-            //log.error(any.toString(), any)
-            //render any as JSON
-            render "an error happened!!"
+            log.error(any.toString(), any)
+            render any as JSON
         }
     }
 
@@ -296,8 +298,10 @@ class ApiController {
      */
 
     private getCampaign() {
+        Date today = new Date()
         def query = Campaign.where {
             creatives.size() > 0
+            //status == "START"
         }
         def campaigns = query.list()
 

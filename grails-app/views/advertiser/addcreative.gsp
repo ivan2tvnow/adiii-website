@@ -209,13 +209,13 @@
 
                 <div class="form-actions">
                     <input type="submit" class="btn btn-primary" value="儲存並完成">
-                    <input type="submit" class="btn" value="取消"/>
+                    <a href="${createLink(controller: 'advertiser', action: 'campaign', id: campaignId)}" class="btn">取消</a>
                 </div>
             </g:uploadForm>
         </div>
 
         <div class="well span4">
-            <table class="table-hover table-striped">
+            <table class="table table-hover table-striped">
                 <thead><tr><th>廣告活動預覽</th></tr></thead>
                 <tbody>
                 <tr><td>活動名稱</td><td>${campaign.name}</td></tr>
@@ -228,7 +228,7 @@
             
             <g:each in="${campaign.creatives}" var="creative" status="i">
                 <br/>
-                <table class="table-hover table-striped creative-table">
+                <table class="table table-hover table-striped creative-table">
                     <thead><tr><th>廣告${i}</th></tr></thead>
                     <tbody>
                     <tr><td>廣告名稱</td><td>${creative.name}</td></tr>

@@ -51,8 +51,25 @@
         <div class="well">
             <h2>帳戶資訊</h2>
         </div>
-        <div class="well">
-
+        <div class="span8">
+            <div class="well">
+                <table class="table table-bordered">
+                    <tbody>
+                    <tr class="success"><td>姓</td><td>${advertiser.firstname}</td></tr>
+                    <tr class="info"><td>名子</td><td>${advertiser.lastname}</td></tr>
+                    <tr class="success"><td>信箱地址</td><td>${advertiser.email}</td></tr>
+                    <sec:ifAllGranted roles="ROLE_DEVELOPER">
+                        <tr class="info"><td>帳戶類型</td><td>開發商</td></tr>
+                    </sec:ifAllGranted>
+                    <sec:ifAllGranted roles="ROLE_ADVERTISER">
+                        <tr class="info"><td>帳戶類型</td><td>廣告商</td></tr>
+                    </sec:ifAllGranted>
+                    <tr class="success"><td>國籍</td><td>${advertiser.country}</td></tr>
+                    <tr class="info"><td>組織</td><td>${advertiser.company}</td></tr>
+                    <tr class="success"><td>使用者金鑰</td><td>${advertiser.apikey}</td></tr>
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
 </div>

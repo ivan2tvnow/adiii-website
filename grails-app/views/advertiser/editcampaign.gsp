@@ -151,7 +151,7 @@
                 </fieldset>
                 <div class="form-actions">
                     <input type="submit" class="btn btn-primary" value="儲存並繼續"/>
-                    <input type="submit" class="btn" value="取消"/>
+                    <a href="${createLink(controller: 'advertiser', action: 'index')}" class="btn">取消</a>
                 </div>
             </g:form>
         </div>

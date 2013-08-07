@@ -177,7 +177,9 @@ class AdvertiserController {
 
     @Secured(['ROLE_ADVERTISER'])
     def account() {
-        render(view: "account")
+        Map modelMap = [:]
+        modelMap.advertiser = springSecurityService.getCurrentUser()
+        render(view: "account", model: modelMap)
     }
 
     /*
