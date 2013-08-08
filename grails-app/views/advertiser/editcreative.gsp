@@ -126,6 +126,16 @@
                             <g:if test="${errorMesseage.contains("imageUrl")}"><div class="errorMesseage">請輸入符合規範的圖片</div></g:if>
                         </div>
                     </div>
+
+                    <div class="control-group">
+                        <label class="control-label" for="current_file">
+                            已存圖片：
+                        </label>
+                        <div class="controls">
+                            <img id="current_file" src="${imgPath}"/>
+                        </div>
+                    </div>
+
                     <div class="control-group">
                         <label class="control-label" for="price">
                             出價：<em class="red">*</em>

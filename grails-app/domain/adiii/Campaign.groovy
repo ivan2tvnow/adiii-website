@@ -16,7 +16,7 @@ class Campaign {
     static hasMany = [creatives: Creative, impressions: Impression]
 
     static constraints = {
-        name(blank: false, size: 1..30, unique: true)
+        name(blank: false, size: 1..150, unique: true)
         dailyBudget(min: 50)
         hasEndDatetime validator: {val, obj ->
             if (val == true && obj.startDatetime.after(obj.endDatetime)) {
@@ -38,13 +38,17 @@ class Campaign {
     def beforeUpdate() {
         def todaty = new Date()
 
-        if (this.endDatetime < todaty)
+        if (this.endDatetime < todaty && this.hasEndDatetime)
         {
             this.status = "END"
         }
         else if (this.creatives.size() == 0)
         {
             this.status = "DRAFT"
+        }
+        else if (this.status == "END")
+        {
+            this.status = "READY"
         }
     }
 

@@ -1,6 +1,7 @@
 package adiii
 
 import grails.plugins.springsecurity.Secured
+import grails.util.Environment
 import org.springframework.web.multipart.MultipartFile
 
 import javax.imageio.ImageIO
@@ -18,9 +19,20 @@ class CreativeController
     def edit()
     {
         Map modelMap = [:]
+        def server
+        def host = "${request.scheme}://${request.serverName}:${request.serverPort}${request.contextPath}"
+        if (Environment.current == Environment.PRODUCTION) {
+            server = "${request.scheme}://${request.serverName}/adiii"
+        } else {
+            server = host
+        }
+
         withCreative() { creative ->
+            def pathArray = creative.imageUrl.split("/")
+            def imgPath = pathArray[pathArray.size() - 1].toString()
             modelMap.creative = creative
             modelMap.errorMesseage = []
+            modelMap.imgPath = "${server}/assets/${imgPath}"
             goBackToEdit(modelMap)
         }
     }

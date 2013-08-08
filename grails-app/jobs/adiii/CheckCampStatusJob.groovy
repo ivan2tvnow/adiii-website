@@ -17,13 +17,17 @@ class CheckCampStatusJob {
                 if (campaign.status != "END")
                 {
                     campaign.status = "END"
-                    campaign.save()
+                    campaign.save(flush: true, failOnError: true)
                 }
+            }
+            else if (campaign.creatives.size() < 0) {
+                campaign.status = "DRAFT"
+                campaign.save(flush: true, failOnError: true)
             }
             else if (campaign.status == "END")
             {
                 campaign.status = "READY"
-                campaign.save()
+                campaign.save(flush: true, failOnError: true)
             }
         }
     }

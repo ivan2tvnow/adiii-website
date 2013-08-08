@@ -12,7 +12,7 @@ class Creative
     static hasMany = [clicks: Click, creativeViews: CreativeView]
 
     static constraints = {
-        name(blank: false, size: 1..30, unique: true)
+        name(blank: false, size: 1..150, unique: true)
         link blank: false, url: true, validator: {val, obj ->
             try {
                 def url = new URL(val)

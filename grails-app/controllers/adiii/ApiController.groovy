@@ -209,9 +209,7 @@ class ApiController {
                 }
             }
 
-            String storagePath = ""
-            def servletContext = ServletContextHolder.servletContext
-            storagePath = servletContext.getRealPath('assets')
+            String storagePath = "/var/www/adiii/assets"
 
             def storageDir = new File(storagePath)
             if (!storageDir.exists()) {
@@ -247,12 +245,13 @@ class ApiController {
                     [error: errorList]
                 }
             }
-            campaign.save()
+            campaign.save(flush: true)
+            creative.save(flush: true)
 
             def file = new File(storageDir, "${creative.id}.png")
             file.setBytes(result.adImage.decodeBase64())
             creative.imageUrl = file.absolutePath
-            creative.save()
+            creative.save(flush: true)
 
             def map = [:]
             map.adId = campaign.id

@@ -46,7 +46,7 @@ class CampaignController
     def save()
     {
         Date startDate = Date.parse("yyyy/MM/dd HH:mm", "${params.start_date} ${params.start_hour}:${params.start_min}")
-        Date endDate = new Date()
+        Date endDate = new Date() + 14
         if (params?.check_end_date == 'on')
         {
             endDate = Date.parse("yyyy/MM/dd HH:mm", "${params.end_date} ${params.end_hour ?: '23'}:${params.end_min ?: '59'}")
