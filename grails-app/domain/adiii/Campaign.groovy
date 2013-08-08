@@ -48,4 +48,23 @@ class Campaign {
         }
     }
 
+    def getVideoCreativeCount() {
+        int count = 0
+        this.creatives.each { creative->
+            if (creative instanceof adiii.VideoAdCreative)
+            {
+                count ++
+            }
+        }
+    }
+
+    def getMobileCreativeCount() {
+        int count = 0
+        this.creatives.each { creative->
+            if (creative instanceof adiii.MobileAdCreative)
+            {
+                count ++
+            }
+        }
+    }
 }

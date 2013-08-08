@@ -10,4 +10,8 @@ class DemoController
     {
         render(view: "index")
     }
+
+    def device() {}
+
+    def ad() {}
 }

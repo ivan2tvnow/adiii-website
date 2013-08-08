@@ -298,9 +298,9 @@ class ApiController {
      */
 
     private getCampaign() {
-        Date today = new Date()
         def query = Campaign.where {
             creatives.size() > 0
+            getVideoCreativeCount() > 0
             //status == "START"
         }
         def campaigns = query.list()
