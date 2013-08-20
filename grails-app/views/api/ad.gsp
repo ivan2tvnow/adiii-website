@@ -1,4 +1,5 @@
-<script type="text/javascript" src="${resource(dir: "js", file: "mraid.js")}"></script>
+<script type="text/javascript" src="${resource(dir: "js", file: "mraidview-bridge.js")}"></script>
+<script type="text/javascript" src="${resource(dir: "js", file: "mraid-main.js")}"></script>
 
 <style>
 
@@ -83,25 +84,14 @@ img {
         }
     };
 
-    /**
-     * Primary entry point, listens for when MRAID is ready.
-     *
-     * Sets up an error event handler and populates initial screen data
-     *
-     * @requires mraid
-     */
     function mraidReady(){
+        window.demo.onReply();
         mraid.useCustomClose(false);
         mraid.addEventListener( 'error', handleErrorEvent );
         mraid.addEventListener( 'stateChange', handleStateChangeEvent );
         showDefault();
     }
 
-    /**
-     * Notifies the SDK that the default ad wishes to move to the expanded state.
-     *
-     * @requires mraid
-     */
     function expandAd() {
         console.log('expand Ad');
         mraid.useCustomClose(false);
@@ -109,10 +99,6 @@ img {
         mraid.expand('./mraid-test-ad-expanded.html');
     }
 
-
-    /**
-     * Handles MRAID errors.
-     */
     function handleErrorEvent( message, action ) {
         console.log('handleErrorEvent');
         var msg = "MRAID ERROR ";
@@ -124,22 +110,12 @@ img {
         alert(msg);
     }
 
-    /**
-     * Handles orientaion changes.
-     *
-     * @param {evt} Event, the error event
-     *
-     * @requires mraid
-     */
     function handleOrientationEvent( angle ) {
         console.log('handleOrientationEvent');
         var btn = document.controller.orientationButton;
         btn.value = "Orientation: " + angle;
     }
 
-    /**
-     * Handles state change events.
-     */
     function handleStateChangeEvent( state ) {
         console.log('handleStateChangeEvent');
         if ( state === 'default' ) {
@@ -150,34 +126,17 @@ img {
         }
     }
 
-
-    /**
-     * creates a calendar event
-     *
-     * @requires mraid
-     */
     function sendEvent() {
         console.log('sendEvent');
         mraid.createCalendarEvent( new Date(), "title", "body" );
     }
 
-    /**
-     * Causes the appropriate elements for the "default" state to be displayed.
-     *
-     * @requires: mraid
-     */
     function showDefault() {
         console.log('showDefault');
         var banner = document.getElementById( 'banner' );
         banner.style.display = 'block';
     }
 
-
-    /**
-     * Causes the appropriate elements for the "expanded" state to be displayed.
-     *
-     * @requires: mraid
-     */
     function showExpanded() {
         console.log('showExpanded');
     }
@@ -228,21 +187,21 @@ img {
 
     function openInMraid() {
         console.log('openInMraid');
-        mraid.open ('http://www.iab.net/mraid/');
+        mraid.open('${clickTrough}');
     }
 
     function playVideo() {
         console.log('playVideo');
-        mraid.playVideo ('http://youtu.be/FB5KeKdVCVo');
+        mraid.playVideo('${videoUrl}');
     }
 
     function storePicture() {
         console.log('storePicture');
-        mraid.storePicture ('http://www.iab.net/media/image/new-iab-logo.gif');
+        mraid.storePicture('${imgUrl}');
     }
     function createCalendarEvent() {
         console.log('createCalendarEvent');
-        mraid.createCalendarEvent ({description:'event description',location:'event location',summary:'event summary',start:'2011-03-24T09:00-08:00',end:'2011-03-24T10:00:00-08:00',reminder: '-3600000'});
+        mraid.createCalendarEvent({description:'event description',location:'event location',summary:'event summary',start:'2011-03-24T09:00-08:00',end:'2011-03-24T10:00:00-08:00',reminder: '-3600000'});
     }
 
     function supports() {
@@ -267,32 +226,61 @@ img {
         mraid.close();
     }
 
+    function adOnView() {
+        console.log('adOnView');
+        tracking('${viewUlr}');
+    }
+
+    function adImpression() {
+        console.log('adImpression');
+        tracking('${impressionUrl}');
+    }
+
+    function adClick() {
+        console.log('adClick');
+        tracking('${clickUrl}');
+    }
+
 </script>
 
 <!-- The actual creative -->
 
 <div id='ad'>
     <div id='banner'>
-        <img src="../img/300x50-solid.png"
-             alt="banner advertisement" />
-        <div id='expand'>
-            <img src="../img/expand.png"
-                 alt="expand"
-                 onclick="expandAd();" />
-        </div>
-        <div id='close'>
-            <img src="../img/shrink.png"
-                 alt="close"
-                 onclick="closeBanner();" />
-        </div>
+        <img id="ad_content" src="${imgUrl}" alt="banner advertisement" onerror="this.src='../img/300x50-solid.png'"/>
     </div>
 
 
     <!-- The expanded ad (expanded state) -->
 </div>
+<script src="http://code.jquery.com/jquery.js"></script>
 <script language="javascript">
-    //listen for mraid ready
+    $(function() {
+        adImpression();
 
+        $('#ad_content').load(adOnView());
+
+        $('#ad_content').click(function(){
+            adClick();
+            openInMraid();
+        });
+    });
+
+    function tracking(url) {
+        $.ajax({
+            url: url,
+            type: "GET",
+            dataType: "text",
+            error: function() {
+                console.log('traking error');
+            },
+            success: function () {
+                console.log('traking success');
+            }
+        });
+    }
+
+    //listen for mraid ready
     var readyTimeout;
     function readyListener() {
         if (typeof (mraid) === 'undefined') {

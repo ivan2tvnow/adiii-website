@@ -85,6 +85,12 @@
                     <h3>影片廣告 (VAST Response)</h3>
 
                     <div class="row">
+                        <div id="botton_panel" class="span10">
+                            <button id="vast_button" class="btn btn-info">測試廣告</button>
+                        </div>
+                    </div>
+
+                    <div class="row">
                         <div id="video_panel" class="span5">
                             <iframe width="400" height="225" src="http://www.youtube.com/embed/Vpg9yizPP_g"
                                     frameborder="0" allowfullscreen></iframe>
@@ -102,7 +108,7 @@
             </div>
 
             <div class="well">
-                <h3>行動廣告</h3>
+                <h3>行動廣告 (MRAID)</h3>
                 <input type="text" id="mraid_url" class="input-small span4" value="ad">
                 <button id="mraid_button" class="btn btn-info" onclick="showMraid();">測試行動廣告</button>
             </div>
@@ -118,10 +124,10 @@
 <script type="text/javascript" src="${resource(dir: "js", file: "mraidview.js")}"></script>
 <script type="text/javascript">
     $(document).ready(function () {
-        $('#submit_button').click(function (e) {
+        $('#vast_button').click(function (e) {
             e.preventDefault();
             e.stopPropagation();
-            favfunct();
+            showVast();
         });
     });
 
@@ -130,11 +136,11 @@
         mraidview.render();
     }
 
-    function favfunct() {
+    function showVast() {
         var request = $.ajax({
             url: "${createLink(controller: "api", action: "getAd", absolute: true)}",
             type: "GET",  // TODO: this should be 'POST'
-            data: { "apiKey": $("#api_key_text").val() },
+            data: { "apiKey": $("#api_key_text").val(), "adType": "video"},
             dataType: "text",
             complete: function () {
                 $("#request_url_text").val(this.url);
@@ -149,7 +155,7 @@
             var adClick = $xml.find("CompanionClickTracking").eq(0).text();
 
             $("#ad_image").remove();
-            $("#ad_img_container").append('<a href="' + adLink + '" onclick="secfunct(\'' + adClick + '\')">' +
+            $("#ad_img_container").append('<a href="' + adLink + '" onclick="clickTracking(\'' + adClick + '\')">' +
                     '<img id="ad_image" src="' + imgUrl + '" width="400" class="text-center img-polaroid" onerror="this.src=\'../assets/default.png\'"></a>');
 
             $.ajax({
@@ -165,7 +171,7 @@
         });
     }
 
-    function secfunct(url) {
+    function clickTracking(url) {
         var request = $.ajax({
             url: url,
             type: "GET",  // TODO: this should be 'POST'

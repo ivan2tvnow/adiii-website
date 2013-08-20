@@ -52,7 +52,7 @@ class Campaign {
         }
     }
 
-    def getVideoCreativeCount() {
+    int getVideoCreativeCount() {
         int count = 0
         this.creatives.each { creative->
             if (creative instanceof adiii.VideoAdCreative)
@@ -60,9 +60,11 @@ class Campaign {
                 count ++
             }
         }
+
+        return count
     }
 
-    def getMobileCreativeCount() {
+    int getMobileCreativeCount() {
         int count = 0
         this.creatives.each { creative->
             if (creative instanceof adiii.MobileAdCreative)
@@ -70,5 +72,7 @@ class Campaign {
                 count ++
             }
         }
+
+        return count
     }
 }

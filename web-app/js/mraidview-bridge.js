@@ -1,7 +1,7 @@
 (function () {
     var mraidview = window.mraidview = {},
         listeners = {};
-    broadcastEvent = function () {
+    broadcastEvent = function() {
         var i,
             key,
             event,
@@ -22,7 +22,7 @@
     mraidview.broadcastEvent = broadcastEvent;
     mraidview.scriptFound = false;
 
-    mraidview.addEventListener = function (event, listener, scope) {
+    mraidview.addEventListener = function(event, listener, scope) {
         var key = String(listener) + String(scope),
             map = listeners[event];
 
@@ -33,7 +33,7 @@
         map[key] = {scope : (scope ? scope : {}), func : listener};
     };
 
-    mraidview.removeEventListener = function (event, listener, scope) {
+    mraidview.removeEventListener = function(event, listener, scope) {
         var key = String(listener) + String(scope),
             map = listeners[event];
 
@@ -43,65 +43,66 @@
         }
     };
 
-    mraidview.pushChange = function (obj) {
+    mraidview.pushChange = function(obj) {
         console.warn(obj);
         Object
         broadcastEvent('change', obj);
     };
 
-    mraidview.pushError = function (message, action) {
+    mraidview.pushError = function(message, action) {
         broadcastEvent('error', message, action);
     };
 
-    mraidview.pushInfo = function (message) {
+    mraidview.pushInfo = function(message) {
         broadcastEvent('info', message);
     };
 
-    mraidview.activate = function (service) {
+    mraidview.activate = function(service) {
         broadcastEvent('activate', service);
     };
 
-    mraidview.deactivate = function (service) {
+    mraidview.deactivate = function(service) {
         broadcastEvent('deactivate', service);
     };
 
-    mraidview.expand = function (URL) {
+    mraidview.expand = function(URL) {
         broadcastEvent('expand', URL);
     };
 
-    mraidview.close = function () {
+    mraidview.close = function() {
         broadcastEvent('close');
     };
 
-    mraidview.open = function (URL) {
+    mraidview.open = function(URL) {
         broadcastEvent('open', URL);
+        window.bridge.open(URL);
     };
 
-    mraidview.resize = function () {
+    mraidview.resize = function() {
         broadcastEvent('resize');
     };
 
-    mraidview.setExpandProperties = function (properties) {
+    mraidview.setExpandProperties = function(properties) {
         broadcastEvent('setExpandProperties', properties);
     };
 
-    mraidview.setResizeProperties = function (properties) {
+    mraidview.setResizeProperties = function(properties) {
         broadcastEvent('setResizeProperties', properties);
     };
 
-    mraidview.storePicture = function (url) {
+    mraidview.storePicture = function(url) {
         broadcastEvent('storePicture', url);
     };
 
-    mraidview.playVideo = function (url) {
+    mraidview.playVideo = function(url) {
         broadcastEvent('playVideo', url);
     };
 
-    mraidview.createCalendarEvent = function (params) {
+    mraidview.createCalendarEvent = function(params) {
         broadcastEvent('createCalendarEvent', params);
     };
 
-    mraidview.useCustomClose = function (useCustomCloseIndicator) {
+    mraidview.useCustomClose = function(useCustomCloseIndicator) {
         broadcastEvent('useCustomClose', useCustomCloseIndicator);
     }
 

@@ -378,7 +378,7 @@
     };
 
     mraid.setExpandProperties = function(properties) {
-        broadcastEvent('setExpandProperties', properties);
+        mraidview.setExpandProperties(properties);
     };
 
     mraid.setResizeProperties = function (properties) {
@@ -393,13 +393,13 @@
         if (!url) {
             broadcastEvent(EVENTS.ERROR, 'URL is required.', 'open');
         } else {
-            broadcastEvent('open', url);
+            mraidview.open(url);
         }
     };
 
     mraid.expand = function(url) {
         if (placementType === PLACEMENTS.INLINE) {
-            broadcastEvent('expand', url);
+            mraidview.expand(url);
         }
     };
 
@@ -408,13 +408,13 @@
             broadcastEvent(EVENTS.ERROR, 'Method not supported by this version. (resize)', 'resize');
         } else {
             if (placementType === PLACEMENTS.INLINE) {
-                broadcastEvent('resize');
+                mraidview.resize();
             }
         }
     };
 
     mraid.close = function() {
-        broadcastEvent('close');
+        mraidview.close();
     };
 
     mraid.playVideo = function(url) {
@@ -427,7 +427,7 @@
             if (!url || typeof url != 'string') {
                 broadcastEvent(EVENTS.ERROR, 'Valid url required.', 'playVideo');
             } else {
-                broadcastEvent('playVideo', url);
+                mraidview.playVideo(url);
             }
         }
     };
@@ -441,7 +441,7 @@
             } else if (!url || typeof url !== 'string') {
                 broadcastEvent(EVENTS.ERROR, 'Valid url required. (storePicture)', 'storePicture');
             } else {
-                broadcastEvent('storePicture', url);
+                mraidview.storePicture(url);
             }
         }
     };
@@ -465,7 +465,7 @@
             } else if (!params || typeof params != 'object') {
                 broadcastEvent(EVENTS.ERROR, 'Valid params required.', 'createCalendarEvent');
             } else {
-                broadcastEvent('createCalendarEvent', params);
+                mraidview.createCalendarEvent(params);
             }
         }
     };

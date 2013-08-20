@@ -64,6 +64,7 @@
             <li><a class="nav-tab" href="${createLink(controller: "advertiser", action: "reports")}">報告</a></li>
             <li><a class="nav-tab" href="${createLink(controller: "advertiser", action: "account")}">帳戶資訊</a></li>
             <li><a class="nav-tab" href="${createLink(controller: "support")}">技術支援</a></li>
+            <li><a class="nav-tab" href="${createLink(controller: "demo")}">呈現測試</a></li>
         </ul>
     </div>
 </header>

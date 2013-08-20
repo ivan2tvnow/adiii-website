@@ -7,6 +7,7 @@ import org.codehaus.groovy.grails.web.context.ServletContextHolder
 import org.springframework.dao.OptimisticLockingFailureException
 
 class ApiController {
+
     /*
      *  URL: /api/search?adId=${campaignId}&apiKey=${user.apiKey}
      *  當廣告主已知廣告ID時, 可透過此API呼叫直接取得廣告活動內容.
@@ -56,12 +57,28 @@ class ApiController {
 
         SessionData sessionData = new SessionData()
         sessionData.deviceId = 'ABC'
-        sessionData.campaign = getCampaign()
         sessionData.accessKey = keyGenerator((('A'..'Z') + ('0'..'9')).join(), 11)
+        sessionData.campaign = getCampaign(params.adType)
 
         if (sessionData.save(flush: true)) {
-            def vastClosure = makeVastClosure(sessionData)
-            render(contentType: "application/xml", vastClosure)
+            if (params.adType == 'video') {
+                def vastClosure = makeVastClosure(sessionData)
+
+                render(contentType: "application/xml", vastClosure)
+            } else if (params.adType == 'mobile') {
+                MobileAdCreative creative = getRandomCreative(sessionData.campaign, 'mobileAd')
+                def result = makeMraid(sessionData.accessKey, sessionData.campaign.id, creative.id)
+
+                render(contentType: "text/json") {
+                    imgUrl = result.imgUrl
+                    viewUlr = result.viewUlr
+                    impressionUrl = result.impressionUrl
+                    clickUrl = result.clickUrl
+                    clickTrough = result.clickTrough
+                    videoUrl = result.videoUrl
+                }
+            }
+
         } else {
             render sessionData.errors
         }
@@ -100,9 +117,10 @@ class ApiController {
             }
 
             render 'success'
+        } else {
+            render 'session not found'
         }
 
-        render 'session not found'
     }
 
     /*
@@ -147,7 +165,7 @@ class ApiController {
     def creativeView() {
         //TODO: needs further improvement of the database accessing performance.
         SessionData sessionData = SessionData.findByAccessKey(params.data)
-        if (sessionData && !sessionData.impression) {
+        if (sessionData) {
             //add view info
             withClientInfo { info ->
                 def creativeView = new CreativeView(info)
@@ -165,9 +183,36 @@ class ApiController {
             }
 
             render 'success'
+        } else {
+            render 'session not found'
+        }
+    }
+
+    /*
+ *  URL: /api/ad?getMraid=${creativeId}&data=${data}
+ *  行動廣告的廣告頁面.
+ */
+    def makeMraid(accessKey, campaignId, creativeId) {
+        Map modelMap = [:]
+
+        def server
+        def host = "${request.scheme}://${request.serverName}:${request.serverPort}${request.contextPath}"
+        if (Environment.current == Environment.PRODUCTION) {
+            server = "${request.scheme}://${request.serverName}/adiii"
+        } else {
+            server = host
         }
 
-        render 'session not found'
+        MobileAdCreative creative = MobileAdCreative.get(creativeId)
+        def imgName = parseImgNameFromPath(creative.imageUrl)
+        modelMap.imgUrl = "${server}/assets/${imgName}"
+        modelMap.impressionUrl = "${host}/api/impression?data=${accessKey}&id=${campaignId}"
+        modelMap.clickUrl = "${host}/api/click?data=${accessKey}&id=${creative.id}"
+        modelMap.viewUlr = "${host}/api/creativeView?data=${accessKey}&id=${creative.id}"
+        modelMap.clickTrough = "${host}/api/clicktTrough?id=${creative.id}"
+        modelMap.videoUrl = "http://www.youtube.com/embed/Vpg9yizPP_g"
+
+        return modelMap
     }
 
     /*
@@ -292,21 +337,29 @@ class ApiController {
 
     /*
      *   (not an action method)
-     *   取得要投放的廣告活動, 目前只有兩個方式:1)亂數挑選, 2)給予預設廣告活動.
+     *   取得要投放的影片廣告活動, 目前只有兩個方式:1)亂數挑選, 2)給予預設廣告活動.
      *
      */
 
-    private getCampaign() {
+    private getCampaign(adType) {
         def query = Campaign.where {
             creatives.size() > 0
-            getVideoCreativeCount() > 0
-            //status == "START"
+            status == "START"
         }
         def campaigns = query.list()
+        List result = []
 
-        if (campaigns?.size()) {
-            def randomIndex = new Random().nextInt(campaigns.size())
-            return campaigns.get(randomIndex)
+        campaigns.each { campaign ->
+            if (adType == 'video' && campaign.getVideoCreativeCount() > 0) {
+                result.add(campaign)
+            } else if (adType == 'mobile' && campaign.getMobileCreativeCount() > 0) {
+                result.add(campaign)
+            }
+        }
+
+        if (result?.size()) {
+            def randomIndex = new Random().nextInt(result.size())
+            return result.get(randomIndex)
         } else {
             return getDefaultCampaign()
         }

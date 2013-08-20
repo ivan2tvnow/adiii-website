@@ -13,5 +13,4 @@ class DemoController
 
     def device() {}
 
-    def ad() {}
 }
